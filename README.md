@@ -7,6 +7,8 @@ Node to save and display Arduino data
 `source reset.sql`
 
 ### NodeJS
+`npm install` 
+
 `nodemon index.js`
 
 ### Browser

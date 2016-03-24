@@ -18,14 +18,18 @@ var connection = mysql.createConnection({
 });
 
 app.get('/', function(req, res){
-	res.send('Arduino');
+	res.send('<pre>Arduino</pre>');
 });
 
 app.get('/save', function(req, res){
 	var temperatura = parseFloat(req.query.temperatura);
+	var acao = '';
+	if(temperatura > 15){
+		acao = 'regar';
+	}
 	var response = {
 		temperatura: temperatura,
-		action: 'regar'
+		action: acao
 	};
 	connection.query('INSERT INTO registros (id, temperatura) VALUES (?, ?)', [null, temperatura] , function(err, res){
 		if(err) throw err;
@@ -35,10 +39,9 @@ app.get('/save', function(req, res){
 });
 
 app.get('/dashboard', function(req, res){
-	var results;
-	connection.query('SELECT * FROM .registros', function(err, rows, fields){
+	connection.query('SELECT * FROM registros', function(err, rows, fields){
 		if(err) throw err;
-		results = rows;
+		var results = rows;
 		res.render('dashboard', {results: results});
 	});
 });
