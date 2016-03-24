@@ -1,0 +1,26 @@
+doctype html
+html(lang="en")
+	head
+		title= Resultados
+		link(rel='stylesheeet', href='/css/bootstrap.css')
+		link(rel='stylesheeet', href='https://fonts.googleapis.com/css?family=Roboto')
+		style.
+			body {
+				font-family: 'Roboto', sans-serif;
+			}
+
+	body
+		div.container
+			div.row
+				h1 Resultados
+				table.table
+					thead
+						tr
+							th ID
+							th Temperatura
+					tbody
+						each result in results
+							tr
+								td= result.id
+								td= result.temperatura
+		script(src='/js/bootstrap.min.js')
