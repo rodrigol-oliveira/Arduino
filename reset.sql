@@ -14,6 +14,10 @@ CREATE TABLE user (
 	constraint PK_USER PRIMARY KEY (id_user)
 ); 
 
+#Criar tabela de estado
+#criar tabela de cidade
+#criar tabela de pais
+
 CREATE TABLE garden (
 	id_garden BIGINT(10) NOT NULL AUTO_INCREMENT,
 	name_garden varchar (50) NOT NULL,
