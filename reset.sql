@@ -6,13 +6,11 @@ USE Arduino;
 
 CREATE TABLE user (
 	id_user BIGINT(10) NOT NULL AUTO_INCREMENT,
-	name_user varchar (50) NOT NULL,
+	name varchar (50) NOT NULL,
 	email varchar (80) NOT NULL,
-	pasword varchar (20) NOT NULL,  #Falta tratar a criptografia 
-	id_contry BIGINT (20) NOT NULL,#conversar sobre tabela contry "PAIS"
-	id_state BIGINT (20) NOT Null, #conversar sobre tabela contry "ESTADO"
-	id_city BIGINT (20) NOT Null,#onversar sobre tabela contry "CIDADE"
-	date_of_birth datetime,
+	password varchar (20) NOT NULL,  #Falta tratar a criptografia MD5
+	city_id BIGINT (20) NOT NULL,#conversar sobre tabela contry "PAIS"
+	#date_of_birth datetime,
 	constraint PK_USER PRIMARY KEY (id_user)
 ); 
 
@@ -89,4 +87,4 @@ CREATE TABLE perimeter (
 	constraint FK_PERIMETER_MICROCONTROLLER FOREIGN KEY (id_microcontroller) references microcontroller(id_microcontroller)
 #	constraint FK_PERIMETER_TEMPERATUREE	 FOREIGN KEY (id_data_temperature) references temperature(id_data_temperature)
 ); 
-
+	
