@@ -7,9 +7,9 @@ USE Arduino;
 CREATE TABLE user (
 	id_user BIGINT(10) NOT NULL AUTO_INCREMENT,
 	name varchar (50) NOT NULL,
-	email varchar (80) NOT NULL,
-	password varchar (20) NOT NULL,  #Falta tratar a criptografia MD5
-	city_id BIGINT (20) NOT NULL,#conversar sobre tabela contry "PAIS"
+	#email varchar (80) NOT NULL,
+	#password varchar (20) NOT NULL,  #Falta tratar a criptografia MD5
+	#city_id BIGINT (20) NOT NULL,#conversar sobre tabela contry "PAIS"
 	#date_of_birth datetime,
 	constraint PK_USER PRIMARY KEY (id_user)
 ); 

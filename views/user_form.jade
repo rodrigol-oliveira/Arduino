@@ -1,0 +1,26 @@
+doctype html
+html(lang="en")
+	head
+		title="Novo Usuario"
+		link(rel='stylesheet', href='/css/bootstrap.css')
+		link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Roboto')
+		style.
+			body {
+				font-family: 'Roboto', sans-serif;
+			}
+
+	body
+		div.container
+			div.row
+				h1 Novo Usuario
+				form(name="create_user", method="post", action="/user")
+					div.form-group
+						label Nome
+						input(type="text", name="name").form-control
+					div.form-group
+						label Senha
+						input(type="password", name="password").form-control
+					input(type="submit", value="ok").btn.btn-default
+
+
+
