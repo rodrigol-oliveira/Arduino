@@ -17,7 +17,7 @@ app.locals.pretty = true;
 	var connection = mysql.createConnection({
 		host		: 'localhost',
 		user		: 'root',
-		password	: '',
+		password	: 'junior04p',
 		database	: 'Arduino'
 	});
 	app.post('/user',function(req, res){
@@ -36,7 +36,17 @@ app.locals.pretty = true;
 
 	app.get('/', function(req, res){
 		//res.send('<pre>Arduino</pre>');
-		res.render('user_form');
+		res.render('login');
+	});
+
+	app.get('/user_add', function(req, res){
+		//res.send('<pre>Arduino</pre>');
+		res.render('user_add');
+	});
+
+	app.get('/main', function(req, res){
+		//res.send('<pre>Arduino</pre>');
+		res.render('main');
 	});
 
 	connection.connect(function(err){

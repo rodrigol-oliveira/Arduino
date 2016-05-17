@@ -13,14 +13,16 @@ html(lang="en")
 		div.container
 			div.row
 				h1 Novo Usuario
-				form(name="create_user", method="post", action="/user")
+				form(name="create_user", method="post", action="")
 					div.form-group
 						label Nome
-						input(type="text", name="name").form-control
+						input(type="text", name="name", required).form-control
 					div.form-group
 						label Senha
-						input(type="password", name="password").form-control
-					input(type="submit", value="ok").btn.btn-default
+						input(type="password", name="password", required).form-control
+					div.form-group
+						input(type="submit", value="Cadastrar" ).btn.btn-default
+						input(type="button" value="Cancelar" onclick="window.location='/'").btn.btn-default
 
 
 

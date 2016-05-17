@@ -1,0 +1,32 @@
+doctype html
+html(lang="en")
+	head
+		title="Login"
+		link(rel='stylesheet', href='/css/bootstrap.css')
+		link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Roboto')
+		style.
+			body {
+				font-family: 'Roboto', sans-serif;
+			}
+
+	body
+		div.container
+			div.row
+				h1 Login
+				form(
+				name="login", method="", action="")
+					div.form-group
+						label username
+						input(type="text", name="name",).form-control
+					div.form-group
+						label Senha
+						input(type="password", name="password").form-control
+					input(type="button", value="Entrar",  onclick="window.location='/main'").btn.btn-default
+			div.row
+				br
+				a(href="/user_add") novo usuário
+
+
+
+
+
