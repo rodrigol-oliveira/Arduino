@@ -18,8 +18,8 @@ Node to save and display Arduino data
 
 `localhost:3000/dashboard`
 
-### Node template language
-`http://jade-lang.com/`
+### EJS template language
+`http://www.embeddedjs.com/`
 
 ### Comandos Git
 `git clone https://github.com/rodrigol-oliveira/Arduino.git`  

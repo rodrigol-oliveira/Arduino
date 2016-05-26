@@ -11,7 +11,7 @@
   "dependencies": {
     "body-parser": "*",
     "express": "*",
-    "jade": "*",
+    "ejs": "*",
     "mysql": "*"
   }
 }

@@ -1,0 +1,330 @@
+<html>
+
+    <head>
+		<title>i1 - Homepage</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <script src="js/jquery.js"></script>
+        <script src="js/bootstrap.js"></script>
+        
+        <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+        
+    
+    </head>
+    
+    <body>
+    
+        <nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+        <a class="navbar-brand" href="#">i1 - Sistema de Irrigação Inteligente</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      
+      <ul class="nav navbar-nav navbar-right">
+            <li><a href="#"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home</a></li> 
+            <li><a href="#"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Sair</a></li>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+        
+    
+    
+    
+    
+        <div class="container-fluid">
+            
+            
+            
+        
+            <div class="row">
+            
+                <div class="col-md-12">
+                
+                    <div class="jumbotron" style="background-image: url('back.jpg');">
+                      </div>
+                
+                </div>
+            
+            </div>
+            
+            
+            <div class="row">
+            
+            
+                
+                
+                <div class="col-md-4">
+                
+                
+                    <div class="dropdown">
+    
+    
+                        <button type="button" class="btn btn-primary dropdown-toggle" id="customer" style="width:100%" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="glyphicon glyphicon-user " aria-hidden="true"></span> Gerenciar a sua conta <span class="caret"></span></button>
+
+
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#" data-toggle="modal" data-target="#addcustomer"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Visualizar seus dados</a></li>
+						<li><a href="#" data-toggle="modal" data-target="#addcustomer"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Alterar seus dados</a></li>
+                        <li><a href="#" data-toggle="modal" data-target="#allcustomer"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Desativar sua conta</a></li>
+                      </ul>
+                    </div>
+                    
+                
+                </div>
+                
+                
+                
+                <div class="col-md-4">
+                
+                
+                    <div class="dropdown">
+    
+    
+                        <button type="button" class="btn btn-primary dropdown-toggle" id="customer" style="width:100%" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="glyphicon glyphicon-book " aria-hidden="true"></span> Gerenciar o seu jardim <span class="caret"></span></button>
+
+
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+					  <!-- fazer no incremento 2 --> 
+                       </ul>
+                    </div>
+                    
+                
+                </div>
+                
+                <div class="col-md-4">
+                
+                    <div class="dropdown">
+    
+    
+                        <button type="button" class="btn btn-primary dropdown-toggle" id="customer" style="width:100%" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="glyphicon glyphicon-equalizer " aria-hidden="true"></span> Relatórios de monitoramento <span class="caret"></span></button>
+
+
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+						<!-- fazer no incremento 2 --> 
+                      </ul>
+                    </div>
+                    
+                
+                </div>
+            
+            
+            </div>
+            
+            <br>
+            
+            
+            
+            <div class="row">
+            
+            
+                <div class="col-md-12">
+                
+                    <table class="table table-hover">
+                        
+                        <thead>
+                            <tr>
+                        
+                                <td style="width:15%;"><strong>Últimas atualizações</strong></td>
+
+                            </tr>
+                        </thead>
+                        
+                        <tr>
+								<!-- !!! dado chumbado !!! fazer tabela dinâmica no incremento 2 --> 
+                                <td style="width:10%;">25/04/2016</td>
+                                <td style="width:15%;">07:08</td>
+								<td style="width:20%;">Solo seco</td>
+                                <td>Válvula acionada</td>
+
+                        </tr>
+                        
+                        <tr>
+								<!-- !!! dado chumbado !!! fazer tabela dinâmica no incremento 2 --> 
+                                <td style="width:10%;">26/04/2016</td>
+                                <td style="width:15%;">10:43</td>
+								<td style="width:20%;">Solo seco</td>
+                                <td>Chuva forte</td>
+
+                        </tr>
+                        
+                        <tr>
+								<!-- !!! dado chumbado !!! fazer tabela dinâmica no incremento 2 --> 
+                                <td style="width:10%;">26/04/2016</td>
+                                <td style="width:15%;">18:27</td>
+								<td style="width:20%;">Solo úmido</td>
+                                <td>Chuva fraca</td>
+
+                        </tr>
+                        
+                    </table>
+                
+                </div>
+            
+            </div>
+            
+        </div>
+    
+   
+    
+    <!-- MODALS -->
+    
+    
+    <!-- visualizar dados -->
+<div class="modal fade" id="addcustomer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Visualizar seus dados</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal">
+<fieldset>
+
+<!-- Form Name --><br>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Name">Name</label>  
+  <div class="col-md-4">
+  <input id="Name" name="Name" type="text" placeholder="" class="form-control input-md">
+    
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Phone</label>  
+  <div class="col-md-4">
+  <input id="textinput" name="textinput" type="text" placeholder="" class="form-control input-md">
+    
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Address</label>  
+  <div class="col-md-4">
+  <input id="textinput" name="textinput" type="text" placeholder="" class="form-control input-md">
+    
+  </div>
+</div>
+
+</fieldset>
+</form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- alterar dados -->
+<div class="modal fade" id="addcustomer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cancelar"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Alterar dados</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal">
+<fieldset>
+
+<!-- Form Name --><br>
+
+<!-- Insere: nome-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Name">Nome:</label>  
+  <div class="col-md-4">
+  <input id="Name" name="Name" type="text" placeholder="" class="form-control input-md">
+    
+  </div>
+</div>
+
+<!-- Insere: sobrenome-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Sobrenome:</label>  
+  <div class="col-md-4">
+  <input id="textinput" name="textinput" type="text" placeholder="" class="form-control input-md">
+    
+  </div>
+</div>
+
+<!-- Insere: email-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Email:</label>  
+  <div class="col-md-4">
+  <input id="textinput" name="textinput" type="text" placeholder="" class="form-control input-md">
+    
+  </div>
+</div>
+
+<!-- Insere: data de nascimento-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Data de nascimento:</label>  
+  <div class="col-md-4">
+  <input id="textinput" name="textinput" type="text" placeholder="" class="form-control input-md">
+    
+  </div>
+</div>
+
+</fieldset>
+</form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary">Atualizar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- desativar conta -->
+<div class="modal fade" id="addcustomer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cancelar"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Desativar sua conta</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal">
+<fieldset>
+
+<!-- vazio -->
+
+</fieldset>
+</form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+    </body>
+
+</html>
