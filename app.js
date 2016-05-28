@@ -47,6 +47,11 @@
 		res.render('login');
 	});
 
+//metodo requisita pagina de Dashboad
+	app.get('/dashboard', function(req, res){
+		res.render('dashboard');
+	});
+
 //Metodo requisita pagina Main
 	app.get('/main', function(req, res){
 		//res.send('<pre>Arduino</pre>');
