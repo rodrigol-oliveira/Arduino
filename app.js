@@ -47,6 +47,28 @@
 		res.render('login');
 	});
 
+//metod que verifica as credenciais usuarios
+	app.post('/check-user', function(req, res) {
+		var email = req.body.email;
+		var password = req.body.password;
+		console.log(email, password);
+		connection.query('SELECT id_user, name, password FROM user WHERE email = ?', [ email ] , function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+		      var id_user = rows[0].id_user;
+		      var name = rows[0].name;
+		      var pwd = rows[0].password;
+		      console.log(id_user, email, name, pwd, ' | ', password);
+		      if(pwd == password){
+		      	res.redirect('/main');
+		      }else{
+		      	res.send("Dados inválidos");
+		      }
+		    }else{
+		      res.send("Usuário não existe");
+		    }
+		});
+	});
 //metodo requisita pagina de Dashboad
 	app.get('/dashboard', function(req, res){
 		res.render('dashboard');
