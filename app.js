@@ -3,6 +3,7 @@
 	var mysql = require('mysql');
 	var bodyParser = require('body-parser');
 	var path = require('path');
+	var session = require('express-session')
 
 
 	var app = express();
@@ -13,6 +14,14 @@
 	app.use(express.static('public'));
 	app.locals.pretty = true;
 	app.use(express.static(__dirname + '/views'));
+
+	app.set('trust proxy', 1) 
+	app.use(session({
+		secret: 'secret cat',
+		resave: false,
+  		saveUninitialized: true,
+	}));
+
 
 //Metodo de conexão
 	var connection = mysql.createConnection({
@@ -47,6 +56,12 @@
 		res.render('login');
 	});
 
+//metodo requisita pagina de Login
+	app.get('/logout', function(req, res){
+		var session = req.session.user = {};
+		res.redirect('/login');
+	});
+
 //metod que verifica as credenciais usuarios
 	app.post('/check-user', function(req, res) {
 		var email = req.body.email;
@@ -58,8 +73,11 @@
 		      var id_user = rows[0].id_user;
 		      var name = rows[0].name;
 		      var pwd = rows[0].password;
-		      console.log(id_user, email, name, pwd, ' | ', password);
 		      if(pwd == password){
+		      	var session = req.session.user = {
+		      		id_user: id_user,
+		      		name: name
+		      	};
 		      	res.redirect('/main');
 		      }else{
 		      	res.send("Dados inválidos");
@@ -71,13 +89,21 @@
 	});
 //metodo requisita pagina de Dashboad
 	app.get('/dashboard', function(req, res){
-		res.render('dashboard');
+		if(!req.session.user.name || !req.session.user.id_user){
+			res.redirect('/login');
+		}else{
+			res.render('dashboard');	
+		}
 	});
 
 //Metodo requisita pagina Main
 	app.get('/main', function(req, res){
-		//res.send('<pre>Arduino</pre>');
-		res.render('main');
+		if(!req.session.user.name || !req.session.user.id_user){
+			res.redirect('/login');
+		}else{
+			var name = req.session.user.name;
+			res.render('main', {name: name});	
+		}
 	});
 
 //Metodo de Conexão
