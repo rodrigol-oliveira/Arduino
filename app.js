@@ -3,7 +3,8 @@
 	var mysql = require('mysql');
 	var bodyParser = require('body-parser');
 	var path = require('path');
-	var session = require('express-session')
+	var session = require('express-session');
+	var bcrypt = require('bcrypt-nodejs');
 
 
 	var app = express();
@@ -35,7 +36,8 @@
 		var name = req.body.name;
 		var email = req.body.email;
 		var password = req.body.password;
-		connection.query('INSERT INTO user (name,email,password) VALUES (?,?,?)', [ name, email, password ] , function(err, res){
+		var hash = bcrypt.hashSync(password);
+		connection.query('INSERT INTO user (name,email,password) VALUES (?,?,?)', [ name, email, hash ] , function(err, res){
 				if(err) throw err;
 			});
 		res.render('index', {message: 'Cadastro OK'});
@@ -66,14 +68,13 @@
 	app.post('/check-user', function(req, res) {
 		var email = req.body.email;
 		var password = req.body.password;
-		console.log(email, password);
 		connection.query('SELECT id_user, name, password FROM user WHERE email = ?', [ email ] , function(err, rows){
 			if(err) throw err;
 			if(rows.length === 1){
 		      var id_user = rows[0].id_user;
 		      var name = rows[0].name;
 		      var pwd = rows[0].password;
-		      if(pwd == password){
+		      if(bcrypt.compareSync(password, pwd)){
 		      	var session = req.session.user = {
 		      		id_user: id_user,
 		      		name: name
@@ -89,7 +90,7 @@
 	});
 //metodo requisita pagina de Dashboad
 	app.get('/dashboard', function(req, res){
-		if(!req.session.user.name || !req.session.user.id_user){
+		if(!req.session.user || !req.session.user.name || !req.session.user.id_user){
 			res.redirect('/login');
 		}else{
 			res.render('dashboard');	
@@ -98,7 +99,7 @@
 
 //Metodo requisita pagina Main
 	app.get('/main', function(req, res){
-		if(!req.session.user.name || !req.session.user.id_user){
+		if(!req.session.user || !req.session.user.name || !req.session.user.id_user){
 			res.redirect('/login');
 		}else{
 			var name = req.session.user.name;
