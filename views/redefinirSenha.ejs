@@ -6,16 +6,8 @@
 
   <!-- Bootstrap core CSS -->
   <link href="./css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
-  <!-- Custom styles for this template -->
+  <link rel="stylesheet" href="./css/bootstrap-theme.min.css"/>
   <link href="./css/signin.css" rel="stylesheet">
-
-  <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-  <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-  <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
   <script src="./js/script.js"></script>
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -27,6 +19,23 @@
     </head>
 
     <body>
+      <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">iOne Jardim Inteligente</a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          
+        </div><!-- /.container-fluid -->
+      </nav>
 
 
       <div class="container">
@@ -45,13 +54,13 @@
             <input type="password" id="reNovaSenha" name="reNovaSenha" class="form-control" placeholder="Redigite nova Senha" required>
             
             
-            <input type="submit" class="btn btn-lg btn-primary btn-block" value="Confirmar"/>
-            <input type="submit" class="btn btn-lg btn-primary btn-block" value="Cancelar" onclick="window.location='/main'"/>
+            <input type="submit" class="btn btn-block btn-primary" value="Confirmar"/>
+            <input type="submit" class="btn btn-block btn-primary " value="Cancelar" onclick="window.location='/main'"/>
 
 
           </form>
         </div>
       </div> <!-- /container -->
-
-    </body>
-    </html>
+    </div>
+  </body>
+  </html>
