@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>iOne Smart Garden - Login</title>
+  <title>iOne Smart Garden - Sign In</title>
 
   <!-- Bootstrap core CSS -->
   <link href="./css/bootstrap.min.css" rel="stylesheet">
@@ -32,18 +32,19 @@
         <div class="row">
           <form name="login" class="form-signin" method="post" action="check-user">
 
-            <h4 class="form-signin-heading">Login</h4>
+            <h4 class="form-signin-heading">Sign In</h4>
             <label for="email" class="sr-only">Email</label>
             <input type="email" id="email" name="email" class="form-control" placeholder="Email" required autofocus>
             <br/>
-            <label for="password" class="sr-only">Senha</label>
+            <label for="password" class="sr-only">Password</label>
             <input type="password" id="password" name="password" class="form-control" placeholder="Senha" required>
             <div class="checkbox">
               <label>
-                <input type="checkbox" value="remember-me"> Lembrar-me
-              </label>
+                <p id="forgotPassword" src="#"><a>Forgot password?</a></p> <!-- Validar função lembrar usuario-->
+                
+               </label>
             </div>
-            <input type="submit" class="btn btn-lg btn-primary btn-block" value="Entrar"  onclick="window.location='/main'"/>
+            <input type="submit" class="btn btn-lg btn-primary btn-block" value="Sign In"  onclick="window.location='/main'"/>
 
           </form>
         </div>
