@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>iOne Jardim Inteligente - Dados Cadastrais</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="./css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="./css/signin.css" rel="stylesheet">
+
+	<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+	<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+	<script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+	<script src="./js/script.js"></script>
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+      <script type="text/javascript">
+        function habilitar(){
+          document.getElementById('nome').readOnly = !document.getElementById('nome').readOnly;
+          document.getElementById('sobrenome').readOnly = !document.getElementById('sobrenome').readOnly;
+          document.getElementById('pais').disabled = !document.getElementById('pais').disabled;
+          document.getElementById('estado').disabled = !document.getElementById('estado').disabled;
+          document.getElementById('cidade').disabled = !document.getElementById('cidade').disabled;
+          document.getElementById('nascimento').readOnly = !document.getElementById('nascimento').readOnly;
+          document.getElementById('confirmar').disabled = !document.getElementById('confirmar').disabled;
+
+          document.getElementById('editar').disabled = !document.getElementById('editar').disabled;        
+          
+        }
+      </script>
+    </head>
+
+    <body>
+
+     <!-- Continuação do formulario Cadastrar-->
+     <div class="container">
+      <div class="row">
+       <form name="cadastro" class="form-signin" method="#">
+        
+        <h4 class="form-signin-heading">Dados cadastrais</h4>
+
+        <input id="nome"      name="nome"      type="text" placeholder="Nome" class="form-control" required readonly>
+        
+        <input id="sobrenome" name="sobrenome" type="text" placeholder="Sobrenome" class="form-control" required readonly>
+        <input id="email"     name="email"       type="text" placeholder="E-mail" class="form-control" required readonly>
+        
+        <select id="pais" name="pais" type="select" placeholder="País" class="form-control" required disabled="true">
+          <option value="1">Brasil</option>   
+        </select>
+
+        <select id="estado" name="estado" type="select" placeholder="Estado" class="form-control" required disabled="true">
+         <option value="1">SP</option>
+         <option value="2">RJ</option>
+       </select>
+
+       <select id="cidade" name="cidade" type="select" placeholder="Cidade" class="form-control" required disabled="true">
+         <option value="1">São Paulo</option>
+       </select>
+
+       <input id="nascimento" name="nascimento" type="date" placeholder="Nascimento" class="form-control" required readonly>
+       <br>
+
+       <input type="button" id="editar" class="btn btn-lg btn-primary btn-block" value="Editar" onclick="habilitar()" /> 
+       <input type="submit" id="confirmar" class="btn btn-lg btn-primary btn-block" value="Confirmar" disabled="true"> 
+       <input type="button" class="btn btn-lg btn-primary btn-block" value="Cancelar" onclick="window.location='/main'"> 
+
+     </div>
+   </form>
+ </div>
+</div>
+
+</body>
+</html>

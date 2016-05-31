@@ -65,6 +65,16 @@ app.get('/logout', function(req, res){
 	res.redirect('/');
 });
 
+//Metodo requisita pagina de redefinir senha
+app.get('/senha',function(req,res){
+	res.render('redefinirSenha');
+});
+
+//Metodo requisita pagina de dados caddastrais
+app.get('/dados',function(req,res){
+	res.render('dadosCadastrais');
+});
+
 //metod que verifica as credenciais usuarios
 app.post('/check-user', function(req, res) {
 	var email = req.body.email;
