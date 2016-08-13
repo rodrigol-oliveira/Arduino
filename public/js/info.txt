@@ -1,7 +1,0 @@
-modelo freelancer 
-
-jqBootstrapValidation
-contact_me
-freelancer
-cbpAnimatedHeader
-classie
