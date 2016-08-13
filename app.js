@@ -39,27 +39,15 @@ app.get('/',function(req,res){
 });
 
 //metodo requisita pagina de Login - ok
-app.get('/iniciar', function(req,res){
+app.get('/viewIniciar', function(req,res){
 	res.render('iniciar');
 });
 
 //Metodo requisita pagina de cadastro - ok
-app.get('/registrar',function(req,res){
+app.get('/viewRegistrar',function(req,res){
 	res.render('registrar');
 });
 
-//metodo de adicionar usuario no BD
-app.post('/gravarregistro',function(req, res){
-	var nome = req.body.nome;
-	var email = req.body.email;
-	var senha = req.body.senha;
-	var hash = bcrypt.hashSync(senha); //criptografia
-	connection.query('INSERT INTO user (nome, email, senha) VALUES (?,?,?)', [ nome, email, hash ] , 
-		function(err, res){
-			if(err) throw err;
-		});
-	res.render('index', {message: 'Usuário cadastrado com sucesso.'});
-});
 
 //metodo requisita pagina de Login
 app.get('/sair', function(req, res){
@@ -68,13 +56,34 @@ app.get('/sair', function(req, res){
 });
 
 //Metodo requisita pagina de redefinir senha
-app.get('/senha',function(req,res){
-	res.render('redefinirSenha');
+app.get('/viewRedefinir',function(req,res){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id_user){
+		res.redirect('/viewIniciar');
+	}else{
+		var nome = req.session.user.nome;
+		res.render('viewRedefinir', {nome: nome});	
+	}
+});
+
+//Metodo requisita pagina main
+app.get('/viewPrincipal', function(req, res){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id_user){
+		res.redirect('/viewIniciar');
+	}else{
+		var nome = req.session.user.nome;
+		res.render('principal', {nome: nome});	
+	}
 });
 
 //Metodo requisita pagina de dados caddastrais
-app.get('/dados',function(req,res){
-	res.render('dadosCadastrais');
+app.get('/viewCriar',function(req,res){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id_user){
+		res.redirect('/viewIniciar');
+	}else{
+		var nome = req.session.user.nome;
+		res.render('criar', {nome: nome});	
+	}
+	
 });
 
 //metod que verifica as credenciais usuarios
@@ -93,7 +102,7 @@ app.post('/validar', function(req, res) {
 						id_user: id_user,
 						nome: nome
 					};
-					res.redirect('/principal');
+					res.redirect('/viedwPrincipal');
 				}else{
 					res.send("Dados inválidos");//senha inválida
 				}
@@ -103,24 +112,18 @@ app.post('/validar', function(req, res) {
 		});
 });
 
-//Metodo requisita pagina main
-app.get('/principal', function(req, res){
-	if(!req.session.user || !req.session.user.nome || !req.session.user.id_user){
-		res.redirect('/iniciar');
-	}else{
-		var nome = req.session.user.nome;
-		res.render('principal', {nome: nome});	
-	}
-});
 
-//Metodo requisita pagina de dados caddastrais
-app.get('/criar',function(req,res){
-	res.render('criar');
-});
-
-//Metodo requisita pagina de dados caddastrais
-app.get('/redefinir',function(req,res){
-	res.render('redefinir');
+//metodo de adicionar usuario no BD
+app.post('/registrar',function(req, res){
+	var nome = req.body.nome;
+	var email = req.body.email;
+	var senha = req.body.senha;
+	var hash = bcrypt.hashSync(senha); //criptografia
+	connection.query('INSERT INTO user (nome, email, senha) VALUES (?,?,?)', [ nome, email, hash ] , 
+		function(err, res){
+			if(err) throw err;
+		});
+	res.render('index', {message: 'Usuário cadastrado com sucesso.'});
 });
 
 //metodo requisita pagina de Dashboad
@@ -131,8 +134,6 @@ app.get('/dashboard', function(req, res){
 		res.render('dashboard');	
 	}
 });
-
-
 
 //Chama Metodo de Conexão ao executar app
 connection.connect(function(err){
