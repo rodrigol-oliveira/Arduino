@@ -119,7 +119,7 @@ app.get('/criar',function(req,res){
 });
 
 //Metodo requisita pagina de dados caddastrais
-app.get('/redefini',function(req,res){
+app.get('/redefinir',function(req,res){
 	res.render('redefinir');
 });
 
