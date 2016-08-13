@@ -40,7 +40,7 @@ app.get('/',function(req,res){
 
 //metodo requisita pagina de Login - ok
 app.get('/viewIniciar', function(req,res){
-	res.render('iniciar');
+	res.render('iniciar', {message: ''});
 });
 
 //Metodo requisita pagina de cadastro - ok
@@ -61,7 +61,7 @@ app.get('/viewRedefinir',function(req,res){
 		res.redirect('/viewIniciar');
 	}else{
 		var nome = req.session.user.nome;
-		res.render('viewRedefinir', {nome: nome});	
+		res.render('redefinir', {nome: nome});	
 	}
 });
 
@@ -76,12 +76,12 @@ app.get('/viewPrincipal', function(req, res){
 });
 
 //Metodo requisita pagina de dados caddastrais
-app.get('/viewCriar',function(req,res){
+app.get('/viewNovoJardim',function(req,res){
 	if(!req.session.user || !req.session.user.nome || !req.session.user.id_user){
 		res.redirect('/viewIniciar');
 	}else{
 		var nome = req.session.user.nome;
-		res.render('criar', {nome: nome});	
+		res.render('novoJardim', {nome: nome});	
 	}
 	
 });
@@ -102,7 +102,7 @@ app.post('/validar', function(req, res) {
 						id_user: id_user,
 						nome: nome
 					};
-					res.redirect('/viedwPrincipal');
+					res.redirect('/viewPrincipal');
 				}else{
 					res.send("Dados inválidos");//senha inválida
 				}
@@ -123,7 +123,7 @@ app.post('/registrar',function(req, res){
 		function(err, res){
 			if(err) throw err;
 		});
-	res.render('index', {message: 'Usuário cadastrado com sucesso.'});
+	res.render('viewIniciar', {msgContaRegistrada: 'Conta registrada com sucesso.'});
 });
 
 //metodo requisita pagina de Dashboad
@@ -134,6 +134,19 @@ app.get('/dashboard', function(req, res){
 		res.render('dashboard');	
 	}
 });
+
+app.post('/novoJardim',function(req, res){
+	var jardim = req.body.nome;
+	var planta = req.body.planta;
+	var ambiente = req.body.ambiente;
+	
+	connection.query('INSERT INTO jardim (nome, planta, ambiente) VALUES (?,?,?)', [ nome, planta, jardim ] , 
+		function(err, res){
+			if(err) throw err;
+		});
+	res.render('viewPrincipal', {msgNovoJardim: 'Jardim criado com Sucesso.'});
+});
+
 
 //Chama Metodo de Conexão ao executar app
 connection.connect(function(err){
