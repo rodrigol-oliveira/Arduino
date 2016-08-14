@@ -2,6 +2,9 @@
 <html lang="pt-BR">
 <head>
 	<meta charset="utf-8">
+	<link rel="stylesheet" href="./css/bootstrap.css" />
+    <link rel="stylesheet" href="./css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="./css/c3.css" type="text/css">
 	<title>iOne</title>
 </head>
 <body>
@@ -10,7 +13,7 @@
 		<fieldset>
 			<legend>Conta</legend>
 			<ul>
-				<li>imegem</li>
+				<li>imagem</li>
 				<li><%= nome %></li>
 				<li><a href="/viewRedefinir">Redefinir senha</a></li>
 				<li><a href="/sair">sair</a></li>
@@ -23,12 +26,53 @@
 			</ul>
 		</fieldset>
 		<fieldset>
+		
 			<legend>Detalhes do Jardim</legend>
+
+			<li>infomacao1:<%= variavel1 %></li>
+			<li>infomacao2:<%= variavel2 %></li>
+			<li>infomacao3:<%= variavel3 %></li>
+			<li>infomacao4:<%= variavel4 %></li>
+			<li>infomacao5:<%= variavel5 %></li>
+			
+		
+
+
+
+
+			<div class="direita" id="chart" style="width: 400px;"></div>
+
+  			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  			<script src="./js/bootstrap.js"></script>
+  			<script src="./js/d3.v3.min.js"></script>
+  			<script src="./js/c3.min.js"></script>
+
+  			<script>
+    			var chart = c3.generate({
+			      	data: {
+          		  	columns: [
+              			['consumo de água', <%= consumo %>],
+              			['acionamento de válvula', <%= acionamento %>]
+          			],
+          			type: 'bar'
+      				},
+      				bar: {
+          				width: {
+              				ratio: 0.5 // this makes bar width 50% of length between ticks
+          				}
+      				}
+  				});
+
+  			</script>
+		
 		</fieldset>
-		<fieldset>
+
+		
+		
 			<legend>Acompanhamento</legend>
-		</fieldset>
+		
 	</div>
 
+	
 </body>
 </html>

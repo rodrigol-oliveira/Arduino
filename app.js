@@ -28,7 +28,8 @@
 var connection = mysql.createConnection({
 	host		: 'localhost',
 	user		: 'root',
-	password	: 'root',
+	//password	: 'root',//Valter
+	password	: '', //Rodrigo
 	database	: 'arduino'
 });
 
@@ -57,7 +58,7 @@ app.get('/sair', function(req, res){
 
 //Metodo requisita pagina de redefinir senha
 app.get('/viewRedefinir',function(req,res){
-	if(!req.session.user || !req.session.user.nome || !req.session.user.id_user){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
 		res.redirect('/viewIniciar');
 	}else{
 		var nome = req.session.user.nome;
@@ -67,17 +68,32 @@ app.get('/viewRedefinir',function(req,res){
 
 //Metodo requisita pagina main
 app.get('/viewPrincipal', function(req, res){
-	if(!req.session.user || !req.session.user.nome || !req.session.user.id_user){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
 		res.redirect('/viewIniciar');
 	}else{
-		var nome = req.session.user.nome;
-		res.render('principal', {nome: nome});	
+	var nome = req.session.user.nome;
+    var consumo = [];
+	var acionamento = [];
+	var variavel = [];
+	
+
+	for(var i=0; i<6; i++) {
+		var _consumo = Math.ceil(Math.random()*200) + 25;
+		var _acionamento = Math.ceil(Math.random()*200) + 25;
+		var _variavel = "variavel vinda do Node " + i;
+		consumo.push(_consumo);
+		acionamento.push(_acionamento);
+		variavel.push(_variavel);
+	}
+	res.render('principal', {variavel1:variavel[1] ,variavel2:variavel[2],variavel3:variavel[3]
+		,variavel4:variavel[4] ,variavel5:variavel[5]
+		,consumo: consumo, acionamento: acionamento,nome:nome})	
 	}
 });
 
 //Metodo requisita pagina de dados caddastrais
 app.get('/viewNovoJardim',function(req,res){
-	if(!req.session.user || !req.session.user.nome || !req.session.user.id_user){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
 		res.redirect('/viewIniciar');
 	}else{
 		var nome = req.session.user.nome;
@@ -86,28 +102,30 @@ app.get('/viewNovoJardim',function(req,res){
 	
 });
 
-//metod que verifica as credenciais usuarios
+//metod que verifica as credenciais da conta
 app.post('/validar', function(req, res) {
 	var email = req.body.email;
 	var senha = req.body.senha;
-	connection.query('SELECT * FROM user WHERE email = ?', [ email ] , 
+	connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
 		function(err, rows){
+
 			if(err) throw err;
-			if(rows.length == 1){
-				var id_user = rows[0].id_user;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
+			if(rows.length === 1){
+  		      var id = rows[0].id;
+  		      var nome = rows[0].nome;
+  		      var pwd = rows[0].senha;
+				
 				if(bcrypt.compareSync(senha, pwd)){ // metodo da biblioteca que compara as senhas
 					var session = req.session.user = {
-						id_user: id_user,
-						nome: nome
+					id: id,
+  		      		nome: nome
 					};
 					res.redirect('/viewPrincipal');
 				}else{
 					res.send("Dados inválidos");//senha inválida
 				}
 			}else{
-				res.send("Dados inválidos");//senha inválida
+				res.send("Dados inválidos");//user não cadastrado
 			}
 		});
 });
@@ -119,20 +137,21 @@ app.post('/registrar',function(req, res){
 	var email = req.body.email;
 	var senha = req.body.senha;
 	var hash = bcrypt.hashSync(senha); //criptografia
-	connection.query('INSERT INTO user (nome, email, senha) VALUES (?,?,?)', [ nome, email, hash ] , 
+	connection.query('INSERT INTO usuario(nome, email, senha) VALUES (?,?,?)', [ nome, email, hash ] , 
 		function(err, res){
 			if(err) throw err;
 		});
-	res.render('viewIniciar', {msgContaRegistrada: 'Conta registrada com sucesso.'});
+	res.render('iniciar');
 });
 
 //metodo requisita pagina de Dashboad
 app.get('/dashboard', function(req, res){
-	if(!req.session.user || !req.session.user.name || !req.session.user.id_user){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
 		res.redirect('/login');
 	}else{
 		res.render('dashboard');	
-	}
+	}	console.log(email); 	
+			console.log(senha); 	
 });
 
 app.post('/novoJardim',function(req, res){
