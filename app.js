@@ -6,15 +6,19 @@
 	var session = require('express-session'); <!-- cria uma instancia em branco  - framework -->
 	var bcrypt = require('bcrypt-nodejs'); <!-- criptografia-->
 
+	/*
+    people = ['geddy', 'neil', 'alex'];
+    html = ejs.render('<%= people.join(", "); %>', {people: people});
+    */
 
-	var app = express();
-	app.set('view engine', 'ejs');
-	app.use(bodyParser.urlencoded({ extended: false }))
-	app.use(bodyParser.json())
-	app.set('views', __dirname + '/views');
-	app.use(express.static('public'));
-	app.locals.pretty = true;
-	app.use(express.static(__dirname + '/views'));
+    var app = express();
+    app.set('view engine', 'ejs');
+    app.use(bodyParser.urlencoded({ extended: false }))
+    app.use(bodyParser.json())
+    app.set('views', __dirname + '/views');
+    app.use(express.static('public'));
+    app.locals.pretty = true;
+    app.use(express.static(__dirname + '/views'));
 	//da linha 19 a 24 se refere a seção, impedindo que acesse as paginas internas sem logar
 	app.set('trust proxy', 1)
 	app.use(session({
@@ -62,33 +66,38 @@ app.get('/viewRedefinir',function(req,res){
 		res.redirect('/viewIniciar');
 	}else{
 		var nome = req.session.user.nome;
+
 		res.render('redefinir', {nome: nome});	
 	}
 });
 
-//Metodo requisita pagina main
+//Metodo requisita pagina principal
 app.get('/viewPrincipal', function(req, res){
 	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
 		res.redirect('/viewIniciar');
 	}else{
-	var nome = req.session.user.nome;
-    var consumo = [];
-	var acionamento = [];
-	var variavel = [];
-	
+		nome = req.session.user.nome;
+		var id = req.session.user.id;
+		
 
-	for(var i=0; i<6; i++) {
-		var _consumo = Math.ceil(Math.random()*200) + 25;
-		var _acionamento = Math.ceil(Math.random()*200) + 25;
-		var _variavel = "variavel vinda do Node " + i;
-		consumo.push(_consumo);
-		acionamento.push(_acionamento);
-		variavel.push(_variavel);
+		connection.query('SELECT * FROM jardim where id_usuario = ?', [id] ,
+			function(err, rows){
+				if(err) throw err;
+				var jardim = rows;
+
+				connection.query('SELECT valor FROM agua limit 5 ',function(err, rows,fields) {
+					if(err) throw err;
+					results=rows;
+
+
+
+
+					res.render('principal', {nome:nome, jardim:jardim, results: results});
+					console.log(results);
+				});
+			});
 	}
-	res.render('principal', {variavel1:variavel[1] ,variavel2:variavel[2],variavel3:variavel[3]
-		,variavel4:variavel[4] ,variavel5:variavel[5]
-		,consumo: consumo, acionamento: acionamento,nome:nome})	
-	}
+	
 });
 
 //Metodo requisita pagina de dados caddastrais
@@ -106,19 +115,19 @@ app.get('/viewNovoJardim',function(req,res){
 app.post('/validar', function(req, res) {
 	var email = req.body.email;
 	var senha = req.body.senha;
+
 	connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
 		function(err, rows){
-
 			if(err) throw err;
 			if(rows.length === 1){
-  		      var id = rows[0].id;
-  		      var nome = rows[0].nome;
-  		      var pwd = rows[0].senha;
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
 				
 				if(bcrypt.compareSync(senha, pwd)){ // metodo da biblioteca que compara as senhas
 					var session = req.session.user = {
-					id: id,
-  		      		nome: nome
+						id: id,
+						nome: nome
 					};
 					res.redirect('/viewPrincipal');
 				}else{
@@ -151,21 +160,21 @@ app.get('/dashboard', function(req, res){
 	}else{
 		res.render('dashboard');	
 	}	console.log(email); 	
-			console.log(senha); 	
+	console.log(senha); 	
 });
 
 app.post('/novoJardim',function(req, res){
-	var jardim = req.body.nome;
-	var planta = req.body.planta;
+	var id_usuario = req.session.user.id;
+	var nome = req.body.nome;
 	var ambiente = req.body.ambiente;
+	var localizacao = req.body.localizacao;
 	
-	connection.query('INSERT INTO jardim (nome, planta, ambiente) VALUES (?,?,?)', [ nome, planta, jardim ] , 
+	connection.query('INSERT INTO jardim (id_usuario, nome, ambiente, localizacao) VALUES (?,?,?,?)', [ id_usuario, nome, ambiente, localizacao ] , 
 		function(err, res){
 			if(err) throw err;
 		});
-	res.render('viewPrincipal', {msgNovoJardim: 'Jardim criado com Sucesso.'});
+	res.redirect('/viewPrincipal');
 });
-
 
 //Chama Metodo de Conexão ao executar app
 connection.connect(function(err){
