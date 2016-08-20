@@ -33,7 +33,7 @@ var connection = mysql.createConnection({
 	host		: 'localhost',
 	user		: 'root',
 	//password	: 'root',//Valter
-	password	: '', //Rodrigo
+	password	: 'root', //Rodrigo
 	database	: 'arduino'
 });
 
@@ -89,11 +89,8 @@ app.get('/viewPrincipal', function(req, res){
 					if(err) throw err;
 					results=rows;
 
-
-
-
 					res.render('principal', {nome:nome, jardim:jardim, results: results});
-					console.log(results);
+					
 				});
 			});
 	}
