@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-	<meta charset="utf-8">
-	<link rel="stylesheet" href="./css/bootstrap.css" />
-	<link rel="stylesheet" href="./css/bootstrap-theme.min.css"/>
-	<link rel="stylesheet" href="./css/c3.css" type="text/css">
 	<title>iOne</title>
+	<meta charset="utf-8">
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="./js/bootstrap.js"></script>
-	<script src="./js/d3.v3.min.js"></script>
-	<script src="./js/c3.min.js"></script>
+	<script src="../js/bootstrap.js"></script>
+	<!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
+	<script src="../js/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="../js/bootstrap.min.js"></script>
 
-	<script type="text/javascript" src="ejs.js"></script>
-	<script type="text/javascript" src="./js/script.js"></script>
+	<link rel="stylesheet" href="../css/bootstrap.css" />
+	<link rel="stylesheet" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+	<link rel="stylesheet" href="../css/c3.css" type="text/css">
 	
+	
+	<script src="../js/d3.v3.min.js"></script>
+	<script src="../js/c3.min.js"></script>
 
+
+	<link rel="stylesheet" type="text/css" href="../css/style.css">
+	<link rel="stylesheet" type="text/css" href="../css/fonts.css">
+	
 	<script>
 		function mostrar_abas(obj) {
 
 			<% for(i=0; i < jardim.length; i++) { %>
 				document.getElementById('div_aba<%=i%>').style.display="none";
 				<%}%>
-
 				switch (obj.id) {
-					
 					<% for(i=0; i < jardim.length; i++) { %>
 						case 'mostra_aba<%=i%>':
 						document.getElementById('div_aba<%=i%>').style.display="block";
@@ -32,71 +37,89 @@
 						<%}%>
 					}
 				}
-
 			</script>
 
 		</head>
 		<body>
 
+
 			<div class="container">
-
-				<fieldset>
-					<legend>Conta</legend>
-					<ul>
-						<li>imagem</li>
-						<li><%= nome %></li>
-						<li><a href="/viewRedefinir">Redefinir senha</a></li>
-						<li><a href="/sair">sair</a></li>
-					</ul>
-				</fieldset>
-
-
-				<fieldset>
-					<legend>Jardim</legend>
-					<a href="/viewNovoJardim">(+)criar novo</a>
-					<br><br>	
-
-					<% for(i=0; i < jardim.length; i++) { %>
-					<a href="#" onclick="mostrar_abas(this);" id="mostra_aba<%=i%>"><%= jardim[i].nome %></a> |
-					<% } %>
-					<div class="detalhes">
-						<br><br>
-						<% for(i=0; i < jardim.length; i++) { %>
-						<div id="div_aba<%=i%>" style="display:none;">
-							<div class="inf_esq">
-								<ul>
-									<li>Nome: <%= jardim[i].nome %></li>
-									<li>Ambiente: <%= jardim[i].ambiente %></li>
-									<li>Localização: <%= jardim[i].localizacao %></li>
-								</ul>
+				<div class="header">
+					<h1>iOne Jardim Inteligente</h1>
+					<h2>principal</h2>
+				</div>
+				<div class="content">
+					
+					<fieldset>
+						<legend>Conta</legend>
+						<div class="conta">	
+							<div class="informacao">
+								<img id="icone-principal" class="img-responsive center-block " src="../img/icone-conta.png"></li>
+								<div class="btn-group">
+									<a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%=nome%> <span class="caret"></span></a>							
+									<ul class="dropdown-menu">
+										<li><a href="/viewRedefinir"><span class="glyphicon glyphicon-user"></span>Redefinir senha</a></li>
+										<li><a href="/sair"><span class="glyphicon glyphicon-off"></span>  Sair</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+					
+					<fieldset>
+						<legend>Jardim</legend>
+						<div class="jardim">
+							<div class="informacao">
+								<% if(jardim.length == 0){%>
+								<a href="/viewNovoJardim">(+)criar novo</a>
+								<br><br>
+								<%}else{%>
+								<input type="image" id="icone-principal" class="img-resposive center-block" name="registrar" src="./img/icone-plantas.png" onclick= "window.location.assign('viewNovoJardim')">
+								<a id="texto-principal" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= jardim[0].nome %></a>						
+								<%}%>	
 							</div>
 
-							<div class="inf_dir" id="chart" style="width: 200px; height: 200px";> 
-								<script>  			
-									var chart = c3.generate({
-										data: {
-											columns: [          		 	
-											['consumo de água' 
-											<% for(var j=0; j<results.length; j++) {%>
-												,<%= results[j].valor %>
-												<% } %>
-												]
-												],
-												type: 'bar'
-											},
-											bar: {
-												width: {
+							
+							<% for(i=0; i < jardim.length; i++) { %>
+							<a href="#" onc
+							lick="mostrar_abas(this);" id="mostra_aba<%=i%>"><%= jardim[i].nome %></a> |
+							<% } %>
+							<div class="informacao">
+								<br><br>
+								<% for(i=0; i < jardim.length; i++) { %>
+								<div class="aba" id="div_aba<%=i%>" style="display:none;">
+									<div class="detalhes">
+										<ul>
+											<li>Nome: <%= jardim[i].nome %></li>
+										</ul>
+									</div>
+
+
+									<div id="chart" class="grafico"> 
+										<script>  			
+											var chart = c3.generate({
+												data: {
+													columns: [          		 	
+													['consumo de água' 
+													<% for(var j=0; j<results.length; j++) {%>
+														,<%= results[j].valor %>
+														<% } %>
+														]
+														],
+														type: 'bar'
+													},
+													bar: {
+														width: {
               								ratio: 0.5 // this makes bar width 50% of length between ticks
-              							}
-              						}
-              					});
-              				</script>
+              							}} 
+              						});
+              					</script>
+              				</div>
+              				<% } %>
               			</div>
               		</div>
-              		<% } %>
+
               	</div>
-
-
               </fieldset>
 
               <fieldset>
@@ -104,7 +127,9 @@
               </fieldset>
 
           </div>
+      </div>
 
 
-      </body>
-      </html>
+
+  </body>
+  </html>

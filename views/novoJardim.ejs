@@ -3,34 +3,44 @@
 <head>
 	<meta charset="utf-8">
 	<title>iOne</title>
-</head>
-<body>
 
-	<div class="container">
-		<h1>iOne Jardim Inteligente</h1>
-		<h2>Criar jardim</h2>
-		<fieldset>
-			<form method="post" action="/novoJardim">
-				<label>Identifique seu Jardim</label><br>
-				<input type="text" name="nome"><br><br>
-				<label>Planta</label><br>
-				<select name="planta">
-					<option></option>
-					<option value="Rosa">Rosa</option>
-					<option value="Orquidea">Orquidea</option>
-				</select><br><br>
-				<label>Ambiente</label><br>
-				<select name="ambiente">
-					<option></option>
-					<option value="Interno">Interno</option>
-					<option value="Externo">Externo</option>
-				</select><br><br>
-				<label>Localização</label><br>
-				<input type="text" name="localizacao"><br><br>
-				<button>Criar</button>
-			</form>
-		</fieldset>
-	</div>
+	<body>
 
-</body>
-</html>
+		<div class="container">
+			<h1>iOne Jardim Inteligente</h1>
+			<h2>Criar jardim</h2>
+			<fieldset>
+				<form method="post" action="/novoJardim">
+					<label>Identifique seu Jardim</label><br>
+					<input type="text" name="nome"><br><br>
+					<label>Planta</label><br>
+					<select name="planta">
+						<option></option>
+						<option value="Rosa">Rosa</option>
+						<option value="Orquidea">Orquidea</option>
+					</select><br><br>
+					<label>Localização</label><br>
+					<label>País</label><br>
+					<select name="pais">
+						<option></option>
+						<option value="Brazil">Brasil</option>
+					</select><br><br>
+					<label>Cidade</label><br>
+					<select name="estado">
+						<option></option>
+						<option value="São Paulo">São Paulo</option>
+					</select><br><br>
+					<label>Estado</label><br>
+					<select name="cidade">
+						<option></option>
+						<option value="São Paulo">São Paulo</option>
+					</select><br><br>
+					<button>Criar</button>
+				</form>
+			</fieldset>
+
+			<label>Localização</label><br>
+		</div>
+
+	</body>
+	</html>

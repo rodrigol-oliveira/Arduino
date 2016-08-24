@@ -5,7 +5,7 @@
 	var path = require('path');
 	var session = require('express-session'); <!-- cria uma instancia em branco  - framework -->
 	var bcrypt = require('bcrypt-nodejs'); <!-- criptografia-->
-
+	
 	/*
     people = ['geddy', 'neil', 'alex'];
     html = ejs.render('<%= people.join(", "); %>', {people: people});
@@ -32,8 +32,7 @@
 var connection = mysql.createConnection({
 	host		: 'localhost',
 	user		: 'root',
-	//password	: 'root',//Valter
-	password	: 'root', //Rodrigo
+	password	: 'root',
 	database	: 'arduino'
 });
 
@@ -76,26 +75,23 @@ app.get('/viewPrincipal', function(req, res){
 	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
 		res.redirect('/viewIniciar');
 	}else{
-		nome = req.session.user.nome;
+		var nome = req.session.user.nome;
 		var id = req.session.user.id;
-		
-
 		connection.query('SELECT * FROM jardim where id_usuario = ?', [id] ,
 			function(err, rows){
 				if(err) throw err;
 				var jardim = rows;
-
-				connection.query('SELECT valor FROM agua limit 5 ',function(err, rows,fields) {
+				connection.query('SELECT * FROM controle limit 7 ',function(err, rows,fields) {
 					if(err) throw err;
-					results=rows;
+					var results = rows;
 
 					res.render('principal', {nome:nome, jardim:jardim, results: results});
-					
 				});
 			});
 	}
-	
 });
+
+
 
 //Metodo requisita pagina de dados caddastrais
 app.get('/viewNovoJardim',function(req,res){
@@ -163,10 +159,11 @@ app.get('/dashboard', function(req, res){
 app.post('/novoJardim',function(req, res){
 	var id_usuario = req.session.user.id;
 	var nome = req.body.nome;
-	var ambiente = req.body.ambiente;
-	var localizacao = req.body.localizacao;
+	var pais = req.body.pais;
+	var estado = req.body.estado;
+	var cidade = req.body.cidade;
 	
-	connection.query('INSERT INTO jardim (id_usuario, nome, ambiente, localizacao) VALUES (?,?,?,?)', [ id_usuario, nome, ambiente, localizacao ] , 
+	connection.query('INSERT INTO jardim (id_usuario, nome, pais, estado, cidade) VALUES (?,?,?,?,?)', [ id_usuario, nome, pais, estado, cidade ] , 
 		function(err, res){
 			if(err) throw err;
 		});
