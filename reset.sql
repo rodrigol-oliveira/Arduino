@@ -31,9 +31,10 @@ CREATE TABLE planta(
 ); 
 
 CREATE TABLE jardim_planta(
+	id BIGINT(10) NOT NULL AUTO_INCREMENT,
 	id_jardim BIGINT(10) NOT NULL,
 	id_planta BIGINT(10) NOT NULL,
-	constraint PK_JARDIMPLANTA PRIMARY KEY(id_jardim, id_planta),
+	constraint PK_JARDIMPLANTA PRIMARY KEY(id),
     constraint FK_JARDIMPLANTA_JARDIM FOREIGN KEY (id_jardim) REFERENCES jardim(id),
     constraint FK_JARDIMPLANTA_PLANTA FOREIGN KEY (id_planta) REFERENCES planta(id)
 );
