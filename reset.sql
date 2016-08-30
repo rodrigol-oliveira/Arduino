@@ -31,14 +31,13 @@ CREATE TABLE planta(
 ); 
 
 CREATE TABLE jardim_planta(
-	id BIGINT(10) NOT NULL AUTO_INCREMENT,
 	id_jardim BIGINT(10) NOT NULL,
 	id_planta BIGINT(10) NOT NULL,
-	constraint PK_JARDIMPLANTA PRIMARY KEY(id),
+	constraint PK_JARDIMPLANTA PRIMARY KEY(id_jardim, id_planta),
     constraint FK_JARDIMPLANTA_JARDIM FOREIGN KEY (id_jardim) REFERENCES jardim(id),
     constraint FK_JARDIMPLANTA_PLANTA FOREIGN KEY (id_planta) REFERENCES planta(id)
 );
-/*
+
 CREATE TABLE grupo(
 	id BIGINT(10) NOT NULL auto_increment,
 	nome varchar(45) NOT NULL,
@@ -52,7 +51,7 @@ CREATE TABLE grupo_planta(
     constraint FK_GRUPOPLANTA_GRUPO FOREIGN KEY (id_jardim) REFERENCES jardim(id),
     constraint FK_GRUPOPLANTA_PLANTA FOREIGN KEY (id_planta) REFERENCES planta(id)
 );
-*/
+
 CREATE TABLE sensor (
 	id BIGINT(10) NOT NULL AUTO_INCREMENT,
 	descricao varchar(50) not null,			#Descobrir o tipo de dados e tratar variavel (HexaDecimal, inteiro, double)	
@@ -87,10 +86,10 @@ CREATE TABLE controle (
 CREATE TABLE controle_sensor(
 	id_controle BIGINT(10) NOT NULL,
 	id_sensor BIGINT(10) NOT NULL ,
-        valor BIGINT(10) NOT NULL ,
+    valor BIGINT(10) NOT NULL ,
 	constraint PK_CONTROLESENSOR PRIMARY KEY(id_controle, id_sensor),
-        constraint FK_CONTROLESENSOR_CONTROLE FOREIGN KEY (id_controle) REFERENCES controle(id),
-        constraint FK_CONTROLESENSOR_SENSOR FOREIGN KEY (id_sensor) REFERENCES sensor(id)
+    constraint FK_CONTROLESENSOR_CONTROLE FOREIGN KEY (id_controle) REFERENCES controle(id),
+    constraint FK_CONTROLESENSOR_SENSOR FOREIGN KEY (id_sensor) REFERENCES sensor(id)
 ); 
 
 

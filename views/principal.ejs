@@ -5,6 +5,7 @@
 	<meta charset="utf-8">
 
 	<script src="../js/bootstrap.js"></script>
+
 	<!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -42,7 +43,6 @@
 		</head>
 		<body>
 
-
 			<div class="container">
 				<div class="header">
 					<h1>iOne Jardim Inteligente</h1>
@@ -54,9 +54,9 @@
 						<legend>Conta</legend>
 						<div class="conta">	
 							<div class="informacao">
-								<img id="icone-principal" class="img-responsive center-block " src="../img/icone-conta.png"></li>
+								<img id="icone-principal" class="img-responsive center-block " src="../img/icone-conta.png">
 								<div class="btn-group">
-									<a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%=nome%> <span class="caret"></span></a>							
+									<a class=" btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%=nome%> <span class="caret"></span></a>							
 									<ul class="dropdown-menu">
 										<li><a href="/viewRedefinir"><span class="glyphicon glyphicon-user"></span>Redefinir senha</a></li>
 										<li><a href="/sair"><span class="glyphicon glyphicon-off"></span>  Sair</a></li>
@@ -69,17 +69,53 @@
 					<fieldset>
 						<legend>Jardim</legend>
 						<div class="jardim">
+
 							<div class="informacao">
 								<% if(jardim.length == 0){%>
-								<a href="/viewNovoJardim">(+)criar novo</a>
+								<input type="image" id="icone-principal-semfoco" class="img-resposive center-block" name="registrar" src="./img/icone-plantas.png" onclick= "window.location.assign('viewNovoJardim')">
+								<a href="/viewNovoJardim" class=" btn dropdown-toggle">criar novo jardim</a>	
 								<br><br>
 								<%}else{%>
-								<input type="image" id="icone-principal" class="img-resposive center-block" name="registrar" src="./img/icone-plantas.png" onclick= "window.location.assign('viewNovoJardim')">
-								<a id="texto-principal" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= jardim[0].nome %></a>						
-								<%}%>	
+								<img id="icone-principal" class="img-responsive center-block " src="../img/icone-plantas.png">
+								<div class="btn-group">
+									<a id="texto-principal" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= nome_jardim %><span class="caret"></span></a>						
+									<ul class="dropdown-menu">
+										<li><a href="/viewAlterarJardim"><span class="glyphicon glyphicon-leaf"></span>  alterar</a></li>
+										<li><a href="/deletarJardim"><span class="glyphicon glyphicon-remove"></span>  remover</a></li>
+									</ul>
+								</div>
+								<%}%>
 							</div>
 
+							<% if(jardim.length > 0){%>
+							<div class="detalhes">
+								<div class="row">
+									<div class="col-xs-12 col-md-6">
+										<div class="detalhes-jardim">
+											<ul>
+												<li class="li-menu">DESCRIÇÃO</li>
+												<li class="li-item">Nome: <%= nome_jardim%></li>
+												<li class="li-item">Planta: <%= planta%></li>
+												<li class="li-item">Grupo: <%= grupo%></li>
+												<li class="li-menu">LOCALIZAÇÃO</li>
+												<li class="li-item">Estado: <%= estado%></li>
+												<li class="li-item">Cidade: <%= cidade%></li>								
+											</ul>
+										</div>
+									</div>
+									<div class="col-xs-12 col-md-6">
+										<div class="dashboard-jardim">
+										<h2>gráfico</h2>
+										</div>
+									</div>
+								</div>
+							</div>
 							
+
+						</div>
+					</fieldset>
+
+		<!--					
 							<% for(i=0; i < jardim.length; i++) { %>
 							<a href="#" onc
 							lick="mostrar_abas(this);" id="mostra_aba<%=i%>"><%= jardim[i].nome %></a> |
@@ -118,18 +154,18 @@
               				<% } %>
               			</div>
               		</div>
+              	-->
 
-              	</div>
-              </fieldset>
 
-              <fieldset>
-              	<legend>Acompanhamento</legend>
-              </fieldset>
-
+              	<fieldset>
+              		<legend>Acompanhamento</legend>
+              		<h1>ultimas análises</h1>
+              	</fieldset>
+<%}%>
+              </div>
           </div>
-      </div>
 
 
 
-  </body>
-  </html>
+      </body>
+      </html>
