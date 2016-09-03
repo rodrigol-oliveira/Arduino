@@ -48,8 +48,7 @@ CREATE TABLE grupo_planta(
 	id_grupo BIGINT(10) NOT NULL,
 	id_planta BIGINT(10) NOT NULL,
 	constraint PK_GRUPO PRIMARY KEY(id_grupo, id_planta),
-    constraint FK_GRUPOPLANTA_GRUPO FOREIGN KEY (id_jardim) REFERENCES jardim(id),
-    constraint FK_GRUPOPLANTA_PLANTA FOREIGN KEY (id_planta) REFERENCES planta(id)
+        constraint FK_GRUPOPLANTA_PLANTA FOREIGN KEY (id_planta) REFERENCES planta(id)
 );
 
 CREATE TABLE sensor (
