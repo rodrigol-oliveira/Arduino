@@ -14,16 +14,6 @@ DROP schema arduino;
 CREATE SCHEMA IF NOT EXISTS `arduino` DEFAULT CHARACTER SET utf8 ;
 USE `arduino` ;
 
--- -----------------------------------------------------
--- Table `arduino`.`agua`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `arduino`.`agua` (
-  `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
-  `descricao` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
 
 -- -----------------------------------------------------
 -- Table `arduino`.`usuario`
@@ -35,87 +25,83 @@ CREATE TABLE IF NOT EXISTS `arduino`.`usuario` (
   `senha` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8;
 
-
 -- -----------------------------------------------------
--- Table `arduino`.`jardim`
+-- Table `arduino`.`agua`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `arduino`.`jardim` (
+CREATE TABLE IF NOT EXISTS `arduino`.`agua` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
-  `id_usuario` BIGINT(10) NOT NULL,
-  `nome` VARCHAR(50) NOT NULL,
-  `pais` VARCHAR(50) NULL DEFAULT NULL,
-  `estado` VARCHAR(50) NULL DEFAULT NULL,
-  `cidade` VARCHAR(50) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `FK_JARDIM` (`id_usuario` ASC),
-  CONSTRAINT `FK_JARDIM`
-    FOREIGN KEY (`id_usuario`)
-    REFERENCES `arduino`.`usuario` (`id`))
+  `descricao_agua` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8;
 
+insert into agua(descricao_agua) value('AGUA001');
+
+-- update agua set descricao_agua = 'AGUA001' where id =1;
 
 -- -----------------------------------------------------
 -- Table `arduino`.`valvula`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `arduino`.`valvula` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
-  `descricao` VARCHAR(50) NOT NULL,
+  `descricao_valvula` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-
--- -----------------------------------------------------
--- Table `arduino`.`controle`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `arduino`.`controle` (
-  `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
-  `id_jardim` BIGINT(10) NOT NULL,
-  `id_agua` BIGINT(10) NOT NULL,
-  `id_valvula` BIGINT(10) NOT NULL,
-  `datahora` DATETIME NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `FK_CONTROLE_JARDIM` (`id_jardim` ASC),
-  INDEX `FK_CONTROLE_AGUA` (`id_agua` ASC),
-  INDEX `FK_CONTROLE_VALVULA` (`id_valvula` ASC),
-  CONSTRAINT `FK_CONTROLE_AGUA`
-    FOREIGN KEY (`id_agua`)
-    REFERENCES `arduino`.`agua` (`id`),
-  CONSTRAINT `FK_CONTROLE_JARDIM`
-    FOREIGN KEY (`id_jardim`)
-    REFERENCES `arduino`.`jardim` (`id`),
-  CONSTRAINT `FK_CONTROLE_VALVULA`
-    FOREIGN KEY (`id_valvula`)
-    REFERENCES `arduino`.`valvula` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
+insert into valvula(descricao_valvula) value('VALV001');
 
 -- -----------------------------------------------------
 -- Table `arduino`.`sensor`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `arduino`.`sensor` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
-  `descricao` VARCHAR(50) NOT NULL,
+  `nome_sensor` VARCHAR(50) NOT NULL,
+  `especificacao_sensor` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
+
+INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S01A', 'Adamantium');
+INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S02A', 'Chumbo');
+INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S03A', 'ouro');
+INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S04A', 'ferro');
+
+select * from sensor;
+
+-- -----------------------------------------------------
+-- Table `arduino`.`controle`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `arduino`.`controle` (
+  `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
+  `id_agua` BIGINT(10) NOT NULL,
+  `id_valvula` BIGINT(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  -- INDEX `FK_CONTROLE_JARDIM` (`id_jardim` ASC),
+  -- INDEX `FK_CONTROLE_AGUA` (`id_agua` ASC),
+  -- INDEX `FK_CONTROLE_VALVULA` (`id_valvula` ASC),
+  CONSTRAINT `FK_CONTROLE_AGUA`
+    FOREIGN KEY (`id_agua`)
+    REFERENCES `arduino`.`agua` (`id`),
+   CONSTRAINT `FK_CONTROLE_VALVULA`
+    FOREIGN KEY (`id_valvula`)
+    REFERENCES `arduino`.`valvula` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
 
 
 -- -----------------------------------------------------
 -- Table `arduino`.`controle_sensor`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `arduino`.`controle_sensor` (
+  `id` BIGINT(10) NOT NULL auto_increment,
   `id_controle` BIGINT(10) NOT NULL,
   `id_sensor` BIGINT(10) NOT NULL,
-  `valor` BIGINT(10) NOT NULL,
-  PRIMARY KEY (`id_controle`, `id_sensor`),
-  INDEX `FK_CONTROLESENSOR_SENSOR` (`id_sensor` ASC),
+  PRIMARY KEY (`id`),
+  -- INDEX `FK_CONTROLESENSOR_SENSOR` (`id_sensor` ASC),
   CONSTRAINT `FK_CONTROLESENSOR_CONTROLE`
     FOREIGN KEY (`id_controle`)
     REFERENCES `arduino`.`controle` (`id`),
@@ -126,19 +112,40 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
+
+-- -----------------------------------------------------
+-- Table `arduino`.`jardim`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `arduino`.`jardim` (
+  `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
+  `id_usuario` BIGINT(10) NOT NULL,
+  `id_controle` BIGINT(10) NOT NULL,
+  `nome_jardim` VARCHAR(50) NOT NULL,
+  `pais` VARCHAR(50) NULL DEFAULT NULL,
+  `estado` VARCHAR(50) NULL DEFAULT NULL,
+  `cidade` VARCHAR(50) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  -- INDEX `FK_JARDIM` (`id_usuario` ASC),
+  CONSTRAINT `FK_JARDIM` FOREIGN KEY (`id_usuario`)REFERENCES `arduino`.`usuario` (`id`),
+  CONSTRAINT `FK_CONTROLE` FOREIGN KEY (`id_controle`)REFERENCES `arduino`.`controle` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
 -- -----------------------------------------------------
 -- Table `arduino`.`grupo`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `arduino`.`grupo` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
-  `nome` VARCHAR(45) NOT NULL,
+  `nome_grupo` VARCHAR(45) NOT NULL,
+  `umidade_min` BIGINT(10),
+  `umidade_max` BIGINT(10),
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8;
 
-INSERT INTO grupo(nome) value('A');
-INSERT INTO grupo(nome) value('B');
+INSERT INTO grupo(nome_grupo, umidade_min, umidade_max) value('A', 400, 800);
+INSERT INTO grupo(nome_grupo, umidade_min, umidade_max) value('B', 300, 700);
 
 
 -- -----------------------------------------------------
@@ -146,16 +153,15 @@ INSERT INTO grupo(nome) value('B');
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `arduino`.`planta` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
-  `nome` VARCHAR(20) NOT NULL,
-  `umidade_min` BIGINT(50) NOT NULL,
-  `umidade_max` BIGINT(50) NOT NULL,
+  `nome_planta` VARCHAR(20) NOT NULL,
+  `umidade_min` BIGINT(10) NOT NULL,
+  `umidade_max` BIGINT(10) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8;
 
-INSERT INTO planta(nome, umidade_min, umidade_max) VALUES('rosa', 300, 700);
-INSERT INTO planta(nome, umidade_min, umidade_max) VALUES('tulipa', 500, 900);
+INSERT INTO planta(nome_planta, umidade_min, umidade_max) VALUES('rosa', 300, 700);
+INSERT INTO planta(nome_planta, umidade_min, umidade_max) VALUES('tulipa', 500, 900);
 
 
 
@@ -176,8 +182,8 @@ CREATE TABLE IF NOT EXISTS `arduino`.`grupo_planta` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
+INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1);
 INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(2,2);
-INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(3,3);
 
 -- -----------------------------------------------------
 -- Table `arduino`.`jardim_planta`
@@ -196,15 +202,67 @@ CREATE TABLE IF NOT EXISTS `arduino`.`jardim_planta` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-SELECT * 
-						from jardim j  
+drop table analize;
+-- -----------------------------------------------------
+-- Table `arduino`.`analize`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `arduino`.`analize` (
+  `id` BIGINT(10) NOT NULL auto_increment,
+  `id_jardim` BIGINT(10) NOT NULL,
+  `data_hora` DATETIME NOT NULL,
+  `valor_S01` BIGINT(10),
+  `valor_S02` BIGINT(10),
+  `valor_S03` BIGINT(10),
+  `valor_S04` BIGINT(10),
+  `status_umidade` VARCHAR(40),
+  `clima` VARCHAR(40),
+  `probabilidade_chuva` BIGINT(10),  
+  `valvula` varchar(10),
+  `consumo` BIGINT(10),
+  PRIMARY KEY (`id`),
+  -- INDEX `FK_GRUPOPLANTA_PLANTA` (`id_planta` ASC),
+  CONSTRAINT `FK_ANALIZE` FOREIGN KEY (`id_jardim`) REFERENCES `arduino`.`jardim` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+insert into analize(id_jardim, data_hora, valor_S01, valor_S02, 
+status_umidade, clima, probabilidade_chuva,valvula, consumo) 
+values(1,now(), 300, 400, 'seco', 'ensolarado', 20, 'on', 30),
+	 (1,now(), 600, 650, 'umido', 'ensolarado', 20, 'off', 0),
+     (1,now(), 550, 600, 'umido', 'ensolarado', 20, 'off', 0);
+
+
+
+-- --------------------------------------------------------------
+
+
+SELECT  j.nome_jardim, p.nome_planta, g.nome_grupo, j.estado, j.cidade from jardim j  
 						inner join usuario u on u.id = j.id_usuario 
 						inner join jardim_planta jp on jp.id_jardim = j.id 
 						inner join planta p on p.id = jp.id_planta 
 						inner join grupo_planta gp on gp.id_planta = p.id 
 						inner join grupo g on g.id = gp.id_grupo
-						where u.id = 2;
+						where u.id = 1;
 
-
-
+select * from usuario;
+select * from jardim;
+select * from jardim_planta;
 select * from grupo_planta;
+select * from planta;
+select * from grupo;
+select * from controle;
+select * from sensor;
+select * from controle_sensor;
+select * from agua;
+select * from valvula;
+
+select * from analize;
+
+
+delete from jardim_planta where id_jardim= 5;
+delete from jardim where id_usuario = 1;
+
+SELECT id FROM jardim WHERE id_usuario = 4;
+INSERT INTO jardim_planta(id_jardim, id_planta) VALUES (1, 1);
+
+UPDATE jardim_planta SET id_planta = 2 WHERE id_jardim= 1;
