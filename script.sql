@@ -71,45 +71,6 @@ INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S04A', 'ferro');
 
 select * from sensor;
 
--- -----------------------------------------------------
--- Table `arduino`.`controle`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `arduino`.`controle` (
-  `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
-  `id_agua` BIGINT(10) NOT NULL,
-  `id_valvula` BIGINT(10) NOT NULL,
-  PRIMARY KEY (`id`),
-  -- INDEX `FK_CONTROLE_JARDIM` (`id_jardim` ASC),
-  -- INDEX `FK_CONTROLE_AGUA` (`id_agua` ASC),
-  -- INDEX `FK_CONTROLE_VALVULA` (`id_valvula` ASC),
-  CONSTRAINT `FK_CONTROLE_AGUA`
-    FOREIGN KEY (`id_agua`)
-    REFERENCES `arduino`.`agua` (`id`),
-   CONSTRAINT `FK_CONTROLE_VALVULA`
-    FOREIGN KEY (`id_valvula`)
-    REFERENCES `arduino`.`valvula` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
-
-
--- -----------------------------------------------------
--- Table `arduino`.`controle_sensor`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `arduino`.`controle_sensor` (
-  `id` BIGINT(10) NOT NULL auto_increment,
-  `id_controle` BIGINT(10) NOT NULL,
-  `id_sensor` BIGINT(10) NOT NULL,
-  PRIMARY KEY (`id`),
-  -- INDEX `FK_CONTROLESENSOR_SENSOR` (`id_sensor` ASC),
-  CONSTRAINT `FK_CONTROLESENSOR_CONTROLE`
-    FOREIGN KEY (`id_controle`)
-    REFERENCES `arduino`.`controle` (`id`),
-  CONSTRAINT `FK_CONTROLESENSOR_SENSOR`
-    FOREIGN KEY (`id_sensor`)
-    REFERENCES `arduino`.`sensor` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
 
 
 
@@ -119,15 +80,36 @@ DEFAULT CHARACTER SET = utf8;
 CREATE TABLE IF NOT EXISTS `arduino`.`jardim` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
   `id_usuario` BIGINT(10) NOT NULL,
-  `id_controle` BIGINT(10) NOT NULL,
+  `id_valvula` BIGINT(10) NOT NULL,
+  `id_agua` BIGINT(10) NOT NULL,
   `nome_jardim` VARCHAR(50) NOT NULL,
   `pais` VARCHAR(50) NULL DEFAULT NULL,
   `estado` VARCHAR(50) NULL DEFAULT NULL,
   `cidade` VARCHAR(50) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   -- INDEX `FK_JARDIM` (`id_usuario` ASC),
-  CONSTRAINT `FK_JARDIM` FOREIGN KEY (`id_usuario`)REFERENCES `arduino`.`usuario` (`id`),
-  CONSTRAINT `FK_CONTROLE` FOREIGN KEY (`id_controle`)REFERENCES `arduino`.`controle` (`id`))
+  CONSTRAINT `FK_USUARIO` FOREIGN KEY (`id_usuario`)REFERENCES `arduino`.`usuario` (`id`),
+  CONSTRAINT `FK_VALVULA` FOREIGN KEY (`id_valvula`)REFERENCES `arduino`.`valvula` (`id`),
+  CONSTRAINT `FK_AGUA` FOREIGN KEY (`id_agua`)REFERENCES `arduino`.`agua` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `arduino`.`jardim_sensor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `arduino`.`jardim_sensor` (
+  `id` BIGINT(10) NOT NULL auto_increment,
+  `id_jardim` BIGINT(10) NOT NULL,
+  `id_sensor` BIGINT(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  -- INDEX `FK_CONTROLESENSOR_SENSOR` (`id_sensor` ASC),
+  CONSTRAINT `FK_JARDIMSENSOR_JARDIM`
+    FOREIGN KEY (`id_jardim`)
+    REFERENCES `arduino`.`jardim` (`id`),
+  CONSTRAINT `FK_JARDIMSENSOR_SENSOR`
+    FOREIGN KEY (`id_sensor`)
+    REFERENCES `arduino`.`sensor` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
@@ -277,7 +259,7 @@ select * from agua;
 select * from valvula;
 
 select * from analize where id_jardim = 1;
-
+select last_insert_id() into analize;
 
 delete from jardim_planta where id_jardim= 5;
 delete from jardim where id_usuario = 1;
@@ -286,3 +268,28 @@ SELECT id FROM jardim WHERE id_usuario = 4;
 INSERT INTO jardim_planta(id_jardim, id_planta) VALUES (1, 1);
 
 UPDATE jardim_planta SET id_planta = 2 WHERE id_jardim= 1;
+
+-- ---------------------------------
+-- removidos
+-- ----------------------------------
+-- -----------------------------------------------------
+-- Table `arduino`.`controle`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `arduino`.`controle` (
+  `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
+  `id_agua` BIGINT(10) NOT NULL,
+  `id_valvula` BIGINT(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  -- INDEX `FK_CONTROLE_JARDIM` (`id_jardim` ASC),
+  -- INDEX `FK_CONTROLE_AGUA` (`id_agua` ASC),
+  -- INDEX `FK_CONTROLE_VALVULA` (`id_valvula` ASC),
+  CONSTRAINT `FK_CONTROLE_AGUA`
+    FOREIGN KEY (`id_agua`)
+    REFERENCES `arduino`.`agua` (`id`),
+   CONSTRAINT `FK_CONTROLE_VALVULA`
+    FOREIGN KEY (`id_valvula`)
+    REFERENCES `arduino`.`valvula` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+-- ------------------------

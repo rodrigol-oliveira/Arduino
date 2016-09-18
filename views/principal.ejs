@@ -44,50 +44,58 @@
 		<body>
 
 			<div class="container">
+
 				<div class="header">
 					<h1>iOne Jardim Inteligente</h1>
 					<h2>principal</h2>
 				</div>
+				
 				<div class="content">
 					
-					<fieldset>
-						<legend>Conta</legend>
-						<div class="conta">	
-							<div class="informacao">
-								<img id="icone-principal" class="img-responsive center-block " src="../img/icone-conta.png">
-								<div class="btn-group">
-									<a class=" btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= nome %> <span class="caret"></span></a>							
-									<ul class="dropdown-menu">
-										<li><a href="/viewRedefinir"><span class="glyphicon glyphicon-user"></span>Redefinir senha</a></li>
-										<li><a href="/sair"><span class="glyphicon glyphicon-off"></span>  Sair</a></li>
-									</ul>
+					<div class="row">
+						<div class="col-xs-12 col-md-6">
+							<fieldset>
+								<legend>conta</legend>
+								<div class="conta">	
+									<div class="informacao">
+										<img id="icone-principal" class="img-responsive center-block " src="../img/icone-conta.png">
+										<div class="btn-group">
+											<a class=" btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= nome %> <span class="caret"></span></a>							
+											<ul class="dropdown-menu">
+												<li><a href="/viewRedefinir"><span class="glyphicon glyphicon-user"></span>Redefinir senha</a></li>
+												<li><a href="/sair"><span class="glyphicon glyphicon-off"></span>  Sair</a></li>
+											</ul>
+										</div>
+									</div>
 								</div>
-							</div>
+							</fieldset>
 						</div>
-					</fieldset>
-					
-					<fieldset>
+						<div class="col-xs-12 col-md-6">
+							<fieldset>
+								<legend>jardim</legend>
+								<div class="jardim">
+									<div class="informacao">
+										<% if(jardim.length == 0){%>
+										<input type="image" id="icone-principal-semfoco" class="img-resposive center-block" name="registrar" src="./img/icone-plantas.png" onclick= "window.location.assign('viewNovoJardim')" >
+										<a href="/viewNovoJardim" class=" btn dropdown-toggle">criar novo jardim</a>	
+										<br><br>
+										<%}else{%>
+										<img id="icone-principal" class="img-responsive center-block " src="../img/icone-plantas.png">
+										<div class="btn-group">
+											<a id="texto-principal" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%- res_jardim.nome_jardim %><span class="caret"></span></a>						
+											<ul class="dropdown-menu">
+												<li><a href="/viewAlterarJardim"><span class="glyphicon glyphicon-leaf"></span>  alterar</a></li>
+												<li><a href="/deletarJardim"><span class="glyphicon glyphicon-remove"></span>  remover</a></li>
+											</ul>
+										</div>
+									</div>
 
-						<legend>Jardim</legend>
-						<div class="jardim">
-							<div class="informacao">
-								<% if(jardim.length == 0){%>
-								<input type="image" id="icone-principal-semfoco" class="img-resposive center-block" name="registrar" src="./img/icone-plantas.png" onclick= "window.location.assign('viewNovoJardim')" >
-								<a href="/viewNovoJardim" class=" btn dropdown-toggle">criar novo jardim</a>	
-								<br><br>
-								<%}else{%>
-								<img id="icone-principal" class="img-responsive center-block " src="../img/icone-plantas.png">
-								<div class="btn-group">
-									<a id="texto-principal" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%- res_jardim.nome_jardim %><span class="caret"></span></a>						
-									<ul class="dropdown-menu">
-										<li><a href="/viewAlterarJardim"><span class="glyphicon glyphicon-leaf"></span>  alterar</a></li>
-										<li><a href="/deletarJardim"><span class="glyphicon glyphicon-remove"></span>  remover</a></li>
-									</ul>
 								</div>
+							</fieldset>
+						</div>
 
-							</div>
-
-
+						<fieldset>
+							<legend>detalhes</legend>
 							<div class="detalhes">
 								<div class="row">
 									<div class="col-xs-12 col-md-6">
@@ -104,22 +112,24 @@
 										</div>
 									</div>
 									<div class="col-xs-12 col-md-6">
-									<% if(!analize == ''){ %>
-										<div class="dashboard-jardim">
-											<div id="chart">
-												<script type="text/javascript">
+									<div class="grafico">
+											<% if(!analize == ''){ %>
+											<div class="dashboard-jardim">
+												<div id="chart">
+													<script type="text/javascript">
 
-													var chart = c3.generate({
-														data: {
-															columns: [
-															['data1', 30, 200, 100, 400, 150, 250],
-															['data2', 130, 100, 140, 200, 150, 50]
-															],
-															type: 'spline'
-														}
-													});
-												</script>
+														var chart = c3.generate({
+															data: {
+																columns: [
+																['data1', 30, 200, 100, 400, 150, 250],
+																['data2', 130, 100, 140, 200, 150, 50]
+																],
+																type: 'spline'
+															}
+														});
+													</script>
 
+												</div>
 											</div>
 										</div>
 									</div>

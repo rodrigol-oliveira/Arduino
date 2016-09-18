@@ -194,26 +194,16 @@ function Analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S0
 	this.valvula = validaCHARNull(valvula);
 }
 
-function SelectAnalize(id){
-	var arrayList = [];
-	connection.query('SELECT * from analize WHERE id_jardim = ?;', [id],
+function SelectIdJardim(usuario){
+	connection.query('SELECT id FROM jardim WHERE id_usuario = ?', [usuario],
 		function(err, rows){
-			if (err) {
-				console.log('erro SelectAnalize');
+			if(err){
+				console.log('erro SelectIdJardim');
 				throw err;
 			}else{
-				if (!rows.length == 0) {
-					for (var i = 0; i < rows.length; i++) {
-						var analize = new Analize(rows[i].id_jardim, rows[i].data_hora, rows[i].valor_S01, 
-							rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
-							rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
-						arrayList.push(analize);
-					}
-					console.log(arrayList);
-					return arrayList;
-				}else{
-					return 0;
-				}
+				var idJardim = rows[0];
+				console.log(idJardim);
+				return idJardim;
 			}
 		});
 }
@@ -338,21 +328,51 @@ app.get('/viewPrincipal', function(req,res){
 
 
 
+
 //Metodo requisita pagina de dados caddastrais
 app.get('/viewNovoJardim', function(req, res){
 	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
 		res.redirect('/viewIniciar');
 	}else{
-		connection.query('SELECT * FROM planta;',
-			function(err, rows){
-				if (err) {
-					console.log('erro ao select plantas cadastradas para pagina novo jardim');
-					throw err;
-				}else{
-					var plantas = rows;
-					res.render('novoJardim',{plantas:plantas});
-				}
-			});
+		connection.query('SELECT * FROM planta;', function(err, rows){
+			if (err) {
+				console.log('erro select plantas novo jardim');
+				throw err;
+			}else{
+				var plantas = rows;
+
+				connection.query('SELECT * from valvula;', function(err, rows){
+					if (err) {
+						console.log('erro select valvula novo jardim');
+						throw err;
+					}else{
+						var valvula = rows;
+
+						connection.query('SELECT * from agua;', function(err, rows){
+							if (err) {
+								console.log('erro select agua novo jardim');
+								throw err;
+							}else{
+								var agua = rows;
+
+								connection.query('SELECT * from sensor;', function(err, rows){
+									if (err) {
+										console.log('erro select sensor novo jardim');
+										throw err;
+									}else{
+										var sensor = rows;
+
+										res.render('novoJardim',{plantas:plantas, valvula:valvula, agua:agua, sensor:sensor});
+									}
+								});
+
+								
+							}
+						});				
+					}
+				});
+			}
+		});
 	}
 });
 
@@ -467,19 +487,7 @@ app.get('/deletarJardim', function(req, res){
 		});
 });
 
-function ProcuraIdJardim(usuario){
-	connection.query('SELECT id FROM jardim WHERE id_usuario = ?', [usuario],
-		function(err, rows){
-			if(err){
-				console.log('erro ProcuraIdJardim');
-				throw err;
-			}else{
-				var idJardim = rows;
-				console.log(idJardim);
-				return idJardim;
-			}
-		});
-}
+
 
 //metodo registra novo jardim no bano ainda da para melhorar a query com insert inner
 app.post('/novoJardim',function(req, res){
@@ -489,44 +497,45 @@ app.post('/novoJardim',function(req, res){
 	var estado = req.body.estado;
 	var cidade = req.body.cidade;
 	var planta = req.body.planta;
-	
-	connection.query('INSERT INTO controle(id_agua, id_valvula) VALUES(1,1);',
-		function(err){
-			if (err) {
-				console.log('erro inserir controle novo jardim');
+	var sensor = req.body.sensor;
+	var agua = req.body.agua;
+	var valvula = req.body.valvula;
+
+	connection.query('INSERT into jardim(id_usuario, id_valvula, id_agua, nome_jardim, pais, estado, cidade) '+
+		'VALUES(?,?,?,?,?,?,?);', [id_usuario, valvula, agua, nome, pais, estado, cidade], function(err){
+			if(err) {
+				console.log('erro inserir novo jardim');
 				throw err;
 			}else{
-				connection.query('INSERT INTO controle_sensor(id_controle, id_sensor) VALUES(1,1);', 
-					function(err){
-						if (err) {
-							console.log('erro inserir controle_sensor novo jardim');
-							throw err;
-						}else{
-							connection.query('INSERT INTO jardim(id_usuario, id_controle, nome_jardim, pais, estado, cidade)'+
-								'VALUES(?,?,?,?,?,?);', [id_usuario, 1, nome, pais, estado, cidade],
-								function(err){
-									if(err){
-										console.log('erro inserir jardim novo jardim');
-										throw err;
-									}else{
-										var idJardim = ProcuraIdJardim(id_usuario);
 
-										connection.query('INSERT INTO jardim_planta(id_jardim, id_planta) VALUES(?,?);'
-											, [idJardim, planta], function(err){
-												if(err){
-													console.log('erro inserir jardim_planta');	
-													throw err;
-												}else{
-													res.redirect('/viewPrincipalJson');			
-												}
-											});
+				connection.query('SELECT * FROM jardim WHERE id_usuario = ?', [id_usuario],function(err, rows){
+					if(err){
+						console.log('erro select idjardim novoJardim');
+						throw err;
+					}else{
+						var id_jardim = rows[0].id;
 
-										
-									}
-								});
-						}
-						
-					});
+						connection.query('insert into jardim_planta(id_jardim, id_planta) VALUES (?,?);', [id_jardim, planta],
+							function(err){
+								if (err) {
+									console.log('erro inserir jardim_planta em novo jardim');
+									throw err;
+								}else{
+
+									connection.query('insert into jardim_sensor(id_jardim, id_sensor) VALUES(?,?);', [id_jardim, sensor],
+										function(err){
+											if (err) {
+												console.log('erro inserir jardim_sensor em novo jardim');
+												throw err;
+											}else{
+												res.redirect('/viewPrincipalJson');	
+											}
+										});
+								}
+							});
+					}
+
+				});
 			}
 		});
 });
@@ -551,7 +560,7 @@ app.post('/selectPlantas', function(req, res){
 					rows[0].nome_grupo, rows[0].descricao_grupo);
 
 				res.render('res_planta', {res_plantas:plantas});
-				
+
 			}
 		});
 });
@@ -579,7 +588,7 @@ app.post('/selectUmidade', function(req, res){
 					}
 
 					res.render('res_umidade', {res_umidade:array});
-					
+
 				}else{
 					res.render('res_umidade', {res_umidade:''});
 				}
@@ -610,7 +619,7 @@ app.post('/selectConsumo', function(req, res){
 					}
 
 					res.render('res_consumo', {res_consumo:array});
-					
+
 				}else{
 					res.render('res_consumo', {res_consumo:''});
 				}
@@ -639,17 +648,17 @@ app.post('/selectCompleto', function(req, res){
 					var array = [];
 
 					for (var i = 0; i < rows.length; i++) {
-						
+
 						var completo = new relatorioCompleto(rows[i].nome_planta, rows[i].nome_grupo, rows[i].data_hora, rows[i].valor_S01, 
 							rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
 							rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
-						
+
 						array.push(completo);
 					}
 
 					res.render('res_completo', {res_completo:array});
 					console.log(rows[0].data_hora);
-					
+
 				}else{
 					res.render('res_completo', {res_completo:''});
 				}
