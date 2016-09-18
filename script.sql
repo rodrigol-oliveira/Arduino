@@ -138,14 +138,18 @@ DEFAULT CHARACTER SET = utf8;
 CREATE TABLE IF NOT EXISTS `arduino`.`grupo` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
   `nome_grupo` VARCHAR(45) NOT NULL,
+  `descricao_grupo` VARCHAR(300) NOT NULL,
   `umidade_min` BIGINT(10),
   `umidade_max` BIGINT(10),
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-INSERT INTO grupo(nome_grupo, umidade_min, umidade_max) value('A', 400, 800);
-INSERT INTO grupo(nome_grupo, umidade_min, umidade_max) value('B', 300, 700);
+INSERT INTO grupo(nome_grupo, descricao_grupo, umidade_min, umidade_max)
+values('A', 'grupo comum', 400, 800), ('B', 'grupo raro', 400, 800);
+
+
+
 
 
 -- -----------------------------------------------------
@@ -154,14 +158,15 @@ INSERT INTO grupo(nome_grupo, umidade_min, umidade_max) value('B', 300, 700);
 CREATE TABLE IF NOT EXISTS `arduino`.`planta` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
   `nome_planta` VARCHAR(20) NOT NULL,
+  `descricao_planta` VARCHAR(300)not null,
   `umidade_min` BIGINT(10) NOT NULL,
   `umidade_max` BIGINT(10) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-INSERT INTO planta(nome_planta, umidade_min, umidade_max) VALUES('rosa', 300, 700);
-INSERT INTO planta(nome_planta, umidade_min, umidade_max) VALUES('tulipa', 500, 900);
+INSERT INTO planta(nome_planta, descricao_planta, umidade_min, umidade_max) 
+VALUES('rosa', 'espécie comum',300, 700),('tulipa','especie rara', 500, 900);
 
 
 
@@ -183,7 +188,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1);
-INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(2,2);
+
 
 -- -----------------------------------------------------
 -- Table `arduino`.`jardim_planta`
@@ -202,7 +207,7 @@ CREATE TABLE IF NOT EXISTS `arduino`.`jardim_planta` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-drop table analize;
+
 -- -----------------------------------------------------
 -- Table `arduino`.`analize`
 -- -----------------------------------------------------
@@ -225,6 +230,12 @@ CREATE TABLE IF NOT EXISTS `arduino`.`analize` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
+
+
+
+INSERT INTO jardim_planta(id_jardim, id_planta) VALUES(1,1);
+
+
 insert into analize(id_jardim, data_hora, valor_S01, valor_S02, 
 status_umidade, clima, probabilidade_chuva,valvula, consumo) 
 values(1,now(), 300, 400, 'seco', 'ensolarado', 20, 'on', 30),
@@ -234,7 +245,7 @@ values(1,now(), 300, 400, 'seco', 'ensolarado', 20, 'on', 30),
 
 
 -- --------------------------------------------------------------
-
+use arduino;
 
 SELECT  j.nome_jardim, p.nome_planta, g.nome_grupo, j.estado, j.cidade from jardim j  
 						inner join usuario u on u.id = j.id_usuario 
@@ -243,6 +254,15 @@ SELECT  j.nome_jardim, p.nome_planta, g.nome_grupo, j.estado, j.cidade from jard
 						inner join grupo_planta gp on gp.id_planta = p.id 
 						inner join grupo g on g.id = gp.id_grupo
 						where u.id = 1;
+                        
+select * from analize where id_jardim = 1;
+
+select a.data_hora, a.status_umidade from usuario u
+inner join jardim j on j.id_usuario = u.id
+inner join analize a on a.id_jardim = j.id
+where u.id = 1; 
+                        
+                        
 
 select * from usuario;
 select * from jardim;
@@ -256,7 +276,7 @@ select * from controle_sensor;
 select * from agua;
 select * from valvula;
 
-select * from analize;
+select * from analize where id_jardim = 1;
 
 
 delete from jardim_planta where id_jardim= 5;

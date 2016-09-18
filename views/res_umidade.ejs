@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<title>iOne</title>
+</head>
+
+
+<body>
+
+
+	<% if(res_umidade.lenght == 0){%>
+	<p>vazio</p>
+	<% }else{%>
+	<% for(i = 0; i < res_umidade.length; i ++ ) { %>
+	<ul>
+		<li class="li-item">Data: <%- res_umidade[i].data_hora%></li>
+		<li class="li-item">Status Solo: <%- res_umidade[i].status_umidade%></li>
+		<li class="li-item">Clima: <%- res_umidade[i].clima%></li>
+	</ul>
+	<% }%>
+
+<%}%>
+
+</body>
+</html>

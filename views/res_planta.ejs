@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<title>iOne</title>
+</head>
+
+
+<body>
+
+
+<% if(res_plantas.lenght == 0){%>
+<p>vazio</p>
+<% }else{%>
+   <ul>
+            <li class="li-item">Jardim: <%- res_plantas.nome_jardim%></li>
+            <li class="li-item">Planta: <%- res_plantas.nome_planta%></li>
+            <li class="li-item">Descrição: <%- res_plantas.descricao_planta%></li>
+            <li class="li-item">Grupo: <%- res_plantas.nome_grupo%></li>
+            <li class="li-item">Descrição: <%- res_plantas.descricao_grupo%></li>                      
+         </ul>
+
+<%}%>
+
+</body>
+</html>

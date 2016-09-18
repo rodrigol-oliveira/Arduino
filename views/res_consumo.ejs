@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<title>iOne</title>
+</head>
+
+
+<body>
+
+
+	<% if(res_consumo.lenght == 0){%>
+	<p>vazio</p>
+	<% }else{%>
+	<% for(i = 0; i < res_consumo.length; i ++ ) { %>
+	<ul>
+		<li class="li-item">Data: <%- res_consumo[i].data_hora%></li>
+		<li class="li-item">Valvula: <%- res_consumo[i].valvula %></li>
+		<li class="li-item">Consumo de Água(L): <%- res_consumo[i].consumo%></li>
+		<li class="li-item">Clima: <%- res_consumo[i].clima%></li>
+	</ul>
+	<% }%>
+
+<%}%>
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<title>iOne</title>
+
+	<script src="../js/bootstrap.js"></script>
+
+	<!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
+	<script src="../js/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="../js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="../css/bootstrap.css" />  
+	<link rel="stylesheet" href="../css/bootstrap.min.css" /> 
+	<link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+
+	<!-- Load c3.css -->
+	<link rel="stylesheet" href="../css/c3.css" type="text/css">
+	<!-- Load d3.js and c3.js -->
+	<script src="../js/d3.v3.min.js"></script> <!--não encontrado -->
+	<script src="../js/c3.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="../css/style.css">
+	<link rel="stylesheet" type="text/css" href="../css/fonts.css">
+</head>
+
+<body>
+
+	<div class="container">
+
+		<div class="header">
+			<h1>iOne Jardim Inteligente</h1>
+			<h2>relatorio completo</h2>
+		</div>
+
+		<% if(res_completo.lenght == 0){%>
+		<p>vazio</p>
+		<% }else{%>
+
+		<div class="table-responsive">
+			<table  class="table table-striped table-bordered">
+
+				<thead>
+					<tr>
+						<th>data</th>
+						<th>planta</th>
+						<th>grupo</th>
+						<th>sensor 1</th>
+						<th>sensor 2</th>
+						<th>sensor 3</th>
+						<th>sensor 4</th>
+						<th>umidade</th>
+						<th>clima</th>
+						<th>chuva (%)</th>
+						<th>valvula</th>
+						<th>consumo (L)</th>
+					</tr>
+				</thead>
+
+
+				<tbody>
+					<% for(i = 0; i < res_completo.length; i ++ ) { %>
+					<tr>
+						<th><%- res_completo[i].data_hora%></th>
+						<th><%- res_completo[i].nome_planta%></th>
+						<th><%- res_completo[i].nome_grupo%></th>
+						<th><%- res_completo[i].valor_S01%></th>
+						<th><%- res_completo[i].valor_S02%></th>
+						<th><%- res_completo[i].valor_S03%></th>
+						<th><%- res_completo[i].valor_S04%></th>
+						<th><%- res_completo[i].status_umidade%></th>
+						<th><%- res_completo[i].clima%></th>
+						<th><%- res_completo[i].probabilidade_chuva%></th>
+						<th><%- res_completo[i].valvula%></th>
+						<th><%- res_completo[i].consumo%></th>
+					</tr>
+					<%}%>
+				</tbody>
+			</table>
+		</div>
+		<%}%>
+	</div>
+</body>
+</html>
