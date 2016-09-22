@@ -22,3 +22,20 @@
             }
          }
       </script>
+      
+
+      <script>
+      function mostrar_abas(obj) {
+
+         <% for(i=0; i < jardim.length; i++) { %>
+            document.getElementById('div_aba<%=i%>').style.display="none";
+            <%}%>
+            switch (obj.id) {
+               <% for(i=0; i < jardim.length; i++) { %>
+                  case 'mostra_aba<%=i%>':
+                  document.getElementById('div_aba<%=i%>').style.display="block";
+                  break
+                  <%}%>
+               }
+            }
+         </script>
