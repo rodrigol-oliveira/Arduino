@@ -210,7 +210,7 @@ function SelectIdJardim(usuario){
 
 
 //chama metodo tela principal
-app.get('/viewPrincipalJson', function(req, res){
+app.get('/viewPrincipal', function(req, res){
 	if (!req.session.user || !req.session.user.nome || !req.session.user.id) {
 		res.redirect('/viewIniciar');
 	}else{
@@ -276,55 +276,6 @@ app.get('/viewPrincipalJson', function(req, res){
 
 });
 
-
-//Metodo requisita pagina principal
-app.get('/viewPrincipal', function(req,res){
-	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
-		res.redirect('/viewIniciar');
-	}else{		
-		var nome = req.session.user.nome;
-		var id = req.session.user.id;
-
-		connection.query('SELECT id FROM jardim WHERE id_usuario = ?', [id],
-			function(err,rows){
-				if (err) {
-					console.log('erro select id jardim principal');
-					throw err;
-				}else{
-
-					var jardim = rows[0].id_jardim;
-
-					if (jardim.length == 0) {
-						res.render('principal', {nome:nome, jardim:jardim})
-					}else{
-
-						connection.query('SELECT j.nome_jardim, j.estado, j.cidade, p.nome_planta, g.nome_grupo '+ 
-							'from jardim j '+ 
-							'inner join usuario u on u.id = j.id_usuario '+
-							'inner join jardim_planta jp on jp.id_jardim = j.id '+
-							'inner join planta p on p.id = jp.id_planta '+
-							'inner join grupo_planta gp on gp.id_planta = p.id '+
-							'inner join grupo g on g.id = gp.id_grupo '+
-							'where u.id = ?;',[id],
-							function(err,rows){
-								if(err) throw err;
-								var nome_jardim = rows[0].nome_jardim;
-								var estado = rows[0].estado;
-								var cidade = rows[0].cidade;
-								var planta = rows[0].nome_planta;
-								var grupo = rows[0].nome_grupo;
-
-								res.render('principal', 
-									{nome:nome, jardim:jardim, nome_jardim:nome_jardim, 
-										estado:estado, cidade:cidade, planta:planta, 
-										grupo:grupo, results:''})
-
-							});
-					}
-				}
-			}); 	
-	}
-});
 
 
 
@@ -395,7 +346,7 @@ app.post('/validar', function(req, res) {
 						id: id,
 						nome: nome
 					};
-					res.redirect('/viewPrincipalJson');
+					res.redirect('/viewPrincipal');
 				}else{
 					res.send("Dados inválidos");//senha inválida
 				}
@@ -446,21 +397,7 @@ app.post('/alterarJardim', function(req,res){
 	res.redirect('viewPrincipal');
 });
 
-/*
-connection.query('SELECT id from jardim WHERE id_usuario = ?;', [id],
-		function(res, rows){
-			if(err) throw err;
 
-			var id_jardim = rows[0].id;
-
-			connection.query('UPDATE jardim_planta SET id_planta = ? WHERE id_jardim = ?;', [planta, id_jardim],
-				function(res, err){
-					if(err)	throw err;
-
-					res.redirect('viewPrincipal', {});
-				});
-		});
-		*/
 
 //metodo deletar jardim
 app.get('/deletarJardim', function(req, res){
@@ -496,49 +433,61 @@ app.post('/novoJardim',function(req, res){
 	var pais = req.body.pais;
 	var estado = req.body.estado;
 	var cidade = req.body.cidade;
-	var planta = req.body.planta;
-	var sensor = req.body.sensor;
 	var agua = req.body.agua;
 	var valvula = req.body.valvula;
 
+	var planta = req.body.planta;
+	var sensor = req.body.sensor;
+	
+
 	connection.query('INSERT into jardim(id_usuario, id_valvula, id_agua, nome_jardim, pais, estado, cidade) '+
-		'VALUES(?,?,?,?,?,?,?);', [id_usuario, valvula, agua, nome, pais, estado, cidade], function(err){
+		'VALUES(?,?,?,?,?,?,?);', [id_usuario, valvula, agua, nome, pais, estado, cidade],
+		function(err){
 			if(err) {
 				console.log('erro inserir novo jardim');
 				throw err;
+			}
+		});
+
+	connection.query('SELECT * FROM jardim WHERE id_usuario = ?', [id_usuario],
+		function(err, rows){
+			if (err) {
+				console.log('erro select idjardim novoJardim');
+				throw err;
 			}else{
+				var id_jardim = rows[0].id;
 
-				connection.query('SELECT * FROM jardim WHERE id_usuario = ?', [id_usuario],function(err, rows){
-					if(err){
-						console.log('erro select idjardim novoJardim');
-						throw err;
-					}else{
-						var id_jardim = rows[0].id;
-
-						connection.query('insert into jardim_planta(id_jardim, id_planta) VALUES (?,?);', [id_jardim, planta],
-							function(err){
+				if (planta.length > 0) {
+					for (var i = 0; i < planta.length; i++) {
+						connection.query('INSERT into jardim_planta(id_jardim, id_planta) VALUES(?,?);',
+							[id_jardim, planta[i]], function(err){
 								if (err) {
-									console.log('erro inserir jardim_planta em novo jardim');
+									console.log('erro inserir jardim_planta');
 									throw err;
-								}else{
-
-									connection.query('insert into jardim_sensor(id_jardim, id_sensor) VALUES(?,?);', [id_jardim, sensor],
-										function(err){
-											if (err) {
-												console.log('erro inserir jardim_sensor em novo jardim');
-												throw err;
-											}else{
-												res.redirect('/viewPrincipalJson');	
-											}
-										});
 								}
 							});
 					}
-
-				});
+				}
+				if (sensor.length > 0) {
+					for (var i = 0; i < sensor.length; i++) {
+						connection.query('INSERT into jardim_sensor(id_jardim, id_sensor) VALUES(?,?);',
+							[id_jardim, sensor[i]], function(err){
+								if (err) {
+									console.log('erro inserir jardim_sensor');
+									throw err;
+								}
+							});
+					}					
+				}
 			}
 		});
+	res.redirect('viewPrincipal');
 });
+
+
+
+
+
 
 app.post('/selectPlantas', function(req, res){
 
@@ -666,7 +615,19 @@ app.post('/selectCompleto', function(req, res){
 		});
 });
 
-		/*		
+
+
+			//Chama Metodo de Conexão ao executar app
+			connection.connect(function(err){
+				if(err) throw err;
+				console.log('Conectado no MySQL'); 	
+				app.listen(3000, function(){
+					console.log('Servidor Arduino -> http://localhost:3000');
+				});
+			});
+
+
+/*		
 				connection.query('INSERT INTO jardim (id_usuario, nome_jardim, pais, estado, cidade) VALUES (?,?,?,?,?);',
 				[ id_usuario, nome, pais, estado, cidade ] , 
 				function(err, res){
@@ -698,12 +659,70 @@ app.post('/selectCompleto', function(req, res){
 				res.redirect('/viewPrincipal');
 			});
 			*/
+/*
+//Metodo requisita pagina principal
+app.get('/viewPrincipalOld', function(req,res){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
+		res.redirect('/viewIniciar');
+	}else{		
+		var nome = req.session.user.nome;
+		var id = req.session.user.id;
 
-			//Chama Metodo de Conexão ao executar app
-			connection.connect(function(err){
-				if(err) throw err;
-				console.log('Conectado no MySQL'); 	
-				app.listen(3000, function(){
-					console.log('Servidor Arduino -> http://localhost:3000');
+		connection.query('SELECT id FROM jardim WHERE id_usuario = ?', [id],
+			function(err,rows){
+				if (err) {
+					console.log('erro select id jardim principal');
+					throw err;
+				}else{
+
+					var jardim = rows[0].id_jardim;
+
+					if (jardim.length == 0) {
+						res.render('principal', {nome:nome, jardim:jardim})
+					}else{
+
+						connection.query('SELECT j.nome_jardim, j.estado, j.cidade, p.nome_planta, g.nome_grupo '+ 
+							'from jardim j '+ 
+							'inner join usuario u on u.id = j.id_usuario '+
+							'inner join jardim_planta jp on jp.id_jardim = j.id '+
+							'inner join planta p on p.id = jp.id_planta '+
+							'inner join grupo_planta gp on gp.id_planta = p.id '+
+							'inner join grupo g on g.id = gp.id_grupo '+
+							'where u.id = ?;',[id],
+							function(err,rows){
+								if(err) throw err;
+								var nome_jardim = rows[0].nome_jardim;
+								var estado = rows[0].estado;
+								var cidade = rows[0].cidade;
+								var planta = rows[0].nome_planta;
+								var grupo = rows[0].nome_grupo;
+
+								res.render('principal', 
+									{nome:nome, jardim:jardim, nome_jardim:nome_jardim, 
+										estado:estado, cidade:cidade, planta:planta, 
+										grupo:grupo, results:''})
+
+							});
+					}
+				}
+			}); 	
+	}
+});
+
+}*/
+
+/*
+connection.query('SELECT id from jardim WHERE id_usuario = ?;', [id],
+		function(res, rows){
+			if(err) throw err;
+
+			var id_jardim = rows[0].id;
+
+			connection.query('UPDATE jardim_planta SET id_planta = ? WHERE id_jardim = ?;', [planta, id_jardim],
+				function(res, err){
+					if(err)	throw err;
+
+					res.redirect('viewPrincipal', {});
 				});
-			});
+		});
+		*/
