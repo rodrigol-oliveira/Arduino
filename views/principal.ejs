@@ -92,7 +92,7 @@
 											<li class="li-item">Nome: <%- detalhesJardim.nome_jardim %></li>
 											<br>
 											<% for(i=0; i < plantas.length; i++){%>
-											<li class="li-item">Planta<%- i+1 %>: <%- plantas[i].nome_planta%></li>
+											<li class="li-item">Planta <%- i+1 %>: <%- plantas[i].nome_planta%></li>
 											<%}%>
 											<li class="li-item">Grupo: <%- detalhesJardim.grupo%></li>
 											<br>
@@ -105,7 +105,7 @@
 										<ul>
 											<li class="li-menu">SENSORES</li>
 											<% for(i=0; i < sensores.length; i++){%>
-											<li class="li-item">Umidade<%- i+1 %>: <%- sensores[i].nome_sensor %></li>
+											<li class="li-item">Umidade <%- i+1 %>: <%- sensores[i].nome_sensor %></li>
 											<%}%>
 											<br>
 											<li class="li-item">Fluxo de água: <%- detalhesJardim.descricao_agua%></li>
@@ -167,7 +167,7 @@
 					<tbody>
 						<% for(i = 0; i < analize.length; i ++) { %>
 						<tr>
-							<td><%= analize[i].data_hora %></td>
+							<td><%- analize[i].data_hora %></td>
 							<td><%= analize[i].status_umidade %></td>
 							<td><%= analize[i].clima %></td>
 							<td><%= analize[i].probabilidade_chuva %>%</td>

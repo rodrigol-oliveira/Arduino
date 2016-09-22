@@ -233,99 +233,106 @@ app.get('/viewPrincipal', function(req, res){
 		
 
 		connection.query('SELECT * from jardim WHERE id_usuario = ?;', [id], function(err, rows){
-			if (err) throw err;
-			var id_jardim = rows[0].id;
-
-			if (id_jardim.length == 0) {
-				res.render('principal', {nome:nome, id_jardim:id_jardim});
+			if (err){
+				console.log('erro select jardim view principal');
+				throw err;
 			}else{
-				connection.query('SELECT j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.descricao_valvula, a.descricao_agua '+ 
-					'from jardim j '+ 
-					'inner join usuario u on u.id = j.id_usuario '+
-					'inner join jardim_planta jp on jp.id_jardim = j.id '+
-					'inner join planta p on p.id = jp.id_planta '+
-					'inner join grupo_planta gp on gp.id_planta = p.id '+
-					'inner join grupo g on g.id = gp.id_grupo '+
-					'inner join valvula v on v.id = j.id_valvula '+
-					'inner join agua a on a.id = j.id_agua '+
-					'where u.id = ?;',[id], 
-					function(err, rows){
-						if (err) {
-							console.log('erro ao pesquisar detalhes de jardim em princiapl json');
-							throw err;
-						}else{
+				if (rows.length == 0) {
+					res.render('principal', {nome:nome, id_jardim:''});
+				}else{
+					var id_jardim = rows[0].id;
 
-							var detalhesJardim = new Jardim(rows[0].nome_jardim, rows[0].estado, 
-								rows[0].cidade, rows[0].nome_grupo, rows[0].descricao_valvula, rows[0].descricao_agua);
+					if (id_jardim.length == 0) {
 
-							var arrayPlanta = [];
+					}else{
+						connection.query('SELECT j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.descricao_valvula, a.descricao_agua '+ 
+							'from jardim j '+ 
+							'inner join usuario u on u.id = j.id_usuario '+
+							'inner join jardim_planta jp on jp.id_jardim = j.id '+
+							'inner join planta p on p.id = jp.id_planta '+
+							'inner join grupo_planta gp on gp.id_planta = p.id '+
+							'inner join grupo g on g.id = gp.id_grupo '+
+							'inner join valvula v on v.id = j.id_valvula '+
+							'inner join agua a on a.id = j.id_agua '+
+							'where u.id = ?;',[id], 
+							function(err, rows){
+								if (err) {
+									console.log('erro ao pesquisar detalhes de jardim em princiapl json');
+									throw err;
+								}else{
 
-							connection.query('SELECT p.nome_planta, p.descricao_planta from planta p '+
-								'inner join jardim_planta jp on jp.id_planta = p.id '+
-								'inner join jardim j on j.id = jp.id_jardim '+
-								'where j.id = ?', [id_jardim], function(err, rows){
-									if (err) {
-										console.log('erro select plantas principal');
-										throw err;
-									}else{
-										if (rows.length > 0) {
-											for(var i=0; i<rows.length; i++){
-												var planta = new Planta(rows[i].nome_planta, rows[i].descricao_planta);
-												arrayPlanta.push(planta);
-											}
-										}
+									var detalhesJardim = new Jardim(rows[0].nome_jardim, rows[0].estado, 
+										rows[0].cidade, rows[0].nome_grupo, rows[0].descricao_valvula, rows[0].descricao_agua);
 
-										var arraySensor = [];
+									var arrayPlanta = [];
 
-										connection.query('SELECT s.nome_sensor, s.especificacao_sensor from sensor s '+
-											'inner join jardim_sensor js on js.id_sensor = s.id '+
-											'inner join jardim j on j.id = js.id_jardim '+
-											'where j.id = ?;', [id_jardim], function(err, rows){
-												if (err) {
-													console.log('erro select sensores principal');
-													throw err;
-												}else{
-													if (rows.length > 0) {
-														for(var i=0; i<rows.length; i++){
-															var sensor = new Sensor(rows[i].nome_sensor, rows[i].especificacao_sensor);
-															arraySensor.push(sensor); 
-														}
+									connection.query('SELECT p.nome_planta, p.descricao_planta from planta p '+
+										'inner join jardim_planta jp on jp.id_planta = p.id '+
+										'inner join jardim j on j.id = jp.id_jardim '+
+										'where j.id = ?', [id_jardim], function(err, rows){
+											if (err) {
+												console.log('erro select plantas principal');
+												throw err;
+											}else{
+												if (rows.length > 0) {
+													for(var i=0; i<rows.length; i++){
+														var planta = new Planta(rows[i].nome_planta, rows[i].descricao_planta);
+														arrayPlanta.push(planta);
 													}
-													connection.query('SELECT * from analize WHERE id_jardim = ? LIMIT 3;', [id_jardim], 
-														function(err, rows){
-															if (err) {
-																console.log('erro select analize');
-																throw err;
-															}else{
+												}
 
-																var arrayAnalize = [];
+												var arraySensor = [];
 
-																if (rows.length == 0) {
-																	res.render('principal', {nome:nome, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
-																		plantas:arrayPlanta, sensores:arraySensor, analize:''});
-																}else{
-																	for (var i = 0; i < rows.length; i++) {
-
-																		var analize = new Analize(rows[i].id_jardim, rows[i].data_hora, rows[i].valor_S01, 
-																			rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
-																			rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
-
-																		arrayAnalize.push(analize);
-																	}
-
-																	res.render('principal', {nome:nome, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
-																		plantas:arrayPlanta, sensores:arraySensor, analize:arrayAnalize});
+												connection.query('SELECT s.nome_sensor, s.especificacao_sensor from sensor s '+
+													'inner join jardim_sensor js on js.id_sensor = s.id '+
+													'inner join jardim j on j.id = js.id_jardim '+
+													'where j.id = ?;', [id_jardim], function(err, rows){
+														if (err) {
+															console.log('erro select sensores principal');
+															throw err;
+														}else{
+															if (rows.length > 0) {
+																for(var i=0; i<rows.length; i++){
+																	var sensor = new Sensor(rows[i].nome_sensor, rows[i].especificacao_sensor);
+																	arraySensor.push(sensor); 
 																}
 															}
-														});
-												}
-											});
-									}
-								});
-						}	
-					});
-			}
+															connection.query('SELECT * from analize WHERE id_jardim = ? LIMIT 3;', [id_jardim], 
+																function(err, rows){
+																	if (err) {
+																		console.log('erro select analize');
+																		throw err;
+																	}else{
 
+																		var arrayAnalize = [];
+
+																		if (rows.length == 0) {
+																			res.render('principal', {nome:nome, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
+																				plantas:arrayPlanta, sensores:arraySensor, analize:''});
+																		}else{
+																			for (var i = 0; i < rows.length; i++) {
+
+																				var analize = new Analize(rows[i].id_jardim, rows[i].data_hora, rows[i].valor_S01, 
+																					rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
+																					rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
+
+																				arrayAnalize.push(analize);
+																			}
+
+																			res.render('principal', {nome:nome, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
+																				plantas:arrayPlanta, sensores:arraySensor, analize:arrayAnalize});
+																		}
+																	}
+																});
+														}
+													});
+											}
+										});
+								}	
+							});
+					}
+				}
+			}
 		});
 	}
 });
@@ -452,24 +459,61 @@ app.post('/alterarJardim', function(req,res){
 app.get('/deletarJardim', function(req, res){
 
 	var nome = req.session.user.nome;
-	var id = req.session.user.id;
+	var id_usuario = req.session.user.id;
 
-	connection.query('select * from jardim where id_usuario = ?', [id],
+	connection.query('select * from jardim where id_usuario = ?', [id_usuario],
 		function(err, rows){
-			if (err) throw err;
-			var id_jardim = rows[0].id;
+			if (err){
+				console.log('erro select jardim em deletar')
+				throw err;
+			}else{
+				
+				var id_jardim = rows[0].id;
 
-			connection.query('delete from jardim_planta where id_jardim=?', [id_jardim],
-				function(res, err){
-					if (err) throw err;
+				connection.query('delete from jardim_planta where id_jardim = ?', [id_jardim],
+					function(err){
+					if(err){
+						console.log('erro ao deletar jardim_planta x');
+						throw err;
+					}
 				});
-
-			connection.query('delete from jardim where id_usuario=?', [id],
-				function(res, err){
-					if(err) throw err;
-
-					res.render('viewPrincipal', {nome:nome, id:id});
+				
+				connection.query('delete from jardim_sensor where id_jardim = ?', [id_jardim],
+					function(err){
+					if (err) {
+						console.log('erro ao deletar jardim_sensor');
+						throw err;
+					}
 				});
+				
+				connection.query('select * from analize WHERE id_jardim = ?', [id_jardim],
+					function(err, rows){
+					if(err){
+						console.log('erro select analize deletar');
+						throw err;
+					}else{
+						if (rows.length > 0) {
+							connection.query('delete from analize where id_jardim = ?', [id_jardim], function(err){
+								if (err) {
+									console.log('erro ao deletar analize');
+									throw err;
+								}
+							});
+						}
+					}
+				});			
+				
+				connection.query('delete from jardim where id_usuario = ?', [id_usuario], 
+					function(err){
+					if (err) {
+						console.log('erro ao deletar jardim');
+						throw err;
+					}
+				});
+				
+				res.redirect('/viewPrincipal');
+			}
+			
 		});
 });
 
