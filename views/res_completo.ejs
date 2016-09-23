@@ -46,15 +46,15 @@
 						<th>data</th>
 						<th>planta</th>
 						<th>grupo</th>
-						<th>sensor 1</th>
-						<th>sensor 2</th>
-						<th>sensor 3</th>
-						<th>sensor 4</th>
+						<th>sen 1</th>
+						<th>sen 2</th>
+						<th>sen 3</th>
+						<th>sen 4</th>
 						<th>umidade</th>
 						<th>clima</th>
-						<th>chuva (%)</th>
+						<th>chuva(%)</th>
 						<th>valvula</th>
-						<th>consumo (L)</th>
+						<th>cons(L)</th>
 					</tr>
 				</thead>
 
@@ -62,7 +62,7 @@
 				<tbody>
 					<% for(i = 0; i < res_completo.length; i ++ ) { %>
 					<tr>
-						<th><%- res_completo[i].data_hora%></th>
+						<th><%- res_completo[i].data_hora %></th>
 						<th><%- res_completo[i].nome_planta%></th>
 						<th><%- res_completo[i].nome_grupo%></th>
 						<th><%- res_completo[i].valor_S01%></th>

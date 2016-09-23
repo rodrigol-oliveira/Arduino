@@ -232,19 +232,17 @@ app.get('/viewPrincipal', function(req, res){
 		var id = req.session.user.id;
 		
 
-		connection.query('SELECT * from jardim WHERE id_usuario = ?;', [id], function(err, rows){
-			if (err){
-				console.log('erro select jardim view principal');
-				throw err;
-			}else{
-				if (rows.length == 0) {
-					res.render('principal', {nome:nome, id_jardim:''});
+		connection.query('SELECT * from jardim WHERE id_usuario = ?;', [id],
+			function(err, rows){
+				if (err){
+					console.log('erro select jardim view principal');
+					throw err;
 				}else{
-					var id_jardim = rows[0].id;
-
-					if (id_jardim.length == 0) {
-
+					if (rows.length == 0) {
+						res.render('principal', {nome:nome, id_jardim:''});
 					}else{
+						var id_jardim = rows[0].id;
+
 						connection.query('SELECT j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.descricao_valvula, a.descricao_agua '+ 
 							'from jardim j '+ 
 							'inner join usuario u on u.id = j.id_usuario '+
@@ -255,6 +253,7 @@ app.get('/viewPrincipal', function(req, res){
 							'inner join valvula v on v.id = j.id_valvula '+
 							'inner join agua a on a.id = j.id_agua '+
 							'where u.id = ?;',[id], 
+							
 							function(err, rows){
 								if (err) {
 									console.log('erro ao pesquisar detalhes de jardim em princiapl json');
@@ -297,7 +296,10 @@ app.get('/viewPrincipal', function(req, res){
 																	arraySensor.push(sensor); 
 																}
 															}
-															connection.query('SELECT * from analize WHERE id_jardim = ? LIMIT 3;', [id_jardim], 
+
+															connection.query('SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", '+
+																'valor_S01, valor_S02, status_umidade, clima, probabilidade_chuva,valvula, '+
+																'consumo from analize where id_jardim = ? LIMIT 3;', [id_jardim], 
 																function(err, rows){
 																	if (err) {
 																		console.log('erro select analize');
@@ -310,6 +312,7 @@ app.get('/viewPrincipal', function(req, res){
 																			res.render('principal', {nome:nome, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
 																				plantas:arrayPlanta, sensores:arraySensor, analize:''});
 																		}else{
+
 																			for (var i = 0; i < rows.length; i++) {
 
 																				var analize = new Analize(rows[i].id_jardim, rows[i].data_hora, rows[i].valor_S01, 
@@ -330,11 +333,11 @@ app.get('/viewPrincipal', function(req, res){
 										});
 								}	
 							});
+						
 					}
 				}
-			}
-		});
-	}
+			});
+}
 });
 
 
@@ -470,53 +473,52 @@ app.get('/deletarJardim', function(req, res){
 				
 				var id_jardim = rows[0].id;
 
-				connection.query('delete from jardim_planta where id_jardim = ?', [id_jardim],
+				connection.query('delete from jardim_planta where id_jardim = ?;', [id_jardim],
 					function(err){
-					if(err){
-						console.log('erro ao deletar jardim_planta x');
-						throw err;
-					}
-				});
-				
-				connection.query('delete from jardim_sensor where id_jardim = ?', [id_jardim],
-					function(err){
-					if (err) {
-						console.log('erro ao deletar jardim_sensor');
-						throw err;
-					}
-				});
-				
-				connection.query('select * from analize WHERE id_jardim = ?', [id_jardim],
-					function(err, rows){
-					if(err){
-						console.log('erro select analize deletar');
-						throw err;
-					}else{
-						if (rows.length > 0) {
-							connection.query('delete from analize where id_jardim = ?', [id_jardim], function(err){
-								if (err) {
-									console.log('erro ao deletar analize');
-									throw err;
-								}
-							});
+						if(err){
+							console.log('erro ao deletar jardim_planta x');
+							throw err;
+						}else{
+							connection.query('delete from jardim_sensor where id_jardim = ?;', [id_jardim],
+								function(err){
+									if (err) {
+										console.log('erro ao deletar jardim_sensor');
+										throw err;
+									}else{
+										connection.query('select * from analize WHERE id_jardim = ?;', [id_jardim],
+											function(err, rows){
+												if(err){
+													console.log('erro select analize deletar');
+													throw err;
+												}else{
+													if (rows.length > 0) {
+														connection.query('delete from analize where id_jardim = ?;', [id_jardim], function(err){
+															if (err) {
+																console.log('erro ao deletar analize');
+																throw err;
+															}
+														});
+													}
+												}
+												connection.query('delete from jardim where id_usuario = ?', [id_usuario], 
+													function(err){
+														if (err) {
+															console.log('erro ao deletar jardim');
+															throw err;
+														}
+
+														res.redirect('/viewPrincipal');
+													});	
+												
+
+											});	
+									}
+								});
 						}
-					}
-				});			
-				
-				connection.query('delete from jardim where id_usuario = ?', [id_usuario], 
-					function(err){
-					if (err) {
-						console.log('erro ao deletar jardim');
-						throw err;
-					}
-				});
-				
-				res.redirect('/viewPrincipal');
+					});
 			}
-			
 		});
 });
-
 
 
 //metodo registra novo jardim no bano ainda da para melhorar a query com insert inner
@@ -611,7 +613,7 @@ app.post('/selectUmidade', function(req, res){
 
 	var id = req.session.user.id;
 
-	connection.query('select a.data_hora, a.status_umidade, a.clima '+
+	connection.query('select DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", status_umidade, clima '+
 		'from usuario u '+
 		'inner join jardim j on j.id_usuario = u.id '+
 		'inner join analize a on a.id_jardim = j.id '+
@@ -643,7 +645,7 @@ app.post('/selectConsumo', function(req, res){
 
 	var id = req.session.user.id;
 
-	connection.query('select a.data_hora, a.valvula, a.consumo, a.clima '+
+	connection.query('select DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", valvula, consumo, clima '+
 		'from usuario u '+
 		'inner join jardim j on j.id_usuario = u.id '+
 		'inner join analize a on a.id_jardim = j.id '+
@@ -674,7 +676,9 @@ app.post('/selectCompleto', function(req, res){
 
 	var id = req.session.user.id;
 
-	connection.query('select a.*, p.nome_planta, g.nome_grupo '+
+	connection.query('SELECT DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", '+
+		'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, '+ 
+		'consumo, nome_planta, nome_grupo '+
 		'from jardim j '+ 
 		'inner join usuario u on u.id = j.id_usuario '+
 		'inner join jardim_planta jp on jp.id_jardim = j.id '+
@@ -687,6 +691,7 @@ app.post('/selectCompleto', function(req, res){
 				console.log('erro selectCompleto');
 				throw err;
 			}else{
+				console.log(rows[0]);
 				if (rows.length > 0) {
 					var array = [];
 

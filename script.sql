@@ -69,10 +69,6 @@ INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S02A', 'Chumbo');
 INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S03A', 'ouro');
 INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S04A', 'ferro');
 
-select * from sensor;
-
-
-
 
 -- -----------------------------------------------------
 -- Table `arduino`.`jardim`
@@ -99,14 +95,13 @@ DEFAULT CHARACTER SET = utf8;
 -- Table `arduino`.`jardim_sensor`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `arduino`.`jardim_sensor` (
-  `id` BIGINT(10) NOT NULL auto_increment,
   `id_jardim` BIGINT(10) NOT NULL,
   `id_sensor` BIGINT(10) NOT NULL,
-  PRIMARY KEY (`id`),
-  -- INDEX `FK_CONTROLESENSOR_SENSOR` (`id_sensor` ASC),
-  CONSTRAINT `FK_JARDIMSENSOR_JARDIM`
-    FOREIGN KEY (`id_jardim`)
-    REFERENCES `arduino`.`jardim` (`id`),
+   PRIMARY KEY (`id_jardim`, `id_sensor`),
+    -- INDEX `FK_CONTROLESENSOR_SENSOR` (`id_sensor` ASC),
+    CONSTRAINT `FK_JARDIMSENSOR_JARDIM`
+	FOREIGN KEY (`id_jardim`)
+     REFERENCES `arduino`.`jardim` (`id`),
   CONSTRAINT `FK_JARDIMSENSOR_SENSOR`
     FOREIGN KEY (`id_sensor`)
     REFERENCES `arduino`.`sensor` (`id`))
@@ -169,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `arduino`.`grupo_planta` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1);
+INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1), (2,2);
 
 
 -- -----------------------------------------------------
@@ -178,8 +173,7 @@ INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1);
 CREATE TABLE IF NOT EXISTS `arduino`.`jardim_planta` (
   `id_jardim` BIGINT(10) NOT NULL,
   `id_planta` BIGINT(10) NOT NULL,
-  PRIMARY KEY (`id_jardim`, `id_planta`),
-  INDEX `FK_JARDIMPLANTA_PLANTA` (`id_planta` ASC),
+  
   CONSTRAINT `FK_JARDIMPLANTA_JARDIM`
     FOREIGN KEY (`id_jardim`)
     REFERENCES `arduino`.`jardim` (`id`),
@@ -215,14 +209,20 @@ DEFAULT CHARACTER SET = utf8;
 
 
 
+
+-- --------------------------------------------------------------------------------
+-- limite de codigo do banco valido
+-- -----------------------------------------------------------------------------------
+
+
 INSERT INTO jardim_planta(id_jardim, id_planta) VALUES(1,1);
 
 
 insert into analize(id_jardim, data_hora, valor_S01, valor_S02, 
 status_umidade, clima, probabilidade_chuva,valvula, consumo) 
 values(1,now(), 300, 400, 'seco', 'ensolarado', 20, 'on', 30),
-	 (1,now(), 600, 650, 'umido', 'ensolarado', 20, 'off', 0),
-     (1,now(), 550, 600, 'umido', 'ensolarado', 20, 'off', 0);
+	 (1,now() + interval 1 day, 600, 650, 'umido', 'ensolarado', 20, 'off', 0),
+     (1,now() - interval 1 day, 550, 600, 'umido', 'ensolarado', 20, 'off', 0);
 
 
 
@@ -244,7 +244,7 @@ inner join jardim j on j.id_usuario = u.id
 inner join analize a on a.id_jardim = j.id
 where u.id = 1; 
                         
-                        
+
 
 select * from usuario;
 select * from jardim;
@@ -254,20 +254,25 @@ select * from planta;
 select * from grupo;
 select * from controle;
 select * from sensor;
-select * from controle_sensor;
+select * from jardim_sensor;
+select * from analize;
 select * from agua;
 select * from valvula;
 
 select * from analize where id_jardim = 1;
 select last_insert_id() into analize;
 
-delete from jardim_planta where id_jardim= 5;
-delete from jardim where id_usuario = 1;
+delete from jardim_planta where id_jardim = 2;
+delete from jardim where id_usuario = 2;
+
+delete from jardim_sensor where id_jardim = 1;
 
 SELECT id FROM jardim WHERE id_usuario = 4;
 INSERT INTO jardim_planta(id_jardim, id_planta) VALUES (1, 1);
 
 UPDATE jardim_planta SET id_planta = 2 WHERE id_jardim= 1;
+
+select * from analize;
 
 -- ---------------------------------
 -- removidos
@@ -292,4 +297,39 @@ CREATE TABLE IF NOT EXISTS `arduino`.`controle` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
+
+SELECT p.nome_planta, p.descricao_planta from planta p 
+inner join jardim_planta jp on jp.id_planta = p.id
+inner join jardim j on j.id = jp.id_jardim 
+where j.id = 1;
+
+
+select id from jardim where id_usuario = 1;
+
+
+
+SELECT j.nome_jardim, j.estado, j.cidade, g.nome_grupo 
+						from jardim j 
+						inner join usuario u on u.id = j.id_usuario
+						inner join jardim_planta jp on jp.id_jardim = j.id
+						inner join planta p on p.id = jp.id_planta
+						inner join grupo_planta gp on gp.id_planta = p.id
+						inner join grupo g on g.id = gp.id_grupo 
+						where u.id = 1;
+                        
+SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s"), valor_S01, valor_S02,
+status_umidade, clima, probabilidade_chuva,valvula, consumo from analize;
+
+
+SELECT DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", 
+		valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, 
+        probabilidade_chuva, valvula, consumo 
+		from jardim j 
+		inner join usuario u on u.id = j.id_usuario 
+		inner join jardim_planta jp on jp.id_jardim = j.id 
+		inner join analize a on a.id_jardim = j.id 
+		where u.id = 1;
+                        
+                        
 -- ------------------------
+
