@@ -184,7 +184,7 @@ function SelectIdJardim(usuario){
 				throw err;
 			}else{
 				var idJardim = rows[0];
-				console.log(idJardim);
+				
 				return idJardim;
 			}
 		});
@@ -562,8 +562,7 @@ app.get('/viewAlterarJardim',function(req,res){
 																rows[0].cidade, rows[0].nome_grupo, rows[0].id_valvula, rows[0].descricao_valvula,
 																rows[0].id_agua,  rows[0].descricao_agua);
 
-															console.log(jardim);
-
+															
 															connection.query('SELECT p.id, p.nome_planta from planta p '+
 																'inner join jardim_planta jp on jp.id_planta = p.id '+
 																'inner join jardim j on j.id = jp.id_jardim '+
@@ -853,7 +852,7 @@ app.post('/selectCompleto', function(req, res){
 				console.log('erro selectCompleto');
 				throw err;
 			}else{
-				console.log(rows[0]);
+				
 				if (rows.length > 0) {
 					var array = [];
 
@@ -867,7 +866,7 @@ app.post('/selectCompleto', function(req, res){
 					}
 
 					res.render('res_completo', {res_completo:array});
-					console.log(rows[0].data_hora);
+					
 
 				}else{
 					res.render('res_completo', {res_completo:''});
