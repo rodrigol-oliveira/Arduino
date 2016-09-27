@@ -17,14 +17,15 @@ fieldset{padding-top: 10px;}
 #botao{color: white; background-color: #008B45;}
 #config{width: 25px; height: 25px;}
 #texto-principal{text-align: center;}
-#icone-principal{width: 100px; height: 100px;}
-#icone-principal-semfoco{opacity: 0.3; width: 100px; height: 100px;}
+#icone-principal{width: 130px; height: 130px;}
+#icone-principal-semfoco{opacity: 0.3; width: 130px; height: 130px;}
 #criar-jardim{color: gray;}
+#icone-usuario{width: 100px; height: 150px;}
 
 
 .header{padding-top: 60px;}
 .content{padding-top: 70px;}
-.icone{ width: 150px; height: 150px;}
+.icone{ width: 175px; height: 175px;}
 .formulario{padding-top: 40px;}
 .informacao{text-align:center; font-size: 20px; }
 .grafico{width: 400px; height: 300px;}

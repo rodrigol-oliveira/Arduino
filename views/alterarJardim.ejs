@@ -48,97 +48,89 @@
                   </div>
                   <div class="form-group">
                    <select  class="selectpicker" data-width="100%" name="planta" multiple required>
-                     <option value='-' disabled >-- atualmente no jardim --</option>
-                     <% if(arrayPlanta.length > 0){%>
-                     <% for(i = 0; i < arrayPlanta.length; i++){ %>
-                     <option value="<%= arrayPlanta[i].id %>" selected ><%= arrayPlanta[i].nome_planta %></option>
+                     <%for(i=0; i<plantas.length; i++){%>
+                     <%for(j=0; j<arrayPlanta.length; j++){%>
+                     <% if(plantas[i].id == arrayPlanta[j].id){%>
+                     <option value="<%= plantas[i].id %>" selected ><%= plantas[i].nome_planta %></option>
+                     <%}else{%>
+                     <option value="<%= plantas[i].id %>" ><%= plantas[i].nome_planta %></option>
                      <%}%>
-                     <%}%>
-                     <option value='-' disabled >-- todas opções --</option>
-                     <% if(plantas.length > 0){%>
-                     <% for(i = 0; i < plantas.length; i++){ %>
-                     <option value="<%= plantas[i].id %>"><%= plantas[i].nome_planta %></option>
                      <%}%>
                      <%}%>
                    </select>
                  </div>
 
                  <div class="form-group">
-                   <select  class="selectpicker"  data-width="100%" name="sensor" multiple required>
-                    <option value='-' disabled >-- atualmente no jardim --</option>
-                    <% if(arraySensor.length > 0){%>
-                    <% for(i = 0; i < arraySensor.length; i++){ %>
-                    <option value="<%= arraySensor[i].id %>" selected ><%= arraySensor[i].nome_sensor %></option>
-                    <%}%>
-                    <%}%>
-                    <option value='-' disabled >-- todas opções --</option>
-                    <% if(sensores.length > 0){%>
-                    <% for(i = 0; i < sensores.length; i++){ %>
-                    <option value="<%= sensores[i].id %>"><%= sensores[i].nome_sensor %></option>
-                    <%}%>
-                    <%}%>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <select  class="selectpicker"  data-width="100%" name="valvula" title="valvula de água" required>
-                   <option value='-' disabled >-- atualmente no jardim --</option>
-                   <option value="<%= jardim.id_valvula %>" selected><%= jardim.descricao_valvula %></option>
-                   <option value='-' disabled >-- todas opções --</option>
-                   <% if(valvula.length > 0){%>
-                   <%    for(i = 0; i < valvula.length; i++){ %>
-                   <option value="<%= valvula[i].id %>"><%= valvula[i].descricao_valvula %></option>
+                  <select  class="selectpicker" data-width="100%" name="sensor" multiple required>
+                   <%for(i=0; i<sensores.length; i++){%>
+                   <%for(j=0; j<arraySensor.length; j++){%>
+                   <% if(sensores[i].id == arraySensor[j].id){%>
+                   <option value="<%= sensores[i].id %>" selected ><%= sensores[i].nome_sensor %></option>
+                   <%}else{%>
+                   <option value="<%= sensores[i].id %>" ><%= sensores[i].nome_sensor %></option>
+                   <%}%>
                    <%}%>
                    <%}%>
                  </select>
                </div>
 
                <div class="form-group">
-                 <select  class="selectpicker"  data-width="100%" name="agua" title="sensor de fluxo de água" required>
-                   <option value='-' disabled >-- atualmente no jardim --</option>
-                   <option value="<%= jardim.id_agua %>" selected><%= jardim.descricao_agua %></option>
-                   <option value='-' disabled >-- todas opções --</option>
-                   <% if(agua.length > 0){%>
-                   <%    for(i = 0; i < agua.length; i++){ %>
-                   <option value="<%= valvula[i].id %>"><%= agua[i].descricao_agua %></option>
-                   <%}%>
-                   <%}%>
-                 </select>
-               </div>
-             </fieldset>
-
-             <fieldset>
-               <legend>localização</legend>
-
-               <div class="form-group">
-                 <select  class="selectpicker"  data-width="100%" name="estado" title="estado" required>
-                   <option value='-' disabled >-- atualmente no jardim --</option>
-                   <option value="<%= jardim.estado %>" selected><%= jardim.estado %></option>
-                   <option value='-' disabled >-- todas opções --</option>
-                   <option value="SP">SP</option>
-                 </select>
-               </div>
-               <div class="form-group">
-                 <select  class="selectpicker"  data-width="100%" name="cidade" title="cidade" required>
-                   <option value='-' disabled >-- atualmente no jardim --</option>
-                   <option value="<%= jardim.cidade %>" selected><%= jardim.cidade %></option>
-                   <option value='-' disabled >-- todas opções --</option>
-                   <option value="São Paulo">São Paulo</option>
-                 </select>
-               </div>
-             </fieldset>
-
+                <select  class="selectpicker"  data-width="100%" name="valvula" title="valvula de água" required>
+                 <%for(i=0; i<valvula.length; i++){%>
+                 <% if(valvula[i].id == jardim.id_valvula){%>
+                 <option value="<%= valvula[i].id %>" selected><%= valvula[i].descricao_valvula%></option>
+                 <%}else{%>
+                 <option value="<%= valvula[i].id %>"><%= valvula[i].descricao_valvula%></option>
+                 <%}%>
+                 <%}%>
+               </select>
+             </div>
 
              <div class="form-group">
-              <button id="botao" class="btn btn-default" type="submit"  class="btn btn-default">alterar</button>
-              <a id="botao" class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
-              <div class="form-group">
-              </form>
+               <select  class="selectpicker"  data-width="100%" name="agua" title="sensor de fluxo de água" required>
+               <%for(i=0; i<agua.length; i++){%>
+                <% if(agua[i].id == jardim.id_agua){%>
+                <option value="<%= agua[i].id %>" selected><%= agua[i].descricao_agua%></option>
+                <%}else{%>
+                <option value="<%= agua[i].id %>"><%= agua[i].descricao_agua%></option>
+                <%}%>
+                <%}%>
+              </select>
             </div>
-            <div class="col-xs-12 col-md-4"></div>
-          </div>
-        </div>
-      </div>
+          </fieldset>
 
-    </body>
-    </html>
+          <fieldset>
+           <legend>localização</legend>
+
+           <div class="form-group">
+             <select  class="selectpicker"  data-width="100%" name="estado" title="estado" required>
+               <option value='-' disabled >-- atualmente no jardim --</option>
+               <option value="<%= jardim.estado %>" selected><%= jardim.estado %></option>
+               <option value='-' disabled >-- todas opções --</option>
+               <option value="SP">SP</option>
+             </select>
+           </div>
+           <div class="form-group">
+             <select  class="selectpicker"  data-width="100%" name="cidade" title="cidade" required>
+               <option value='-' disabled >-- atualmente no jardim --</option>
+               <option value="<%= jardim.cidade %>" selected><%= jardim.cidade %></option>
+               <option value='-' disabled >-- todas opções --</option>
+               <option value="São Paulo">São Paulo</option>
+             </select>
+           </div>
+         </fieldset>
+
+
+         <div class="form-group">
+          <button id="botao" class="btn btn-default" type="submit"  class="btn btn-default">alterar</button>
+          <a id="botao" class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
+          <div class="form-group">
+          </form>
+        </div>
+        <div class="col-xs-12 col-md-4"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

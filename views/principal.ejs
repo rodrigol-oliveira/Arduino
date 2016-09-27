@@ -42,9 +42,13 @@
 						<legend>conta</legend>
 						<div class="conta">	
 							<div class="informacao">
-								<img id="icone-principal" class="img-responsive center-block " src="../img/icone-conta.png">
+								<% if(usuario.genero == 'm'){ %> 
+								<img id="icone-usuario" class="img-responsive center-block " src=" img/usuario_m.png">
+								<%}else{%>
+								<img id="icone-usuario" class="img-responsive center-block " src=" img/usuario_f.jpg">
+								<%}%>
 								<div class="btn-group">
-									<a class=" btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= nome %> <span class="caret"></span></a>							
+									<a class=" btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= usuario.nome %> <span class="caret"></span></a>							
 									<ul class="dropdown-menu">
 										<li><a href="/viewRedefinir"><span class="glyphicon glyphicon-user"></span>Redefinir senha</a></li>
 										<li><a href="/sair"><span class="glyphicon glyphicon-off"></span>  Sair</a></li>
@@ -59,7 +63,7 @@
 						<legend>jardim</legend>
 						<div class="jardim">
 							<div class="informacao">
-								<% if(id_jardim.length == 0){%>
+							<% if(id_jardim.length == 0){%>
 								<input type="image" id="icone-principal-semfoco" class="img-resposive center-block" name="registrar" src="./img/icone-plantas.png" onclick= "window.location.assign('viewNovoJardim')" >
 								<a href="/viewNovoJardim" class=" btn dropdown-toggle">criar novo jardim</a>	
 								<br><br>
@@ -113,6 +117,9 @@
 											<li class="li-item">Válvula: <%- detalhesJardim.descricao_valvula%></li>
 										</ul>
 									</div>
+								</div>
+								<div class="form-group">
+									<a  class="btn btn-default" class="btn btn-default" href="/analizar">analizar</a>
 								</div>
 							</div>
 						</div>

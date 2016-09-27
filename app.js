@@ -84,6 +84,14 @@ app.get('/viewRedefinir',function(req,res){
 	}
 });
 
+function Usuario(id, nome, sobrenome, genero, email){
+	this.id = validaINTNull(id);
+	this.nome = validaCHARNull(nome);
+	this.sobrenome = validaCHARNull(sobrenome);
+	this.genero = validaCHARNull(genero);
+	this.email = validaCHARNull(email);
+}
+
 function relatorioCompleto(nome_planta, nome_grupo, data_hora, valor_S01, valor_S02, valor_S03, valor_S04,
 	status_umidade, clima, probabilidade_chuva,valvula, consumo){
 	
@@ -188,116 +196,120 @@ app.get('/viewPrincipal', function(req, res){
 	if (!req.session.user || !req.session.user.nome || !req.session.user.id) {
 		res.redirect('/viewIniciar');
 	}else{
-		var nome = req.session.user.nome;
-		var id = req.session.user.id;
-		
+		var id_usuario = req.session.user.id;
 
-		connection.query('SELECT * from jardim WHERE id_usuario = ?;', [id],
-			function(err, rows){
-				if (err){
-					console.log('erro select jardim view principal');
-					throw err;
-				}else{
-					if (rows.length == 0) {
-						res.render('principal', {nome:nome, id_jardim:''});
-					}else{
-						var id_jardim = rows[0].id;
+		connection.query('SELECT * from usuario WHERE id = ?;', [id_usuario], function(err, rows){
+			if (err) {
+				console.log('erro select usuario principal');
+				throw err;
+			}else{
+				var usuario = new Usuario(rows[0].id, rows[0].nome, rows[0].sobrenome, rows[0].genero, rows[0].email)
+				
+				connection.query('SELECT * from jardim WHERE id_usuario = ?;', [id_usuario],
+					function(err, rows){
+						if (err){
+							console.log('erro select jardim view principal');
+							throw err;
+						}else{
+							if (rows.length == 0) {
+								res.render('principal', {usuario:usuario, id_jardim:''});
+							}else{
+								var id_jardim = rows[0].id;
 
-						connection.query('SELECT j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.id, v.descricao_valvula, a.id, a.descricao_agua '+ 
-							'from jardim j '+ 
-							'inner join usuario u on u.id = j.id_usuario '+
-							'inner join jardim_planta jp on jp.id_jardim = j.id '+
-							'inner join planta p on p.id = jp.id_planta '+
-							'inner join grupo_planta gp on gp.id_planta = p.id '+
-							'inner join grupo g on g.id = gp.id_grupo '+
-							'inner join valvula v on v.id = j.id_valvula '+
-							'inner join agua a on a.id = j.id_agua '+
-							'where u.id = ?;',[id], 
-							
-							function(err, rows){
-								if (err) {
-									console.log('erro ao pesquisar detalhes de jardim em princiapl json');
-									throw err;
-								}else{
+								connection.query('SELECT j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.id, v.descricao_valvula, a.id, a.descricao_agua '+ 
+									'from jardim j '+ 
+									'inner join usuario u on u.id = j.id_usuario '+
+									'inner join jardim_planta jp on jp.id_jardim = j.id '+
+									'inner join planta p on p.id = jp.id_planta '+
+									'inner join grupo_planta gp on gp.id_planta = p.id '+
+									'inner join grupo g on g.id = gp.id_grupo '+
+									'inner join valvula v on v.id = j.id_valvula '+
+									'inner join agua a on a.id = j.id_agua '+
+									'where u.id = ?;',[id_usuario], function(err, rows){
+										if (err) {
+											console.log('erro ao pesquisar detalhes de jardim em princiapl json');
+											throw err;
+										}else{
 
-									var detalhesJardim = new Jardim(rows[0].nome_jardim, rows[0].estado, 
-										rows[0].cidade, rows[0].nome_grupo, rows[0].id_valvula, rows[0].descricao_valvula,
-										rows[0].id_agua,  rows[0].descricao_agua);
+											var detalhesJardim = new Jardim(rows[0].nome_jardim, rows[0].estado, 
+												rows[0].cidade, rows[0].nome_grupo, rows[0].id_valvula, rows[0].descricao_valvula,
+												rows[0].id_agua,  rows[0].descricao_agua);
 
-									var arrayPlanta = [];
+											var arrayPlanta = [];
 
-									connection.query('SELECT p.id, p.nome_planta, p.descricao_planta from planta p '+
-										'inner join jardim_planta jp on jp.id_planta = p.id '+
-										'inner join jardim j on j.id = jp.id_jardim '+
-										'where j.id = ?', [id_jardim], function(err, rows){
-											if (err) {
-												console.log('erro select plantas principal');
-												throw err;
-											}else{
-												if (rows.length > 0) {
-													for(var i=0; i<rows.length; i++){
-														var planta = new Planta(rows[i].id, rows[i].nome_planta, rows[i].descricao_planta);
-														arrayPlanta.push(planta);
-													}
-												}
-
-												var arraySensor = [];
-
-												connection.query('SELECT s. id, s.nome_sensor, s.especificacao_sensor from sensor s '+
-													'inner join jardim_sensor js on js.id_sensor = s.id '+
-													'inner join jardim j on j.id = js.id_jardim '+
-													'where j.id = ?;', [id_jardim], function(err, rows){
-														if (err) {
-															console.log('erro select sensores principal');
-															throw err;
-														}else{
-															if (rows.length > 0) {
-																for(var i=0; i<rows.length; i++){
-																	var sensor = new Sensor(rows[i].id, rows[i].nome_sensor, rows[i].especificacao_sensor);
-																	arraySensor.push(sensor); 
-																}
+											connection.query('SELECT p.id, p.nome_planta, p.descricao_planta from planta p '+
+												'inner join jardim_planta jp on jp.id_planta = p.id '+
+												'inner join jardim j on j.id = jp.id_jardim '+
+												'where j.id = ?', [id_jardim], function(err, rows){
+													if (err) {
+														console.log('erro select plantas principal');
+														throw err;
+													}else{
+														if (rows.length > 0) {
+															for(var i=0; i<rows.length; i++){
+																var planta = new Planta(rows[i].id, rows[i].nome_planta, rows[i].descricao_planta);
+																arrayPlanta.push(planta);
 															}
+														}
 
-															connection.query('SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", '+
-																'valor_S01, valor_S02, status_umidade, clima, probabilidade_chuva,valvula, '+
-																'consumo from analize where id_jardim = ? LIMIT 3;', [id_jardim], 
-																function(err, rows){
-																	if (err) {
-																		console.log('erro select analize');
-																		throw err;
-																	}else{
+														var arraySensor = [];
 
-																		var arrayAnalize = [];
-
-																		if (rows.length == 0) {
-																			res.render('principal', {nome:nome, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
-																				plantas:arrayPlanta, sensores:arraySensor, analize:''});
-																		}else{
-
-																			for (var i = 0; i < rows.length; i++) {
-
-																				var analize = new Analize(rows[i].id_jardim, rows[i].data_hora, rows[i].valor_S01, 
-																					rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
-																					rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
-
-																				arrayAnalize.push(analize);
-																			}
-
-																			res.render('principal', {nome:nome, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
-																				plantas:arrayPlanta, sensores:arraySensor, analize:arrayAnalize});
+														connection.query('SELECT s. id, s.nome_sensor, s.especificacao_sensor from sensor s '+
+															'inner join jardim_sensor js on js.id_sensor = s.id '+
+															'inner join jardim j on j.id = js.id_jardim '+
+															'where j.id = ?;', [id_jardim], function(err, rows){
+																if (err) {
+																	console.log('erro select sensores principal');
+																	throw err;
+																}else{
+																	if (rows.length > 0) {
+																		for(var i=0; i<rows.length; i++){
+																			var sensor = new Sensor(rows[i].id, rows[i].nome_sensor, rows[i].especificacao_sensor);
+																			arraySensor.push(sensor); 
 																		}
 																	}
-																});
-														}
-													});
-											}
-										});
-								}	
-							});
-						
-					}
-				}
-			});
+
+																	connection.query('SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", '+
+																		'valor_S01, valor_S02, status_umidade, clima, probabilidade_chuva,valvula, '+
+																		'consumo from analize where id_jardim = ? LIMIT 3;', [id_jardim], 
+																		function(err, rows){
+																			if (err) {
+																				console.log('erro select analize');
+																				throw err;
+																			}else{
+
+																				var arrayAnalize = [];
+
+																				if (rows.length == 0) {
+																					res.render('principal', {usuario:usuario, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
+																						plantas:arrayPlanta, sensores:arraySensor, analize:''});
+																				}else{
+
+																					for (var i = 0; i < rows.length; i++) {
+
+																						var analize = new Analize(rows[i].id_jardim, rows[i].data_hora, rows[i].valor_S01, 
+																							rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
+																							rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
+
+																						arrayAnalize.push(analize);
+																					}
+
+																					res.render('principal', {usuario:usuario, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
+																						plantas:arrayPlanta, sensores:arraySensor, analize:arrayAnalize});
+																				}
+																			}
+																		});
+																}
+															});
+													}
+												});
+										}	
+									});
+}
+}
+});
+}
+});
 }
 });
 
@@ -441,7 +453,40 @@ app.post('/alterarJardim', function(req,res){
 													console.log('erro update cidade alterarJardim');
 													throw err;		
 												}else{
-													res.redirect('viewPrincipal');
+													connection.query('delete from jardim_planta where id_jardim = ?',[id_jardim], function(err){
+														if (err) {
+															console.log('erro delete jardim_planta alterarJardim');
+															throw err;		
+														}else{
+															for (var i = 0; i < planta.length; i++) {
+																connection.query('INSERT into jardim_planta(id_jardim, id_planta) VALUES(?,?)',
+																	[id_jardim, planta[i]], function(err){
+																		if (err) {
+																			console.log('erro inserir jardim_planta alterarJardim');
+																			throw err;
+																		}
+																	});	
+															}
+
+															connection.query('delete from jardim_sensor where id_jardim = ?;',[id_jardim], function(err){
+																if (err) {
+																	console.log('erro delete jardim_sensor alterarJardim');
+																	throw err;		
+																}else{
+																	for (var i = 0; i < sensor.length; i++) {
+																		connection.query('INSERT into jardim_sensor(id_jardim, id_sensor) VALUES(?,?);',
+																			[id_jardim, sensor[i]], function(err){
+																				if (err) {
+																					console.log('erro inserir jardim_sensor alterarJardim');
+																					throw err;
+																				}
+																			});
+																	}
+																	res.redirect('viewPrincipal');
+																}
+															});
+														}
+													});
 												}
 											});
 										}
@@ -829,6 +874,69 @@ app.post('/selectCompleto', function(req, res){
 				}
 			}
 		});
+});
+
+function defineStatus(v1,v2,v3,v4){
+	this.v1 = parseInt(v1);
+	this.v2 = parseInt(v2);
+	this.v3 = parseInt(v3);
+	this.v4 = parseInt(v4);
+
+	var md = parseFloat((this.v1+this.v2+this.v3+this.v4)/4);
+	
+	if(md > 500){
+		var status =  'umido';
+	}else{
+		var status =  'seco';
+	}
+	return status;
+}
+
+//metodo-teste analize
+app.get('/analizar', function(res, req){
+	
+	
+	var S01 = 500; var S02=600; var S03=200; var S04=300;
+
+/*	`id` BIGINT(10) NOT NULL auto_increment,  `id_jardim` BIGINT(10) NOT NULL,   `data_hora` DATETIME NOT NULL,
+  `valor_S01` BIGINT(10),   `valor_S02` BIGINT(10),   `valor_S03` BIGINT(10),   `valor_S04` BIGINT(10),
+  `status_umidade` VARCHAR(40),   `clima` VARCHAR(40),  `probabilidade_chuva` BIGINT(10),    `valvula` varchar(10),
+  `consumo` BIGINT(10),
+  */
+
+  connection.query('SELECT * from jardim where id_usuario = ?;', [1], function(err, rows){
+  	if(err){
+  		console.log('erro select jardim analize');
+  		throw err;
+  	}else{
+
+  		var id_jardim = rows[0].id;
+
+  		connection.query('INSERT into analize(id_jardim, data_hora,  valor_S01, valor_S02, valor_S03, valor_S04) '+
+  			'VALUES(?, now(), ?,?,?,?);', [id_jardim, S01, S02, S03, S04], function(err){
+  				if(err){
+  					console.log('erro insert analize');
+  					throw err;
+  				}else{
+
+  					var st = new defineStatus(S01, S02, S03, S04);
+  					console.log(st);
+
+  					connection.query('UPDATE analize SET status = ? where id_jardim = ?;', [st, id_jardim], function(err){
+  						if(err){
+  							console.log('erro update status analize');
+  							throw err;
+  						}else{
+  							res.redirect('/viewPrincipal');
+  						}
+  					})
+  				}
+
+  			});
+  	}
+  });
+
+
 });
 
 

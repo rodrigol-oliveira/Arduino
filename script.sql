@@ -221,9 +221,9 @@ INSERT INTO jardim_planta(id_jardim, id_planta) VALUES(1,1);
 
 insert into analize(id_jardim, data_hora, valor_S01, valor_S02, 
 status_umidade, clima, probabilidade_chuva,valvula, consumo) 
-values(4,now(), 300, 400, 'seco', 'ensolarado', 20, 'on', 30),
-	 (4,now() + interval 1 day, 600, 650, 'umido', 'ensolarado', 20, 'off', 0),
-     (4,now() - interval 1 day, 550, 600, 'umido', 'ensolarado', 20, 'off', 0);
+values(2,now(), 300, 400, 'seco', 'ensolarado', 20, 'on', 30),
+	 (2,now() + interval 1 day, 600, 650, 'umido', 'ensolarado', 20, 'off', 0),
+     (2,now() - interval 1 day, 550, 600, 'umido', 'ensolarado', 20, 'off', 0);
 
 
 
@@ -336,7 +336,7 @@ inner join grupo g on g.id = gp.id_grupo
 
 inner join valvula v on v.id = j.id_valvula
 inner join agua a on a.id = j.id_agua
-where j.id = 4;
+where j.id = 1;
                         
 -- ------------------------
 
