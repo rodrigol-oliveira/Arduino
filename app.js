@@ -271,7 +271,7 @@ app.get('/viewPrincipal', function(req, res){
 
 																	connection.query('SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", '+
 																		'valor_S01, valor_S02, status_umidade, clima, probabilidade_chuva,valvula, '+
-																		'consumo from analize where id_jardim = ? LIMIT 3;', [id_jardim], 
+																		'consumo from analize where id_jardim = ? LIMIT 5;', [id_jardim], 
 																		function(err, rows){
 																			if (err) {
 																				console.log('erro select analize');

@@ -221,9 +221,11 @@ INSERT INTO jardim_planta(id_jardim, id_planta) VALUES(1,1);
 
 insert into analize(id_jardim, data_hora, valor_S01, valor_S02, 
 status_umidade, clima, probabilidade_chuva,valvula, consumo) 
-values(2,now(), 300, 400, 'seco', 'ensolarado', 20, 'on', 30),
-	 (2,now() + interval 1 day, 600, 650, 'umido', 'ensolarado', 20, 'off', 0),
-     (2,now() - interval 1 day, 550, 600, 'umido', 'ensolarado', 20, 'off', 0);
+values(2,now(), 450, 400, 'seco', 'ensolarado', 20, 'on', 30),
+(2,now() + interval 1 hour, 600, 650, 'umido', 'ensolarado', 20, 'off', 0),
+(2,now() + interval 2 hour, 700, 650, 'umido', 'ensolarado', 20, 'off', 0),
+(2,now() + interval 3 hour, 550, 620, 'umido', 'ensolarado', 20, 'off', 20),
+(2,now() + interval 4 hour, 540, 680, 'umido', 'ensolarado', 20, 'off', 0);
 
 
 
@@ -260,11 +262,12 @@ select * from analize;
 select * from agua;
 select * from valvula;
 
+
 select * from analize where id_jardim = 1;
 select last_insert_id() into analize;
 
 delete from jardim_planta where id_jardim = 2;
-delete from analize where id_jardim= 1;
+delete from analize where id_jardim= 2;
 delete from jardim where id_usuario = 1;
 delete from jardim_sensor where id_jardim = 1;
 
@@ -273,7 +276,7 @@ INSERT INTO jardim_planta(id_jardim, id_planta) VALUES (1, 1);
 
 UPDATE jardim SET id_valvula = 1 WHERE id = 1;
 
-select * from analize;
+select * from jardim where id_usuario = 3;
 
 -- ---------------------------------
 -- removidos

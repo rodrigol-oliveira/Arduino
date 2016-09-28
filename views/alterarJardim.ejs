@@ -49,57 +49,59 @@
                   <div class="form-group">
                    <select  class="selectpicker" data-width="100%" name="planta" multiple required>
                      <%for(i=0; i<plantas.length; i++){%>
+                     <option id='p<%-i%>' value="<%= plantas[i].id %>" ><%= plantas[i].nome_planta %></option>
                      <%for(j=0; j<arrayPlanta.length; j++){%>
                      <% if(plantas[i].id == arrayPlanta[j].id){%>
-                     <option value="<%= plantas[i].id %>" selected ><%= plantas[i].nome_planta %></option>
-                     <%}else{%>
-                     <option value="<%= plantas[i].id %>" ><%= plantas[i].nome_planta %></option>
-                     <%}%>
-                     <%}%>
-                     <%}%>
-                   </select>
-                 </div>
+                     <script type="text/javascript">
+                      document.getElementById('p<%-i%>').selected=true;
+                    </script>
+                    <%}%>
+                    <%}%>
+                    <%}%>
+                  </select>
+                </div>
 
-                 <div class="form-group">
+                <div class="form-group">
                   <select  class="selectpicker" data-width="100%" name="sensor" multiple required>
                    <%for(i=0; i<sensores.length; i++){%>
+                   <option id='s<%-i%>' value="<%= sensores[i].id %>" ><%= sensores[i].nome_sensor %></option>
                    <%for(j=0; j<arraySensor.length; j++){%>
                    <% if(sensores[i].id == arraySensor[j].id){%>
-                   <option value="<%= sensores[i].id %>" selected ><%= sensores[i].nome_sensor %></option>
-                   <%}else{%>
-                   <option value="<%= sensores[i].id %>" ><%= sensores[i].nome_sensor %></option>
-                   <%}%>
-                   <%}%>
-                   <%}%>
-                 </select>
-               </div>
+                   <script type="text/javascript">
+                    document.getElementById('s<%-i%>').selected=true;
+                  </script>
+                  <%}%>
+                  <%}%>
+                  <%}%>
+                </select>
+              </div>
 
-               <div class="form-group">
+              <div class="form-group">
                 <select  class="selectpicker"  data-width="100%" name="valvula" title="valvula de água" required>
                  <%for(i=0; i<valvula.length; i++){%>
-                 <% if(valvula[i].id == jardim.id_valvula){%>
-                 <option value="<%= valvula[i].id %>" selected><%= valvula[i].descricao_valvula%></option>
-                 <%}else{%>
-                 <option value="<%= valvula[i].id %>"><%= valvula[i].descricao_valvula%></option>
-                 <%}%>
-                 <%}%>
-               </select>
-             </div>
-
-             <div class="form-group">
-               <select  class="selectpicker"  data-width="100%" name="agua" title="sensor de fluxo de água" required>
-               <%for(i=0; i<agua.length; i++){%>
-                <% if(agua[i].id == jardim.id_agua){%>
-                <option value="<%= agua[i].id %>" selected><%= agua[i].descricao_agua%></option>
-                <%}else{%>
-                <option value="<%= agua[i].id %>"><%= agua[i].descricao_agua%></option>
-                <%}%>
-                <%}%>
+               <% if(valvula[i].id == jardim.id_valvula){%>
+               <option value="<%= valvula[i].id %>" selected><%= valvula[i].descricao_valvula%></option>
+               <%}else{%>
+               <option value="<%= valvula[i].id %>"><%= valvula[i].descricao_valvula%></option>
+               <%}%>
+               <%}%>
               </select>
             </div>
-          </fieldset>
 
-          <fieldset>
+            <div class="form-group">
+             <select  class="selectpicker"  data-width="100%" name="agua" title="sensor de fluxo de água" required>
+               <%for(i=0; i<agua.length; i++){%>
+               <% if(agua[i].id == jardim.id_agua){%>
+               <option value="<%= agua[i].id %>" selected><%= agua[i].descricao_agua%></option>
+               <%}else{%>
+               <option value="<%= agua[i].id %>"><%= agua[i].descricao_agua%></option>
+               <%}%>
+               <%}%>
+             </select>
+           </div>
+         </fieldset>
+
+         <fieldset>
            <legend>localização</legend>
 
            <div class="form-group">
