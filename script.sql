@@ -222,10 +222,10 @@ INSERT INTO jardim_planta(id_jardim, id_planta) VALUES(1,1);
 insert into analize(id_jardim, data_hora, valor_S01, valor_S02, 
 status_umidade, clima, probabilidade_chuva,valvula, consumo) 
 values(2,now(), 450, 400, 'seco', 'ensolarado', 20, 'on', 30),
-(2,now() + interval 1 hour, 600, 650, 'umido', 'ensolarado', 20, 'off', 0),
-(2,now() + interval 2 hour, 700, 650, 'umido', 'ensolarado', 20, 'off', 0),
-(2,now() + interval 3 hour, 550, 620, 'umido', 'ensolarado', 20, 'off', 20),
-(2,now() + interval 4 hour, 540, 680, 'umido', 'ensolarado', 20, 'off', 0);
+(2,now(), 600, 650, 'umido', 'ensolarado', 20, 'off', 0),
+(2,now(), 700, 650, 'umido', 'ensolarado', 20, 'off', 0),
+(2,now(), 550, 620, 'umido', 'ensolarado', 20, 'off', 20),
+(2,now(), 540, 680, 'umido', 'ensolarado', 20, 'off', 0);
 
 
 

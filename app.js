@@ -52,6 +52,11 @@ app.get('/viewRegistrar',function(req,res){
 	res.render('registrar');
 });
 
+//Metodo requisita pagina de cadastro - ok
+app.get('/viewAlterarUsuario',function(req,res){
+	res.render('alterarUsuario');
+});
+
 
 //Metodo requisita pagina de relatorios
 app.get('/viewRelatorios',function(req,res){
