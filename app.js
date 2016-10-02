@@ -5,7 +5,10 @@
 	var path = require('path');
 	var session = require('express-session'); <!-- cria uma instancia em branco  - framework -->
 	var bcrypt = require('bcrypt-nodejs'); <!-- criptografia-->
-	
+	var nodemailer = require('nodemailer');//envia email
+	var request = require('request');//request previsao do tempo
+	var keyprevisao = 'd18b9453b7807f16107f9e8573492a6a';//key previsao do tempo
+
 	/*
     people = ['geddy', 'neil', 'alex'];
     html = ejs.render('<%= people.join(", "); %>', {people: people});
@@ -32,7 +35,7 @@
 var connection = mysql.createConnection({
 	host		: 'localhost',
 	user		: 'root',
-	password	: 'root',
+	password	: '',
 	database	: 'arduino'
 });
 
@@ -958,6 +961,163 @@ app.get('/analizar', function(res, req){
 
 
 });
+
+app.get('/values', function(req,res){
+ 	var agua =  req.query.agua;
+ 	var id_sensor =  req.query.sensor;
+	var response={
+		'name':'Valter',
+		'agua':agua,
+	};
+	console.log('values', agua);
+
+	res.json(response);
+});
+
+app.get('/recuperar-senha',function(req,res){
+	res.render('recuperar');
+});
+
+
+
+app.post('/checkemail',function(req,res){
+	var email = req.body.email;
+	connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
+		function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
+				var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
+				enviaemailsenha(req, res,link,email)
+			}else{
+				res.send("Email não encontrado");//user não cadastrado
+			}
+		});
+
+});
+
+
+
+
+
+
+app.get('/redefinir',function(req,res){
+	var key =req.query.K;
+	var id =req.query.I;
+	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+		function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
+				if(pwd.substr(5,20)==key){
+					res.render('redefinir', {key: key,id:id})
+				}else {
+					res.send("Dandos invalidos");//user não cadastrado
+				}
+			}else{
+				res.send("Dandos invalidos");//user não cadastrado
+			}
+		});
+});
+
+
+app.post('/redefinirpost',function(req,res){
+	var senha = req.body.senha;
+	var key = req.body.key;
+	var id = req.body.id;
+	var hash = bcrypt.hashSync(senha);
+	console.log(senha, hash)
+	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+		function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
+				if(pwd.substr(5,20)==key){
+					 //criptografia
+					connection.query('UPDATE usuario SET senha = "?" WHERE id =?',[ hash,id ] , 
+						function(err){
+							if(err) throw err;
+							console.log('update ok',res);
+							res.send("Dandos atualizados| ");//user não cadastrado
+					});
+
+				}else {
+					res.send("Dandos invalidos");//user não cadastrado
+				}
+			}else{
+				res.send("Dandos invalidos");//user não cadastrado
+			}
+		});
+
+});
+
+function enviaemailsenha(req, res,link,email) {
+    // Not the movie transporter!
+    var text = 'Para Trocar a sua senha click no link: http://localhost:3000'+link;
+    var mailOptions = {
+    	from: 'ionegardensystem@gmail.com', // sender address
+    	to: email, // list of receivers
+    	subject: 'ione Garden | Troca de Senha', // Subject line
+    	text: text //, // plaintext body
+    // html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
+	};
+    var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'ionegardensystem@gmail.com', // Your email id
+            pass: 'jardim10' // Your password
+        }
+    });
+    transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+        console.log(error);
+        res.send("Erro ao enviar email");
+    }else{
+        console.log('Message sent: ');
+        res.send("Enviado um e-mail para redefinir a senha");
+    };
+  });    
+};
+
+
+//loadWeather('3448439');
+
+function loadWeather(req, res, city) {
+	console.log('loadWeather', city)
+	var path = 'http://api.openweathermap.org/data/2.5/forecast/city?id=' + city + '&APPID=' + keyprevisao + '&units=metric';
+	console.log('path', path);
+	request(path, function (error, response, body) {
+	  if (!error && response.statusCode == 200) {
+	    res.json(JSON.parse(body));
+	    var resposta = JSON.parse(body);
+	    //console.log(resposta.list);
+	    //console.log(resposta.list.length);
+	    console.log(resposta.list[0].main.temp_min);
+	    console.log(resposta.list[0].main.temp_max);
+	    console.log(resposta.list[0].main.humidity);
+	  }else{
+	  	console.log(error)
+	  }
+	});
+}
+
+app.get('/previsao', function(req, res) {
+	console.log('previsao get');
+	var city = req.query.city;
+	if(typeof city == 'undefined') {
+		city = '3448439';
+	}
+	loadWeather(req, res, city);
+});
+
+
+
 		//Chama Metodo de Conexão ao executar app
 		connection.connect(function(err){
 			if(err) throw err;
@@ -968,86 +1128,3 @@ app.get('/analizar', function(res, req){
 		});
 
 
-/*		
-				connection.query('INSERT INTO jardim (id_usuario, nome_jardim, pais, estado, cidade) VALUES (?,?,?,?,?);',
-				[ id_usuario, nome, pais, estado, cidade ] , 
-				function(err, res){
-					if(err) {
-						console.log('erro ao cadastrar jardim');
-						throw err;
-					}else{
-						connection.query('SELECT * FROM jardim WHERE id_usuario = ?;' , [id_usuario],
-						function(err, rows){
-							if(err){
-								console.log('erro ao pesquisar jardim cadastrado pelo usuario');
-								throw err;	
-							} else{
-								var id = rows[0].id;
-								console.log(id);
-								connection.query('INSERT INTO jardim_planta(id_jardim, id_planta) VALUES (?,?);',
-								[id, planta],
-								function(err,res){
-									if(err)
-										console.log('erro ao cadastrar jardim_planta');
-									throw err;	
-									
-
-								});
-							}
-						});
-					}
-				});
-				res.redirect('/viewPrincipal');
-			});
-			*/
-/*
-//Metodo requisita pagina principal
-app.get('/viewPrincipalOld', function(req,res){
-	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
-		res.redirect('/viewIniciar');
-	}else{		
-		var nome = req.session.user.nome;
-		var id = req.session.user.id;
-
-		connection.query('SELECT id FROM jardim WHERE id_usuario = ?', [id],
-			function(err,rows){
-				if (err) {
-					console.log('erro select id jardim principal');
-					throw err;
-				}else{
-
-					var jardim = rows[0].id_jardim;
-
-					if (jardim.length == 0) {
-						res.render('principal', {nome:nome, jardim:jardim})
-					}else{
-
-						connection.query('SELECT j.nome_jardim, j.estado, j.cidade, p.nome_planta, g.nome_grupo '+ 
-							'from jardim j '+ 
-							'inner join usuario u on u.id = j.id_usuario '+
-							'inner join jardim_planta jp on jp.id_jardim = j.id '+
-							'inner join planta p on p.id = jp.id_planta '+
-							'inner join grupo_planta gp on gp.id_planta = p.id '+
-							'inner join grupo g on g.id = gp.id_grupo '+
-							'where u.id = ?;',[id],
-							function(err,rows){
-								if(err) throw err;
-								var nome_jardim = rows[0].nome_jardim;
-								var estado = rows[0].estado;
-								var cidade = rows[0].cidade;
-								var planta = rows[0].nome_planta;
-								var grupo = rows[0].nome_grupo;
-
-								res.render('principal', 
-									{nome:nome, jardim:jardim, nome_jardim:nome_jardim, 
-										estado:estado, cidade:cidade, planta:planta, 
-										grupo:grupo, results:''})
-
-							});
-					}
-				}
-			}); 	
-	}
-});
-
-}*/

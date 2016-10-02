@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `arduino`.`grupo_planta` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1), (1,2), (2,3);
+
 
 
 -- -----------------------------------------------------
@@ -216,6 +216,8 @@ INSERT INTO planta(nome_planta, descricao_planta, umidade_min, umidade_max)
 VALUES('rosa', 'espécie comum',300, 700),('margarida', 'especie comum', 350, 659),
 ('tulipa','especie rara', 500, 900);
 
+INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1), (1,2), (2,3);
+
 -- --------------------------------------------------------------------------------
 -- limite de codigo do banco valido
 -- -----------------------------------------------------------------------------------
@@ -224,7 +226,7 @@ VALUES('rosa', 'espécie comum',300, 700),('margarida', 'especie comum', 350, 65
 
 
 
-
+/*
 
 
 
@@ -362,3 +364,4 @@ where j.id = 1;
                         
 -- ------------------------
 
+*/
