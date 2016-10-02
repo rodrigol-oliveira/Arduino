@@ -962,9 +962,9 @@ app.get('/analizar', function(res, req){
 
 });
 
-app.get('/values', function(req,res){
- 	var agua =  req.query.agua;
- 	var id_sensor =  req.query.sensor;
+app.get('/umidade', function(req,res){
+ 	var id_sensor =  req.query.idsensor;
+ 	var valor_umidade =  req.query.valorumidade;
 	var response={
 		'name':'Valter',
 		'agua':agua,
