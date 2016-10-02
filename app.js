@@ -171,6 +171,13 @@ function Sensor(id, nome_sensor, especificacao_sensor){
 	this.especificacao_sensor = validaCHARNull(especificacao_sensor);
 }
 
+function Grupo(id, nome_grupo, umidade_min, umidade_max){
+	this.id = validaINTNull(id);
+	this.nome_grupo = validaCHARNull(nome_grupo);
+	this.umidade_min = validaINTNull(umidade_min);
+	this.umidade_max = validaINTNull(umidade_max);
+}
+
 function validaINTNull(int){
 	if (int == null) {
 		return 0;
@@ -292,8 +299,8 @@ app.get('/viewPrincipal', function(req, res){
 																		}
 																	}
 
-																	connection.query('SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", '+
-																		'DATE_FORMAT(data_hora, "%H:%m:%s") as "hora", '+
+																	connection.query('SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%m/%Y %H:%m:%s") as "data_hora", '+
+																		'DATE_FORMAT(data_hora, "%H:%i:%s") as "hora", '+
 																		'valor_S01, valor_S02, status_umidade, clima, probabilidade_chuva,valvula, '+
 																		'consumo from analize where id_jardim = ? LIMIT 4;', [id_jardim], 
 																		function(err, rows){
@@ -803,7 +810,7 @@ app.post('/selectUmidade', function(req, res){
 
 	var id = req.session.user.id;
 
-	connection.query('select DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", status_umidade, clima '+
+	connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", status_umidade, clima '+
 		'from usuario u '+
 		'inner join jardim j on j.id_usuario = u.id '+
 		'inner join analize a on a.id_jardim = j.id '+
@@ -835,7 +842,7 @@ app.post('/selectConsumo', function(req, res){
 
 	var id = req.session.user.id;
 
-	connection.query('select DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", valvula, consumo, clima '+
+	connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", valvula, consumo, clima '+
 		'from usuario u '+
 		'inner join jardim j on j.id_usuario = u.id '+
 		'inner join analize a on a.id_jardim = j.id '+
@@ -866,7 +873,7 @@ app.post('/selectCompleto', function(req, res){
 
 	var id = req.session.user.id;
 
-	connection.query('SELECT DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", '+
+	connection.query('SELECT DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", '+
 		'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, '+ 
 		'consumo, nome_planta, nome_grupo '+
 		'from jardim j '+ 
@@ -904,155 +911,137 @@ app.post('/selectCompleto', function(req, res){
 		});
 });
 
-function defineStatus(v1,v2,v3,v4){
-	this.v1 = parseInt(v1);
-	this.v2 = parseInt(v2);
-	this.v3 = parseInt(v3);
-	this.v4 = parseInt(v4);
-
-	var md = parseFloat((this.v1+this.v2+this.v3+this.v4)/4);
-	
-	if(md > 500){
-		var status =  'umido';
-	}else{
-		var status =  'seco';
-	}
-	return status;
-}
-
-//metodo-teste analize
-app.get('/analizar', function(res, req){
-	
-	
-	var S01 = 500; var S02=600; var S03=200; var S04=300;
-
-/*	`id` BIGINT(10) NOT NULL auto_increment,  `id_jardim` BIGINT(10) NOT NULL,   `data_hora` DATETIME NOT NULL,
-  `valor_S01` BIGINT(10),   `valor_S02` BIGINT(10),   `valor_S03` BIGINT(10),   `valor_S04` BIGINT(10),
-  `status_umidade` VARCHAR(40),   `clima` VARCHAR(40),  `probabilidade_chuva` BIGINT(10),    `valvula` varchar(10),
-  `consumo` BIGINT(10),
-  */
-
-  connection.query('SELECT * from jardim where id_usuario = ?;', [1], function(err, rows){
-  	if(err){
-  		console.log('erro select jardim analize');
-  		throw err;
-  	}else{
-
-  		var id_jardim = rows[0].id;
-
-  		connection.query('INSERT into analize(id_jardim, data_hora,  valor_S01, valor_S02, valor_S03, valor_S04) '+
-  			'VALUES(?, now(), ?,?,?,?);', [id_jardim, S01, S02, S03, S04], function(err){
-  				if(err){
-  					console.log('erro insert analize');
-  					throw err;
-  				}else{
-
-  					var st = new defineStatus(S01, S02, S03, S04);
-  					console.log(st);
-
-  					connection.query('UPDATE analize SET status = ? where id_jardim = ?;', [st, id_jardim], function(err){
-  						if(err){
-  							console.log('erro update status analize');
-  							throw err;
-  						}else{
-  							res.redirect('/viewPrincipal');
-  						}
-  					})
-  				}
-
-  			});
-  	}
-  });
 
 
-});
 
 app.get('/umidade', function(req,res){
- 	var id_sensor =  req.query.idsensor;
- 	var valor_umidade =  req.query.valorumidade;
-	var response={
-		'name':'Valter',
-		'agua':agua,
-	};
-	console.log('values', agua);
 
-	res.json(response);
+	var id_sensor =  req.query.idsensor;
+	var valor_umidade =  req.query.valorumidade;
+	var id_usuario = req.query.id;
+
+	console.log(id_sensor, valor_umidade, id_usuario);
+
+	connection.query('select * from jardim where id=?', [id_usuario], function(err, rows){
+		if (err) {
+			console.log('erro select jardim em umidade');
+			throw err;
+		}else{
+			var id_jardim = rows[0].id;
+
+			connection.query('select g.id, g.nome_grupo, g.umidade_min, g.umidade_max '+
+				'from jardim j '+
+				'inner join jardim_planta jp on jp.id_jardim = j.id '+
+				'inner join planta p on p.id = jp.id_planta '+
+				'inner join grupo_planta gp on gp.id_planta = p.id '+
+				'inner join grupo g on g.id = gp.id_grupo '+
+				'where id_jardim=?;', [id_jardim], function(err, rows){
+					if (err) {
+						console.log('erro select grupo_planta em umidade');
+						throw err;
+					}else{
+						var grupo = new Grupo(rows[0].id, rows[0].nome_grupo, rows[0].umidade_min, rows[0].umidade_max);
+
+
+						//verifica status de umidade do solo
+						if (valor_umidade >= grupo.umidade_min) {
+							var status_umidade = 'umido';
+
+						}else{
+							var status_umidade = 'seco';
+						}
+						//implementar probabilidade de chuva
+
+						connection.query('insert into analize(id_jardim, data_hora, valor_S01, status_umidade, '+
+							'valvula, consumo) VALUES(?, now(), ?, ?, "off", 0 );',[id_jardim, valor_umidade, status_umidade], function(rr){
+								if (err) {
+									console.log('erro select jardim em umidade');
+									throw err;
+								}else{
+									res.json(status_umidade);
+								}
+							});
+					}
+				});
+		}
+
+	});
 });
 
-app.get('/recuperar-senha',function(req,res){
-	res.render('recuperar');
-});
+	app.get('/recuperar-senha',function(req,res){
+		res.render('recuperar');
+	});
 
 
 
-app.post('/checkemail',function(req,res){
-	var email = req.body.email;
-	connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
-		function(err, rows){
-			if(err) throw err;
-			if(rows.length === 1){
-				var id = rows[0].id;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
-				var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
-				enviaemailsenha(req, res,link,email)
-			}else{
+	app.post('/checkemail',function(req,res){
+		var email = req.body.email;
+		connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
+			function(err, rows){
+				if(err) throw err;
+				if(rows.length === 1){
+					var id = rows[0].id;
+					var nome = rows[0].nome;
+					var pwd = rows[0].senha;
+					var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
+					enviaemailsenha(req, res,link,email)
+				}else{
 				res.send("Email não encontrado");//user não cadastrado
 			}
 		});
 
-});
+	});
 
 
 
 
 
 
-app.get('/redefinir',function(req,res){
-	var key =req.query.K;
-	var id =req.query.I;
-	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-		function(err, rows){
-			if(err) throw err;
-			if(rows.length === 1){
-				var id = rows[0].id;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
-				if(pwd.substr(5,20)==key){
-					res.render('redefinir', {key: key,id:id})
-				}else {
+	app.get('/redefinir',function(req,res){
+		var key =req.query.K;
+		var id =req.query.I;
+		connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+			function(err, rows){
+				if(err) throw err;
+				if(rows.length === 1){
+					var id = rows[0].id;
+					var nome = rows[0].nome;
+					var pwd = rows[0].senha;
+					if(pwd.substr(5,20)==key){
+						res.render('redefinir', {key: key,id:id})
+					}else {
 					res.send("Dandos invalidos");//user não cadastrado
 				}
 			}else{
 				res.send("Dandos invalidos");//user não cadastrado
 			}
 		});
-});
+	});
 
 
-app.post('/redefinirpost',function(req,res){
-	var senha = req.body.senha;
-	var key = req.body.key;
-	var id = req.body.id;
-	var hash = bcrypt.hashSync(senha);
-	console.log(senha, hash);
-	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-		function(err, rows){
-			if(err) throw err;
-			if(rows.length === 1){
-				var id = rows[0].id;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
-				if(pwd.substr(5,20)==key){
+	app.post('/redefinirpost',function(req,res){
+		var senha = req.body.senha;
+		var key = req.body.key;
+		var id = req.body.id;
+		var hash = bcrypt.hashSync(senha);
+		console.log(senha, hash);
+		connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+			function(err, rows){
+				if(err) throw err;
+				if(rows.length === 1){
+					var id = rows[0].id;
+					var nome = rows[0].nome;
+					var pwd = rows[0].senha;
+					if(pwd.substr(5,20)==key){
 					 //criptografia
-					connection.query('UPDATE usuario SET senha = ? WHERE id =?',[ hash,id ] , 
-						function(err){
-							if(err) throw err;
-							console.log('update ok',res);
+					 connection.query('UPDATE usuario SET senha = ? WHERE id =?',[ hash,id ] , 
+					 	function(err){
+					 		if(err) throw err;
+					 		console.log('update ok',res);
 							res.send("Dandos atualizados| ");//user não cadastrado
-					});
+						});
 
-				}else {
+					}else {
 					res.send("Dandos invalidos");//user não cadastrado
 				}
 			}else{
@@ -1060,9 +1049,9 @@ app.post('/redefinirpost',function(req,res){
 			}
 		});
 
-});
+	});
 
-function enviaemailsenha(req, res,link,email) {
+	function enviaemailsenha(req, res,link,email) {
     // Not the movie transporter!
     var text = 'Para Trocar a sua senha click no link: http://localhost:3000'+link;
     var mailOptions = {
@@ -1071,23 +1060,23 @@ function enviaemailsenha(req, res,link,email) {
     	subject: 'ione Garden | Troca de Senha', // Subject line
     	text: text //, // plaintext body
     // html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
-	};
-    var transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
+};
+var transporter = nodemailer.createTransport({
+	service: 'Gmail',
+	auth: {
             user: 'ionegardensystem@gmail.com', // Your email id
             pass: 'jardim10' // Your password
         }
     });
-    transporter.sendMail(mailOptions, function(error, info){
-    if(error){
-        console.log(error);
-        res.send("Erro ao enviar email");
-    }else{
-        console.log('Message sent: ');
-        res.send("Enviado um e-mail para redefinir a senha");
-    };
-  });    
+transporter.sendMail(mailOptions, function(error, info){
+	if(error){
+		console.log(error);
+		res.send("Erro ao enviar email");
+	}else{
+		console.log('Message sent: ');
+		res.send("Enviado um e-mail para redefinir a senha");
+	};
+});    
 };
 
 
@@ -1098,18 +1087,18 @@ function loadWeather(req, res, city) {
 	var path = 'http://api.openweathermap.org/data/2.5/forecast/city?id=' + city + '&APPID=' + keyprevisao + '&units=metric';
 	console.log('path', path);
 	request(path, function (error, response, body) {
-	  if (!error && response.statusCode == 200) {
-	    res.json(JSON.parse(body));
-	    var resposta = JSON.parse(body);
+		if (!error && response.statusCode == 200) {
+			res.json(JSON.parse(body));
+			var resposta = JSON.parse(body);
 	    //console.log(resposta.list);
 	    //console.log(resposta.list.length);
 	    console.log(resposta.list[0].main.temp_min);
 	    console.log(resposta.list[0].main.temp_max);
 	    console.log(resposta.list[0].main.humidity);
-	  }else{
-	  	console.log(error)
-	  }
-	});
+	}else{
+		console.log(error)
+	}
+});
 }
 
 app.get('/previsao', function(req, res) {

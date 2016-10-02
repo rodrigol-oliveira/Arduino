@@ -224,13 +224,6 @@ INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1), (1,2), (2,3);
 
 
 
-
-
-/*
-
-
-
-
 INSERT INTO jardim_planta(id_jardim, id_planta) VALUES(1,1);
 
 
@@ -364,4 +357,9 @@ where j.id = 1;
                         
 -- ------------------------
 
-*/
+select g.id, g.nome_grupo, g.umidade_min, g.umidade_max from jardim j
+join jardim_planta jp on jp.id_jardim = j.id 
+join planta p on p.id = jp.id_planta 
+join grupo_planta gp on gp.id_planta = p.id 
+join grupo g on g.id = gp.id_grupo 
+where id_jardim=1;
