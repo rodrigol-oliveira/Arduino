@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>iOne</title>
 
-	< <!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
+	<!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
   <script src="js/bootstrap.min.js"></script>
@@ -32,7 +32,7 @@
      <div class="container">
       <div class="header">
        <h1>iOne Jardim Inteligente</h1>
-       <h2>Registrar Conta</h2>
+       <h2>Alterar Conta</h2>
      </div>
 
      <div class="formulario">
@@ -42,39 +42,45 @@
         <div class="col-xs-12 col-md-4">
          <form method="post" action="/registrar">
           <div class="form-group">
-            <input class="form-control" type="text" name="nome" placeholder="nome" required="">
+            <label>nome</label>
+            <input class="form-control" type="text" name="nome" value="<%- usuario.nome %>" placeholder="nome" required="">
           </div>
           <div class="form-group">
-            <input class="form-control" type="text" name="sobrenome" required placeholder="sobrenome">
+            <label>sobrenome</label>
+            <input class="form-control" type="text" name="sobrenome" value="<%- usuario.sobrenome %>" required placeholder="sobrenome">
           </div>
           <div class="form-group">
+            <label>gênero</label>
             <select  class="selectpicker" data-width="100%"  title="selecione gênero" required name="genero" >
-            <option value="m">masculino</option>
-             <option value="f">feminino</option>
-           </select>
+              <option id='masc' value="m">masculino</option>
+              <option id='fem' value="f">feminino</option>
+              <%if(usuario.genero == "m"){%>
+              <script type="text/javascript">
+                document.getElementById('masc').selected=true;
+                </script>
+                <%}else{%>
+                <script type="text/javascript">
+                  document.getElementById('fem').selected=true;
+                <%}%>
+                </script>
+             </select>
+
+           </div>
+           <div class="form-group">
+             <label>e-mail</label>
+             <input class="form-control" type="email" name="email" value="<%- usuario.email %>" required placeholder="email" disabled>
+           </div>
+
+           <div class="form-group">
+             <button id="botao" class="btn btn-default" type="submit" >registrar</button>
+             <a id="botao" class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
+             <div class="form-group">
+             </form>
+           </div>
+           <div class="col-xs-12 col-md-4"></div>
+
          </div>
-         <div class="form-group">
-          <input class="form-control" type="email" name="email" required placeholder="email">
-        </div>
-        <div class="form-group">
-         <input class="form-control" type="email" name="email2" placeholder="confirme email">
        </div>
-       <div class="form-group">
-        <input class="form-control" type="password" name="senha" required placeholder="senha">
-      </div>
-      <div class="form-group">
-        <input class="form-control" type="password" name="senha2" placeholder="confirme senha">
-      </div>
-      <div class="form-group">
-       <button id="botao" class="btn btn-default" type="submit" >registrar</button>
-       <a id="botao" class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
-       <div class="form-group">
-       </form>
-     </div>
-     <div class="col-xs-12 col-md-4"></div>
 
-   </div>
- </div>
-
-</body>
-</html>
+     </body>
+     </html>

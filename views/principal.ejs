@@ -23,8 +23,11 @@
 
 	<link rel="stylesheet" type="text/css" href="../css/style.css">
 	<link rel="stylesheet" type="text/css" href="../css/fonts.css">
-	<link rel="stylesheet" type="text/css" href="https://code.highcharts.com"></script>
-	<script src="https://code.highcharts.com"></script>
+	
+
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
 
 </head>
 <body>
@@ -126,42 +129,64 @@
 						<div class="col-xs-12 col-md-6">
 							<div class="grafico">
 								<% if(!analize == ''){ %>
-								<div class="dashboard-jardim">
-									<div id="chart">
+								<div class="dashboard-jardim img-responsive">
+									<div id="container" style="min-width: 100%; height: 400px; margin: 0 auto"> 
+
 										<script type="text/javascript">
 
 
-											var chart = c3.generate({
+											for(i = 0;i<4;i++){
 
+												var nome = "eduardo";
+												var valor = "<%= analize[i].data_hora;%>";
 
-												data: {
-													x: 'x',
+												var data = valor.substring(19,24);
 
-													columns: [
+												
+											}	
+											
 
-													['x', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05'],
-													['consumo de água', 20, 0, 0, 10, 15],
-													['umidade do solo', 30, 200, 100, 400, 150]
+											$(function () {
+												$('#container').highcharts({
+													title: {
+														text: 'Últimas Análizes: Consumo e Umidade',
+            x: -20 //center
+        },
+        xAxis: {
+        	categories: [
 
-													],
-													axes: {
-														data1: 'y',
-														data2: 'y2'
-													}
-												},
-												axis: {
+        	<% for(i = 0; i < analize.length; i ++) {  %>
+        		[ "<%-analize[i].hora %>"],
 
-													x: {
-														type: 'timeseries',
-														tick: {
-															format: '%Y-%m-%d'
-														}
-													},
-													y2: {
-														show: true
-													}
-												}
+        		<%}%>	
+        		]
+        	},
+        	yAxis: {
+        		plotLines: [{
+        			value: 0,
+        			width: 1,
+        			color: '#808080'
+        		},
+        		{
+        			title:{ text: null}
+        			
+        		}]
+        	},
+        	series: [
+        	{
+        		name: 'consumo',
+        		data: [0,27, 0,0]
+
+        		}, {
+        			name: 'umidade',
+        			data: [500, 300, 680, 520]
+        			
+        				
+        			}
+        			]
+        		});
 											});
+											
 
 
 										</script>

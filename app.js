@@ -54,7 +54,21 @@ app.get('/viewRegistrar',function(req,res){
 
 //Metodo requisita pagina de cadastro - ok
 app.get('/viewAlterarUsuario',function(req,res){
-	res.render('alterarUsuario');
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
+		res.redirect('/viewIniciar');
+	}else{
+		var id_usuario = req.session.user.id;
+
+		connection.query('SELECT * from usuario where id=?;', [id_usuario], function(err, rows){
+			if(err){
+				conosole.log('erro select usuario viewAlterarUsuario');
+				throw err;
+			}else{
+				var usuario = new Usuario(rows[0].id, rows[0].nome, rows[0].sobrenome, rows[0].genero, rows[0].email);
+				res.render('alterarUsuario', {usuario:usuario});
+			}
+		});
+	}
 });
 
 
@@ -63,8 +77,8 @@ app.get('/viewRelatorios',function(req,res){
 	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
 		res.redirect('/viewIniciar');
 	}else{
-		var id = req.session.user.id;
-		res.render('relatorios', {id:id});
+		var id_jardim = req.session.user.id;
+		res.render('relatorios', {id:id_usuario});
 	}
 });
 
@@ -170,10 +184,11 @@ function validaCHARNull(char){
 	}
 }
 
-function Analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04,
+function Analize(id_jardim, data_hora, hora, valor_S01, valor_S02, valor_S03, valor_S04,
 	status_umidade, clima, probabilidade_chuva,valvula, consumo){
 	
 	this.id_jardim = id_jardim;	this.data_hora = data_hora;	
+	this.hora = hora;
 	this.valor_S01 = validaINTNull(valor_S01); this.valor_S02 = validaINTNull(valor_S02);
 	this.valor_S03 = validaINTNull(valor_S03); this.valor_S04 = validaINTNull(valor_S04); 
 	this.probabilidade_chuva = validaINTNull(probabilidade_chuva); this.consumo = validaINTNull(consumo);
@@ -275,8 +290,9 @@ app.get('/viewPrincipal', function(req, res){
 																	}
 
 																	connection.query('SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora", '+
+																		'DATE_FORMAT(data_hora, "%H:%m:%s") as "hora", '+
 																		'valor_S01, valor_S02, status_umidade, clima, probabilidade_chuva,valvula, '+
-																		'consumo from analize where id_jardim = ? LIMIT 5;', [id_jardim], 
+																		'consumo from analize where id_jardim = ? LIMIT 4;', [id_jardim], 
 																		function(err, rows){
 																			if (err) {
 																				console.log('erro select analize');
@@ -292,10 +308,10 @@ app.get('/viewPrincipal', function(req, res){
 
 																					for (var i = 0; i < rows.length; i++) {
 
-																						var analize = new Analize(rows[i].id_jardim, rows[i].data_hora, rows[i].valor_S01, 
-																							rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
-																							rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
-
+																						var analize = new Analize(rows[i].id_jardim, rows[i].data_hora, rows[i].hora,
+																							rows[i].valor_S01, rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, 
+																							rows[i].status_umidade, rows[i].clima, rows[i].probabilidade_chuva, 
+																							rows[i].valvula, rows[i].consumo);
 																						arrayAnalize.push(analize);
 																					}
 
@@ -601,7 +617,7 @@ app.get('/viewAlterarJardim',function(req,res){
 																					}	
 																					
 																					res.render('alterarJardim', {plantas:plantas, sensores:sensores, valvula:valvula,
-																						agua:agua, jardim:jardim, arrayPlanta:arrayPlanta, arraySensor:arraySensor});
+																						agua:agua, jardim:jardim, arrayPlanta:arrayPlanta, arraySensor:arraySensor, cidades:" ", estados:" "});
 																				}
 																			});
 																	}
@@ -942,17 +958,14 @@ app.get('/analizar', function(res, req){
 
 
 });
-
-
-
-			//Chama Metodo de Conexão ao executar app
-			connection.connect(function(err){
-				if(err) throw err;
-				console.log('Conectado no MySQL'); 	
-				app.listen(3000, function(){
-					console.log('Servidor Arduino -> http://localhost:3000');
-				});
+		//Chama Metodo de Conexão ao executar app
+		connection.connect(function(err){
+			if(err) throw err;
+			console.log('Conectado no MySQL'); 	
+			app.listen(3000, function(){
+				console.log('Servidor Arduino -> http://localhost:3000');
 			});
+		});
 
 
 /*		

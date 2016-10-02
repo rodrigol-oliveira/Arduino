@@ -44,10 +44,13 @@
                   <fieldset>
                    <legend>detalhes do jardim</legend>
                    <div class="form-group">
-                    <input  class="form-control" type="text" name="nome" value="<%- jardim.nome_jardim %>" required>
-                  </div>
-                  <div class="form-group">
-                   <select  class="selectpicker" data-width="100%" name="planta" multiple required>
+                     <label>nome do jardim</label>
+                     <input  class="form-control" type="text" name="nome" value="<%- jardim.nome_jardim %>" required>
+                   </div>
+                   <div class="form-group">
+                    <label>plantas</label>
+
+                    <select  class="selectpicker" data-width="100%" name="planta" multiple required>
                      <%for(i=0; i<plantas.length; i++){%>
                      <option id='p<%-i%>' value="<%= plantas[i].id %>" ><%= plantas[i].nome_planta %></option>
                      <%for(j=0; j<arrayPlanta.length; j++){%>
@@ -62,6 +65,7 @@
                 </div>
 
                 <div class="form-group">
+                  <label>sensors de umidade</label>
                   <select  class="selectpicker" data-width="100%" name="sensor" multiple required>
                    <%for(i=0; i<sensores.length; i++){%>
                    <option id='s<%-i%>' value="<%= sensores[i].id %>" ><%= sensores[i].nome_sensor %></option>
@@ -77,19 +81,21 @@
               </div>
 
               <div class="form-group">
+                <label>válvula de água</label>
                 <select  class="selectpicker"  data-width="100%" name="valvula" title="valvula de água" required>
                  <%for(i=0; i<valvula.length; i++){%>
-               <% if(valvula[i].id == jardim.id_valvula){%>
-               <option value="<%= valvula[i].id %>" selected><%= valvula[i].descricao_valvula%></option>
-               <%}else{%>
-               <option value="<%= valvula[i].id %>"><%= valvula[i].descricao_valvula%></option>
-               <%}%>
-               <%}%>
-              </select>
-            </div>
+                 <% if(valvula[i].id == jardim.id_valvula){%>
+                 <option value="<%= valvula[i].id %>" selected><%= valvula[i].descricao_valvula%></option>
+                 <%}else{%>
+                 <option value="<%= valvula[i].id %>"><%= valvula[i].descricao_valvula%></option>
+                 <%}%>
+                 <%}%>
+               </select>
+             </div>
 
-            <div class="form-group">
-             <select  class="selectpicker"  data-width="100%" name="agua" title="sensor de fluxo de água" required>
+             <div class="form-group">
+              <label>sensor de fluxo de água</label>
+              <select  class="selectpicker"  data-width="100%" name="agua" title="sensor de fluxo de água" required>
                <%for(i=0; i<agua.length; i++){%>
                <% if(agua[i].id == jardim.id_agua){%>
                <option value="<%= agua[i].id %>" selected><%= agua[i].descricao_agua%></option>
@@ -103,36 +109,58 @@
 
          <fieldset>
            <legend>localização</legend>
-
+           <label>estado</label>
            <div class="form-group">
-             <select  class="selectpicker"  data-width="100%" name="estado" title="estado" required>
-               <option value='-' disabled >-- atualmente no jardim --</option>
-               <option value="<%= jardim.estado %>" selected><%= jardim.estado %></option>
-               <option value='-' disabled >-- todas opções --</option>
-               <option value="SP">SP</option>
-             </select>
-           </div>
-           <div class="form-group">
-             <select  class="selectpicker"  data-width="100%" name="cidade" title="cidade" required>
-               <option value='-' disabled >-- atualmente no jardim --</option>
-               <option value="<%= jardim.cidade %>" selected><%= jardim.cidade %></option>
-               <option value='-' disabled >-- todas opções --</option>
-               <option value="São Paulo">São Paulo</option>
-             </select>
-           </div>
-         </fieldset>
+          <!--
+             <select  class="selectpicker" data-width="100%" name="estado" required>
+                   <%for(i=0; i<estados.length; i++){%>
+                   <option id='e<%-i%>' value="<%= estados[i].id %>" ><%= estados[i].nome %></option>
+                   <% if(jardim.estado == sensores[i].id){%>
+                   <script type="text/javascript">
+                    document.getElementById('e<%-i%>').selected=true;
+                  </script>
+                  <%}%>
+                  <%}%>
+                </select>
+            
+           -->
+           <select  class="selectpicker"  data-width="100%" name="estado" title="estado" required>
+             <option value="<%= jardim.estado %>" selected><%= jardim.estado %></option>
+           </select>
+         </div>
 
-
+         <label>cidade</label>
          <div class="form-group">
-          <button id="botao" class="btn btn-default" type="submit"  class="btn btn-default">alterar</button>
-          <a id="botao" class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
-          <div class="form-group">
-          </form>
-        </div>
-        <div class="col-xs-12 col-md-4"></div>
+         <!--
+             <select  class="selectpicker" data-width="100%" name="cidade" required>
+                   <%for(i=0; i<cidades.length; i++){%>
+                   <option id='c<%-i%>' value="<%= cidades[i].id %>" ><%= cidades[i].nome %></option>
+                   <% if(jardim.cidade == cidades[i].id){%>
+                   <script type="text/javascript">
+                    document.getElementById('c<%-i%>').selected=true;
+                  </script>
+                  <%}%>
+                  <%}%>
+                </select>
+            
+           -->
+           <select  class="selectpicker"  data-width="100%" name="cidade" title="cidade" required>
+             <option value="<%= jardim.cidade %>" selected><%= jardim.cidade %></option>
+           </select>
+         </div>
+       </fieldset>
+
+
+       <div class="form-group">
+        <button id="botao" class="btn btn-default" type="submit"  class="btn btn-default">alterar</button>
+        <a id="botao" class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
+        <div class="form-group">
+        </form>
       </div>
+      <div class="col-xs-12 col-md-4"></div>
     </div>
   </div>
+</div>
 
 </body>
 </html>

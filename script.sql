@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `arduino`.`agua` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-insert into agua(descricao_agua) value('AGUA001');
+
 
 -- update agua set descricao_agua = 'AGUA001' where id =1;
 
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `arduino`.`valvula` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-insert into valvula(descricao_valvula) value('VALV001');
+
 
 -- -----------------------------------------------------
 -- Table `arduino`.`sensor`
@@ -66,10 +66,6 @@ CREATE TABLE IF NOT EXISTS `arduino`.`sensor` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S01A', 'Adamantium');
-INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S02A', 'Chumbo');
-INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S03A', 'ouro');
-INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S04A', 'ferro');
 
 
 -- -----------------------------------------------------
@@ -122,8 +118,7 @@ CREATE TABLE IF NOT EXISTS `arduino`.`grupo` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-INSERT INTO grupo(nome_grupo, descricao_grupo, umidade_min, umidade_max)
-values('A', 'grupo comum', 400, 800), ('B', 'grupo raro', 400, 800);
+
 
 -- -----------------------------------------------------
 -- Table `arduino`.`planta`
@@ -142,9 +137,7 @@ CREATE TABLE IF NOT EXISTS `arduino`.`planta` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-INSERT INTO planta(nome_planta, descricao_planta, umidade_min, umidade_max) 
-VALUES('rosa', 'espécie comum',300, 700),('margarida', 'especie comum', 350, 659),
-('tulipa','especie rara', 500, 900);
+
 
 
 
@@ -207,13 +200,33 @@ CREATE TABLE IF NOT EXISTS `arduino`.`analize` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
+insert into agua(descricao_agua) value('AGUA001');
 
+insert into valvula(descricao_valvula) value('VALV001');
 
+INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S01A', 'Adamantium');
+INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S02A', 'Chumbo');
+INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S03A', 'ouro');
+INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S04A', 'ferro');
 
+INSERT INTO grupo(nome_grupo, descricao_grupo, umidade_min, umidade_max)
+values('A', 'grupo comum', 400, 800), ('B', 'grupo raro', 400, 800);
+
+INSERT INTO planta(nome_planta, descricao_planta, umidade_min, umidade_max) 
+VALUES('rosa', 'espécie comum',300, 700),('margarida', 'especie comum', 350, 659),
+('tulipa','especie rara', 500, 900);
 
 -- --------------------------------------------------------------------------------
 -- limite de codigo do banco valido
 -- -----------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 
 INSERT INTO jardim_planta(id_jardim, id_planta) VALUES(1,1);
@@ -313,6 +326,12 @@ SELECT DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora",
 		inner join jardim_planta jp on jp.id_jardim = j.id 
 		inner join analize a on a.id_jardim = j.id 
 		where u.id = 1;
+        
+
+SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%l/%Y %H:%m:%s") as "data_hora",
+DATE_FORMAT(data_hora, "%H:%m:%s") as "hora",
+valor_S01, valor_S02, status_umidade, clima, probabilidade_chuva,valvula,
+consumo from analize where id_jardim = 2;
 
 
 
