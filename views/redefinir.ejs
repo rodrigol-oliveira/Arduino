@@ -35,14 +35,12 @@
   			<div class="row">
   				<div class="col-xs-12 col-md-4"></div>
   				<div class="col-xs-12 col-md-4">
-  					<form method="post" action="/viewRedefinir">
-  						<div class="form-group">
-  							<label>senha atual</label>
-  							<input class="form-control" type="password" name="senhaatual" required="">
-  						</div>
+  					<form method="post" action="/redefinirpost">  						
+            <input type="hidden" name="key" value="<%- key %>" >
+            <input type="hidden" name="id" value="<%- id %>" >
   						<div class="form-group">
   							<label>nova senha</label>
-  							<input class="form-control" type="password" name="novasenha">
+  							<input class="form-control" type="password" name="senha">
   						</div>
   						<div class="form-group">
   							<label>confirme senha</label>
