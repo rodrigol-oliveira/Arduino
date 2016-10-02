@@ -384,6 +384,11 @@ app.get('/viewNovoJardim', function(req, res){
 });
 
 
+
+
+
+
+
 //metod que verifica as credenciais da conta
 app.post('/validar', function(req, res) {
 	var email = req.body.email;
@@ -1030,7 +1035,7 @@ app.post('/redefinirpost',function(req,res){
 	var key = req.body.key;
 	var id = req.body.id;
 	var hash = bcrypt.hashSync(senha);
-	console.log(senha, hash)
+	console.log(senha, hash);
 	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
 		function(err, rows){
 			if(err) throw err;
@@ -1040,7 +1045,7 @@ app.post('/redefinirpost',function(req,res){
 				var pwd = rows[0].senha;
 				if(pwd.substr(5,20)==key){
 					 //criptografia
-					connection.query('UPDATE usuario SET senha = "?" WHERE id =?',[ hash,id ] , 
+					connection.query('UPDATE usuario SET senha = ? WHERE id =?',[ hash,id ] , 
 						function(err){
 							if(err) throw err;
 							console.log('update ok',res);
