@@ -9,12 +9,7 @@
 	var request = require('request');//request previsao do tempo
 	var keyprevisao = 'd18b9453b7807f16107f9e8573492a6a';//key previsao do tempo
 
-	/*
-    people = ['geddy', 'neil', 'alex'];
-    html = ejs.render('<%= people.join(", "); %>', {people: people});
-    */
-
-    var app = express();
+	var app = express();
     app.set('view engine', 'ejs');
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(bodyParser.json())
@@ -40,72 +35,6 @@ var connection = mysql.createConnection({
 });
 
 
-//Pagina requisita pagina inicial - ok
-app.get('/',function(req,res){
-	res.render('index', {message: ''});
-});
-
-//metodo requisita pagina de Login - ok
-app.get('/viewIniciar', function(req,res){
-	res.render('iniciar', {message: ''});
-});
-
-//Metodo requisita pagina de cadastro - ok
-app.get('/viewRegistrar',function(req,res){
-	res.render('registrar');
-});
-
-//Metodo requisita pagina de cadastro - ok
-app.get('/viewAlterarUsuario',function(req,res){
-	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
-		res.redirect('/viewIniciar');
-	}else{
-		var id_usuario = req.session.user.id;
-
-		connection.query('SELECT * from usuario where id=?;', [id_usuario], function(err, rows){
-			if(err){
-				conosole.log('erro select usuario viewAlterarUsuario');
-				throw err;
-			}else{
-				var usuario = new Usuario(rows[0].id, rows[0].nome, rows[0].sobrenome, rows[0].genero, rows[0].email);
-				res.render('alterarUsuario', {usuario:usuario});
-			}
-		});
-	}
-});
-
-
-//Metodo requisita pagina de relatorios
-app.get('/viewRelatorios',function(req,res){
-	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
-		res.redirect('/viewIniciar');
-	}else{
-		var id_jardim = req.session.user.id;
-		res.render('relatorios', {id:id_usuario});
-	}
-});
-
-
-
-
-//metodo requisita pagina de Login
-app.get('/sair', function(req, res){
-var session = req.session.user = {}; //finaliza a seção (cria uma em branco) e chama index
-res.redirect('/');
-});
-
-
-//Metodo requisita pagina de redefinir senha
-app.get('/viewRedefinir',function(req,res){
-	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
-		res.redirect('/viewIniciar');
-	}else{
-		var nome = req.session.user.nome;
-
-		res.render('redefinir', {nome: nome});	
-	}
-});
-
 function Usuario(id, nome, sobrenome, genero, email){
 	this.id = validaINTNull(id);
 	this.nome = validaCHARNull(nome);
@@ -114,11 +43,10 @@ function Usuario(id, nome, sobrenome, genero, email){
 	this.email = validaCHARNull(email);
 }
 
-function relatorioCompleto(nome_planta, nome_grupo, data_hora, valor_S01, valor_S02, valor_S03, valor_S04,
+function relatorioCompleto(data_hora, valor_S01, valor_S02, valor_S03, valor_S04,
 	status_umidade, clima, probabilidade_chuva,valvula, consumo){
 	
-	this.nome_planta = validaCHARNull(nome_planta);
-	this.nome_grupo = validaCHARNull(nome_grupo);
+	this.data_hora = validaCHARNull(data_hora);
 	this.valor_S01 = validaINTNull(valor_S01); this.valor_S02 = validaINTNull(valor_S02);
 	this.valor_S03 = validaINTNull(valor_S03); this.valor_S04 = validaINTNull(valor_S04); 
 	this.probabilidade_chuva = validaINTNull(probabilidade_chuva); this.consumo = validaINTNull(consumo);
@@ -148,7 +76,8 @@ function relatorioConsumo(data_hora, valvula, consumo, clima){
 	this.clima = validaCHARNull(clima);
 }
 
-function Jardim(nome_jardim, estado, cidade, grupo, id_valvula, descricao_valvula, id_agua, descricao_agua){
+function Jardim(serial, nome_jardim, estado, cidade, grupo, id_valvula, descricao_valvula, id_agua, descricao_agua){
+	this.serial = validaCHARNull(serial);
 	this.nome_jardim = validaCHARNull(nome_jardim);
 	this.estado = validaCHARNull(estado);
 	this.cidade = validaCHARNull(cidade);
@@ -194,16 +123,21 @@ function validaCHARNull(char){
 	}
 }
 
-function Analize(id_jardim, data_hora, hora, valor_S01, valor_S02, valor_S03, valor_S04,
+function Analize(id, id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media,
 	status_umidade, clima, probabilidade_chuva,valvula, consumo){
-	
-	this.id_jardim = id_jardim;	this.data_hora = data_hora;	
-	this.hora = hora;
-	this.valor_S01 = validaINTNull(valor_S01); this.valor_S02 = validaINTNull(valor_S02);
-	this.valor_S03 = validaINTNull(valor_S03); this.valor_S04 = validaINTNull(valor_S04); 
-	this.probabilidade_chuva = validaINTNull(probabilidade_chuva); this.consumo = validaINTNull(consumo);
-	this.status_umidade = validaCHARNull(status_umidade); this.clima = validaCHARNull(clima); 
+	this.id = validaINTNull(id);
+	this.id_jardim =validaINTNull(id_jardim);	
+	this.data_hora = validaCHARNull(data_hora);	
+	this.valor_S01 = validaINTNull(valor_S01); 
+	this.valor_S02 = validaINTNull(valor_S02);
+	this.valor_S03 = validaINTNull(valor_S03); 
+	this.valor_S04 = validaINTNull(valor_S04); 
+	this.media = validaINTNull(media);
+	this.status_umidade = validaCHARNull(status_umidade); 
+	this.clima = validaCHARNull(clima); 
+	this.probabilidade_chuva = validaINTNull(probabilidade_chuva); 
 	this.valvula = validaCHARNull(valvula);
+	this.consumo = validaINTNull(consumo);	
 }
 
 function SelectIdJardim(usuario){
@@ -219,6 +153,127 @@ function SelectIdJardim(usuario){
 			}
 		});
 }
+
+
+//Pagina requisita pagina inicial - ok
+app.get('/',function(req,res){
+	res.render('index', {message: ''});
+});
+
+//metodo requisita pagina de Login - ok
+app.get('/viewIniciar', function(req,res){
+	res.render('iniciar', {message: ''});
+});
+
+//Metodo requisita pagina de cadastro - ok
+app.get('/viewRegistrar',function(req,res){
+	res.render('registrar');
+});
+
+//Metodo requisita pagina de cadastro - ok
+app.get('/viewAlterarUsuario',function(req,res){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
+		res.redirect('/viewIniciar');
+	}else{
+		var id_usuario = req.session.user.id;
+
+		connection.query('SELECT * from usuario where id=?;', [id_usuario], function(err, rows){
+			if(err){
+				conosole.log('erro select usuario viewAlterarUsuario');
+				throw err;
+			}else{
+				var usuario = new Usuario(rows[0].id, rows[0].nome, rows[0].sobrenome, rows[0].genero, rows[0].email);
+				res.render('alterarUsuario', {usuario:usuario});
+			}
+		});
+	}
+});
+
+
+//Metodo requisita pagina de relatorios
+app.get('/viewRelatorios',function(req,res){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
+		res.redirect('/viewIniciar');
+	}else{
+		var id_jardim = req.session.user.id;
+		res.render('relatorios');
+	}
+});
+
+
+
+
+//metodo requisita pagina de Login
+app.get('/sair', function(req, res){
+var session = req.session.user = {}; //finaliza a seção (cria uma em branco) e chama index
+res.redirect('/');
+});
+
+
+//Metodo requisita pagina de redefinir senha
+app.get('/viewRedefinir',function(req,res){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
+		res.redirect('/viewIniciar');
+	}else{
+		var nome = req.session.user.nome;
+
+		res.render('redefinir', {nome: nome});	
+	}
+});
+
+//Metodo requisita pagina de redefinir senha
+app.get('/viewRedefinirLogado',function(req,res){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
+		res.redirect('/viewIniciar');
+	}else{
+		var nome = req.session.user.nome;
+
+		res.render('redefinirLogado');	
+	}
+});
+
+app.post('/redefinirlogado', function(req, res){
+	if(!req.session.user || !req.session.user.nome || !req.session.user.id){
+		res.redirect('/viewIniciar');
+	}else{
+
+		var id_usuario = req.session.user.id;
+		var senha = req.body.senha;
+		var hash = bcrypt.hashSync(senha);
+		var novasenha = req.body.novasenha;
+		var novahash = bcrypt.hashSync(novasenha);
+
+
+
+		connection.query('SELECT * FROM usuario WHERE id = ?;', [ id_usuario ] , function(err, rows){
+			if(err){
+				console.log('erro selec usuario redefinirlogado')
+				throw err;				
+			}else{				
+				if(rows.length == 1){
+					var pwd = rows[0].senha;
+					console.log(senha, hash, pwd, novasenha, novahash);
+
+					if(pwd == hash){
+
+						connection.query('UPDATE usuario SET senha = ? WHERE id =?',[ novasenha, id_usuario ] , 
+							function(err){
+								if(err) throw err;
+								console.log('update ok',res);
+							res.send('/viewPrincipal');//user não cadastrado
+						});
+					}else{
+					res.send("Dados invalidos");//user não cadastrado
+				}
+			}else{
+				res.send("Dados invalidos");//user não cadastrado
+			}
+		}
+	});
+
+	}
+});
+
 
 
 //chama metodo tela principal
@@ -246,7 +301,7 @@ app.get('/viewPrincipal', function(req, res){
 							}else{
 								var id_jardim = rows[0].id;
 
-								connection.query('SELECT j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.id, v.descricao_valvula, a.id, a.descricao_agua '+ 
+								connection.query('SELECT j.serial, j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.id, v.descricao_valvula, a.id, a.descricao_agua '+ 
 									'from jardim j '+ 
 									'inner join usuario u on u.id = j.id_usuario '+
 									'inner join jardim_planta jp on jp.id_jardim = j.id '+
@@ -261,7 +316,7 @@ app.get('/viewPrincipal', function(req, res){
 											throw err;
 										}else{
 
-											var detalhesJardim = new Jardim(rows[0].nome_jardim, rows[0].estado, 
+											var detalhesJardim = new Jardim(rows[0].serial, rows[0].nome_jardim, rows[0].estado, 
 												rows[0].cidade, rows[0].nome_grupo, rows[0].id_valvula, rows[0].descricao_valvula,
 												rows[0].id_agua,  rows[0].descricao_agua);
 
@@ -299,11 +354,9 @@ app.get('/viewPrincipal', function(req, res){
 																		}
 																	}
 
-																	connection.query('SELECT id_jardim, DATE_FORMAT(data_hora, "%d/%m/%Y %H:%m:%s") as "data_hora", '+
-																		'DATE_FORMAT(data_hora, "%H:%i:%s") as "hora", '+
-																		'valor_S01, valor_S02, status_umidade, clima, probabilidade_chuva,valvula, '+
-																		'consumo from analize where id_jardim = ? LIMIT 4;', [id_jardim], 
-																		function(err, rows){
+																	connection.query('SELECT id, id_jardim, DATE_FORMAT(data_hora, "%d/%m/%Y %H:%m:%s") as "data_hora", '+
+																		'valor_S01, valor_S02, valor_S03, valor_S04, media, status_umidade, clima, probabilidade_chuva, valvula, '+
+																		'consumo from analize where id_jardim = ? order by id desc limit 4;', [id_jardim], function(err, rows){
 																			if (err) {
 																				console.log('erro select analize');
 																				throw err;
@@ -318,10 +371,10 @@ app.get('/viewPrincipal', function(req, res){
 
 																					for (var i = 0; i < rows.length; i++) {
 
-																						var analize = new Analize(rows[i].id_jardim, rows[i].data_hora, rows[i].hora,
-																							rows[i].valor_S01, rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, 
-																							rows[i].status_umidade, rows[i].clima, rows[i].probabilidade_chuva, 
-																							rows[i].valvula, rows[i].consumo);
+																						var analize = new Analize(rows[i].id, rows[i].id_jardim, rows[i].data_hora,
+																							rows[i].valor_S01, rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].media,
+																							rows[i].status_umidade, rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
+
 																						arrayAnalize.push(analize);
 																					}
 
@@ -455,8 +508,7 @@ app.post('/alterarJardim', function(req,res){
 	var planta = req.body.planta;
 	var sensor = req.body.sensor;
 
-	console.log(nome, estado, cidade, agua, valvula);
-
+	
 	connection.query('SELECT * from jardim WHERE id_usuario = ?;', [id_usuario], function(err, rows){
 		if (err) {
 			console.log('erro select jardim alterarJardim');
@@ -464,78 +516,52 @@ app.post('/alterarJardim', function(req,res){
 		}else{
 			var id_jardim = rows[0].id;
 
-			connection.query('UPDATE jardim SET nome_jardim = ? WHERE id = ?;', [nome, id_jardim], function(err){
-				if (err) {
-					console.log('erro update nome alterarJardim');
-					throw err;
-				}else{
-					connection.query('UPDATE jardim SET id_valvula = ? WHERE id = ?;', [ valvula, id_jardim], function(err){
-						if (err) {
-							console.log('erro update valvula alterarJardim');
-							throw err;		
-						}else{
-							connection.query('UPDATE jardim SET id_agua = ? WHERE id = ?;', [ agua, id_jardim], function(err){
-								if (err) {
-									console.log('erro update agua alterarJardim');
-									throw err;		
-								}else{
-									connection.query('UPDATE jardim SET estado = ? WHERE id = ?;', [ estado, id_jardim], function(err){
-										if (err) {
-											console.log('erro update estado alterarJardim');
-											throw err;		
-										}else{
-											connection.query('UPDATE jardim SET cidade = ? WHERE id = ?;', [ cidade, id_jardim], function(err){
-												if (err) {
-													console.log('erro update cidade alterarJardim');
-													throw err;		
-												}else{
-													connection.query('delete from jardim_planta where id_jardim = ?',[id_jardim], function(err){
-														if (err) {
-															console.log('erro delete jardim_planta alterarJardim');
-															throw err;		
-														}else{
-															for (var i = 0; i < planta.length; i++) {
-																connection.query('INSERT into jardim_planta(id_jardim, id_planta) VALUES(?,?)',
-																	[id_jardim, planta[i]], function(err){
-																		if (err) {
-																			console.log('erro inserir jardim_planta alterarJardim');
-																			throw err;
-																		}
-																	});	
-															}
-
-															connection.query('delete from jardim_sensor where id_jardim = ?;',[id_jardim], function(err){
-																if (err) {
-																	console.log('erro delete jardim_sensor alterarJardim');
-																	throw err;		
-																}else{
-																	for (var i = 0; i < sensor.length; i++) {
-																		connection.query('INSERT into jardim_sensor(id_jardim, id_sensor) VALUES(?,?);',
-																			[id_jardim, sensor[i]], function(err){
-																				if (err) {
-																					console.log('erro inserir jardim_sensor alterarJardim');
-																					throw err;
-																				}
-																			});
-																	}
-																	res.redirect('viewPrincipal');
-																}
-															});
-														}
-													});
-												}
-											});
-										}
-									});
+			connection.query('UPDATE jardim SET nome_jardim = ?, id_valvula=?, id_agua=?, estado=?, cidade=? WHERE id = ?;', 
+				[nome, valvula, agua, estado, cidade, id_jardim], function(err){
+					if (err) {
+						console.log('erro update alteraJardim');
+						throw err;
+					}else{
+						connection.query('delete from jardim_planta where id_jardim = ?',[id_jardim], function(err){
+							if (err) {
+								console.log('erro delete jardim_planta alterarJardim');
+								throw err;		
+							}else{
+								for (var i = 0; i < planta.length; i++) {
+									connection.query('INSERT into jardim_planta(id_jardim, id_planta) VALUES(?,?)',
+										[id_jardim, planta[i]], function(err){
+											if (err) {
+												console.log('erro inserir jardim_planta alterarJardim');
+												throw err;
+											}
+										});	
 								}
-							});
-						}
-					});
-				}
-			});
+
+								connection.query('delete from jardim_sensor where id_jardim = ?;',[id_jardim], function(err){
+									if (err) {
+										console.log('erro delete jardim_sensor alterarJardim');
+										throw err;		
+									}else{
+										for (var i = 0; i < sensor.length; i++) {
+											connection.query('INSERT into jardim_sensor(id_jardim, id_sensor) VALUES(?,?);',
+												[id_jardim, sensor[i]], function(err){
+													if (err) {
+														console.log('erro inserir jardim_sensor alterarJardim');
+														throw err;
+													}
+												});
+										}
+										res.redirect('viewPrincipal');
+									}
+								});
+							}
+						});
+					}
+				});
 		}
 	});
 });
+
 
 
 //Metodo alterar jardim
@@ -580,7 +606,7 @@ app.get('/viewAlterarJardim',function(req,res){
 											}else{
 												var valvula = rows;
 
-												connection.query('SELECT j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.id as id_valvula, v.descricao_valvula, a.id as id_agua, a.descricao_agua '+ 
+												connection.query('SELECT j.serial, j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.id as id_valvula, v.descricao_valvula, a.id as id_agua, a.descricao_agua '+ 
 													'from jardim j '+ 
 													'inner join usuario u on u.id = j.id_usuario '+
 													'inner join jardim_planta jp on jp.id_jardim = j.id '+
@@ -594,7 +620,9 @@ app.get('/viewAlterarJardim',function(req,res){
 															console.log('erro select jardim alterar jardim');
 															throw err;
 														}else{
-															var jardim = new Jardim(rows[0].nome_jardim, rows[0].estado, 
+
+
+															var jardim = new Jardim(rows[0].serial, rows[0].nome_jardim, rows[0].estado, 
 																rows[0].cidade, rows[0].nome_grupo, rows[0].id_valvula, rows[0].descricao_valvula,
 																rows[0].id_agua,  rows[0].descricao_agua);
 
@@ -722,6 +750,7 @@ app.get('/deletarJardim', function(req, res){
 app.post('/novoJardim',function(req, res){
 	var id_usuario = req.session.user.id;
 	var nome = req.body.nome;
+	var serial = req.body.serial;
 	var pais = req.body.pais;
 	var estado = req.body.estado;
 	var cidade = req.body.cidade;
@@ -731,9 +760,8 @@ app.post('/novoJardim',function(req, res){
 	var planta = req.body.planta;
 	var sensor = req.body.sensor;
 	
-
-	connection.query('INSERT into jardim(id_usuario, id_valvula, id_agua, nome_jardim, estado, cidade) '+
-		'VALUES(?,?,?,?,?,?);', [id_usuario, valvula, agua, nome, estado, cidade],
+	connection.query('INSERT into jardim(serial,id_usuario, id_valvula, id_agua, nome_jardim, estado, cidade) '+
+		'VALUES(?,?,?,?,?,?,?);', [serial.toUpperCase(), id_usuario, valvula, agua, nome, estado, cidade],
 		function(err){
 			if(err) {
 				console.log('erro inserir novo jardim');
@@ -874,14 +902,9 @@ app.post('/selectCompleto', function(req, res){
 	var id = req.session.user.id;
 
 	connection.query('SELECT DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", '+
-		'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, '+ 
-		'consumo, nome_planta, nome_grupo '+
+		'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, consumo '+ 
 		'from jardim j '+ 
 		'inner join usuario u on u.id = j.id_usuario '+
-		'inner join jardim_planta jp on jp.id_jardim = j.id '+
-		'inner join planta p on p.id = jp.id_planta '+
-		'inner join grupo_planta gp on gp.id_planta = p.id '+
-		'inner join grupo g on g.id = gp.id_grupo '+
 		'inner join analize a on a.id_jardim = j.id '+
 		'where u.id = ?;', [id], function(err, rows){
 			if(err){
@@ -894,7 +917,7 @@ app.post('/selectCompleto', function(req, res){
 
 					for (var i = 0; i < rows.length; i++) {
 
-						var completo = new relatorioCompleto(rows[i].nome_planta, rows[i].nome_grupo, rows[i].data_hora, rows[i].valor_S01, 
+						var completo = new relatorioCompleto(rows[i].data_hora, rows[i].valor_S01, 
 							rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
 							rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
 
@@ -914,46 +937,50 @@ app.post('/selectCompleto', function(req, res){
 
 
 
-app.get('/umidade', function(req,res){
+app.get('/analize', function(req,res){
 
-	var id_sensor =  req.query.idsensor;
-	var valor_umidade =  req.query.valorumidade;
-	var id_usuario = req.query.id;
+	if(req.query.valorumidade1==null){var umidade1 = 0}else{var umidade1 = parseInt(req.query.valorumidade1)};
+	if(req.query.valorumidade2==null){var umidade2 = 0}else{var umidade2 = parseInt(req.query.valorumidade2)};
+	if(req.query.valorumidade3==null){var umidade3 = 0}else{var umidade3 = parseInt(req.query.valorumidade3)};
+	if(req.query.valorumidade4==null){var umidade4 = 0}else{var umidade4 = parseInt(req.query.valorumidade4)};
+	var serial = req.query.serial;
 
-	console.log(id_sensor, valor_umidade, id_usuario);
-
-	connection.query('select * from jardim where id=?', [id_usuario], function(err, rows){
+	connection.query('select * from jardim where serial=?', [serial], function(err, rows){
 		if (err) {
-			console.log('erro select jardim em umidade');
+			console.log('erro select jardim em analize');
 			throw err;
 		}else{
-			var id_jardim = rows[0].id;
 
-			connection.query('select g.id, g.nome_grupo, g.umidade_min, g.umidade_max '+
-				'from jardim j '+
-				'inner join jardim_planta jp on jp.id_jardim = j.id '+
-				'inner join planta p on p.id = jp.id_planta '+
-				'inner join grupo_planta gp on gp.id_planta = p.id '+
-				'inner join grupo g on g.id = gp.id_grupo '+
-				'where id_jardim=?;', [id_jardim], function(err, rows){
-					if (err) {
-						console.log('erro select grupo_planta em umidade');
-						throw err;
-					}else{
-						var grupo = new Grupo(rows[0].id, rows[0].nome_grupo, rows[0].umidade_min, rows[0].umidade_max);
+			if(rows.length == 1){
+				var id_jardim = rows[0].id;
 
-
-						//verifica status de umidade do solo
-						if (valor_umidade >= grupo.umidade_min) {
-							var status_umidade = 'umido';
-
+				connection.query('select g.id, g.nome_grupo, g.umidade_min, g.umidade_max '+
+					'from jardim j '+
+					'inner join jardim_planta jp on jp.id_jardim = j.id '+
+					'inner join planta p on p.id = jp.id_planta '+
+					'inner join grupo_planta gp on gp.id_planta = p.id '+
+					'inner join grupo g on g.id = gp.id_grupo '+
+					'where id_jardim=?;', [id_jardim], function(err, rows){
+						if (err) {
+							console.log('erro select grupo_planta em umidade');
+							throw err;
 						}else{
-							var status_umidade = 'seco';
-						}
+							var grupo = new Grupo(rows[0].id, rows[0].nome_grupo, rows[0].umidade_min, rows[0].umidade_max);
+
+							var media_umidade = (umidade1+umidade2)/2;
+
+							if (media_umidade >= grupo.umidade_min) {
+								var status_umidade = "umido";
+
+							}else{
+								var status_umidade = "seco";
+							}
 						//implementar probabilidade de chuva
 
-						connection.query('insert into analize(id_jardim, data_hora, valor_S01, status_umidade, '+
-							'valvula, consumo) VALUES(?, now(), ?, ?, "off", 0 );',[id_jardim, valor_umidade, status_umidade], function(rr){
+						connection.query('insert into analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media, '+
+							'status_umidade, valvula, consumo) VALUES(?, now(), ?, ?, ?, ?, ?, ?, ?, ?);',[id_jardim, umidade1, umidade2, 
+							umidade3, umidade4, media_umidade, status_umidade, 'off', 0], 
+							function(err){
 								if (err) {
 									console.log('erro select jardim em umidade');
 									throw err;
@@ -963,95 +990,94 @@ app.get('/umidade', function(req,res){
 							});
 					}
 				});
+			}else{
+				res.json('err');
+			}
 		}
 
 	});
 });
 
-	app.get('/recuperar-senha',function(req,res){
-		res.render('recuperar');
-	});
+app.get('/recuperar-senha',function(req,res){
+	res.render('recuperar');
+});
 
 
 
-	app.post('/checkemail',function(req,res){
-		var email = req.body.email;
-		connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
-			function(err, rows){
-				if(err) throw err;
-				if(rows.length === 1){
-					var id = rows[0].id;
-					var nome = rows[0].nome;
-					var pwd = rows[0].senha;
-					var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
-					enviaemailsenha(req, res,link,email)
-				}else{
+app.post('/checkemail',function(req,res){
+	var email = req.body.email;
+	connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
+		function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
+				var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
+				enviaemailsenha(req, res,link,email)
+			}else{
 				res.send("Email não encontrado");//user não cadastrado
 			}
 		});
 
-	});
+});
 
 
-
-
-
-
-	app.get('/redefinir',function(req,res){
-		var key =req.query.K;
-		var id =req.query.I;
-		connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-			function(err, rows){
-				if(err) throw err;
-				if(rows.length === 1){
-					var id = rows[0].id;
-					var nome = rows[0].nome;
-					var pwd = rows[0].senha;
-					if(pwd.substr(5,20)==key){
-						res.render('redefinir', {key: key,id:id})
-					}else {
-					res.send("Dandos invalidos");//user não cadastrado
+app.get('/redefinir',function(req,res){
+	var key =req.query.K;
+	var id =req.query.I;
+	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+		function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
+				if(pwd.substr(5,20)==key){
+					res.render('redefinir', {key: key, id:id})
+				}else {
+					res.send("Dados invalidos");//user não cadastrado
 				}
 			}else{
-				res.send("Dandos invalidos");//user não cadastrado
+				res.send("Dados invalidos");//user não cadastrado
 			}
 		});
-	});
+});
 
 
-	app.post('/redefinirpost',function(req,res){
-		var senha = req.body.senha;
-		var key = req.body.key;
-		var id = req.body.id;
-		var hash = bcrypt.hashSync(senha);
-		console.log(senha, hash);
-		connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-			function(err, rows){
-				if(err) throw err;
-				if(rows.length === 1){
-					var id = rows[0].id;
-					var nome = rows[0].nome;
-					var pwd = rows[0].senha;
-					if(pwd.substr(5,20)==key){
+app.post('/redefinirpost',function(req,res){
+	var senha = req.body.senha;
+	var key = req.body.key;
+	var id = req.body.id;
+	var hash = bcrypt.hashSync(senha);
+	console.log(senha, hash);
+	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+		function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
+				if(pwd.substr(5,20)==key){
 					 //criptografia
 					 connection.query('UPDATE usuario SET senha = ? WHERE id =?',[ hash,id ] , 
 					 	function(err){
 					 		if(err) throw err;
 					 		console.log('update ok',res);
-							res.send("Dandos atualizados| ");//user não cadastrado
+							res.send("Dados atualizados| ");//user não cadastrado
 						});
 
 					}else {
-					res.send("Dandos invalidos");//user não cadastrado
+					res.send("Dados invalidos");//user não cadastrado
 				}
 			}else{
-				res.send("Dandos invalidos");//user não cadastrado
+				res.send("Dados invalidos");//user não cadastrado
 			}
 		});
 
-	});
+});
 
-	function enviaemailsenha(req, res,link,email) {
+function enviaemailsenha(req, res,link,email) {
     // Not the movie transporter!
     var text = 'Para Trocar a sua senha click no link: http://localhost:3000'+link;
     var mailOptions = {

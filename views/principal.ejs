@@ -56,7 +56,7 @@
 									<a class=" btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= usuario.nome %> <span class="caret"></span></a>							
 									<ul class="dropdown-menu">
 										<li><a href="/viewAlterarUsuario"><span class="glyphicon glyphicon-user"></span> alterar</a></li>
-										<li><a href="/viewRedefinir"><span class="glyphicon glyphicon-edit"></span> redefinir senha</a></li>
+										<li><a href="/viewRedefinirLogado"><span class="glyphicon glyphicon-edit"></span> redefinir senha</a></li>
 										<li><a href="/sair"><span class="glyphicon glyphicon-off"></span>  sair</a></li>
 									</ul>
 								</div>
@@ -135,8 +135,6 @@
 										<script type="text/javascript">
 
 
-																						
-
 											$(function () {
 												$('#container').highcharts({
 													title: {
@@ -146,10 +144,11 @@
         xAxis: {
         	categories: [
 
-        	<% for(i = 0; i < analize.length; i ++) {  %>
-        		[ "<%-analize[i].hora %>"],
+        	<% for(i = analize.length-1; i >= 0 ; i--) {  %>
+        		[ "<%-analize[i].data_hora %>"],
 
         		<%}%>	
+
         		]
         	},
         	yAxis: {
@@ -163,18 +162,30 @@
         			
         		}]
         	},
+
+        	
         	series: [
         	{
         		name: 'consumo',
-        		data: [0,27, 0,0]
+        		data: [
+        		<% for(i = analize.length-1; i>=0; i --) {  %>
+        			[<%-analize[i].consumo %>],
+
+        			<%}%>
+        			]
 
         		}, {
         			name: 'umidade',
-        			data: [500, 300, 680, 520]
-        			
-        				
+        			data: [
+        			<% for(i = analize.length-1; i>=0; i --) {  %>
+        				[<%-analize[i].media %>],
+
+        				<%}%>
+        				]
+
         			}
         			]
+
         		});
 											});
 											
@@ -216,11 +227,11 @@
 						<% for(i = 0; i < analize.length; i ++) { %>
 						<tr>
 							<td><%- analize[i].data_hora %></td>
-							<td><%= analize[i].status_umidade %></td>
-							<td><%= analize[i].clima %></td>
-							<td><%= analize[i].probabilidade_chuva %>%</td>
-							<td><%= analize[i].valvula %></td>
-							<td><%= analize[i].consumo %></td>
+							<td><%- analize[i].status_umidade %></td>
+							<td><%- analize[i].clima %></td>
+							<td><%- analize[i].probabilidade_chuva %></td>
+							<td><%- analize[i].valvula %></td>
+							<td><%- analize[i].consumo %></td>
 						</tr>
 						<%}%>
 					</tbody>

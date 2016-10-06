@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS `arduino`.`jardim` (
   `id_usuario` BIGINT(10) NOT NULL,
   `id_valvula` BIGINT(10) NOT NULL,
   `id_agua` BIGINT(10) NOT NULL,
+  `serial`VARCHAR(10) NOT NULL,
   `nome_jardim` VARCHAR(50) NOT NULL,
   `estado` VARCHAR(50),
   `cidade` VARCHAR(50),
@@ -189,6 +190,7 @@ CREATE TABLE IF NOT EXISTS `arduino`.`analize` (
   `valor_S02` BIGINT(10),
   `valor_S03` BIGINT(10),
   `valor_S04` BIGINT(10),
+  `media`	  BIGINT(10),
   `status_umidade` VARCHAR(40),
   `clima` VARCHAR(40),
   `probabilidade_chuva` BIGINT(10),  
@@ -222,7 +224,9 @@ INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1), (1,2), (2,3);
 -- limite de codigo do banco valido
 -- -----------------------------------------------------------------------------------
 
-
+insert into analize(id_jardim, data_hora, valor_S01, valor_S02,media,
+status_umidade, clima, probabilidade_chuva,valvula, consumo) 
+values(1,now(), 450, 400,300, 'seco', 'ensolarado', 20, 'on', 30);
 
 INSERT INTO jardim_planta(id_jardim, id_planta) VALUES(1,1);
 
@@ -269,6 +273,7 @@ select * from jardim_sensor;
 select * from analize;
 select * from agua;
 select * from valvula;
+select * from analize order by id desc limit 4;
 
 
 select * from analize where id_jardim = 1;
@@ -363,3 +368,22 @@ join planta p on p.id = jp.id_planta
 join grupo_planta gp on gp.id_planta = p.id 
 join grupo g on g.id = gp.id_grupo 
 where id_jardim=1;
+
+select * from analize;
+
+select avg(valor_S01) from analize;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

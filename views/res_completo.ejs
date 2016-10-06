@@ -37,6 +37,10 @@
 		<% if(res_completo.lenght == 0){%>
 		<p>vazio</p>
 		<% }else{%>
+		<div class="informacao-plantas">
+			plantas:
+			grupo:
+		</div>
 
 		<div class="table-responsive">
 			<table  class="table table-striped table-bordered">
@@ -44,8 +48,6 @@
 				<thead>
 					<tr>
 						<th>data</th>
-						<th>planta</th>
-						<th>grupo</th>
 						<th>sen 1</th>
 						<th>sen 2</th>
 						<th>sen 3</th>
@@ -63,8 +65,6 @@
 					<% for(i = 0; i < res_completo.length; i ++ ) { %>
 					<tr>
 						<th><%- res_completo[i].data_hora %></th>
-						<th><%- res_completo[i].nome_planta%></th>
-						<th><%- res_completo[i].nome_grupo%></th>
 						<th><%- res_completo[i].valor_S01%></th>
 						<th><%- res_completo[i].valor_S02%></th>
 						<th><%- res_completo[i].valor_S03%></th>

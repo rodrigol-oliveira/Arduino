@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<title>iOne</title>
+
+	<!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="js/bootstrap.min.js"></script>
+
+	<!-- Bootstrap -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+
+      <link rel="stylesheet" type="text/css" href="../css/style.css">
+      <link rel="stylesheet" type="text/css" href="../css/fonts.css">
+      <!--<link href="https://fonts.googleapis.com/css?family=Baloo+Paaji" rel="stylesheet"> -->
+    </head>
+    <body>
+
+     <div class="container">
+      <div class="header">
+       <h1>iOne Jardim Inteligente</h1>
+       <h2>Redefinir Senha</h2>
+     </div>
+     <div class="formulario">
+
+       <div class="row">
+        <div class="col-xs-12 col-md-4"></div>
+        <div class="col-xs-12 col-md-4">
+         <form method="post" action="/redefinirlogado">  
+             <div class="form-group">
+             <label>senha atual</label>
+             <input class="form-control" type="password" name="senha">
+           </div>						
+           <div class="form-group">
+             <label>nova senha</label>
+             <input class="form-control" type="password" name="novasenha">
+           </div>
+           <div class="form-group">
+             <label>confirme senha</label>
+             <input class="form-control" type="password" name="novasenha2">
+           </div>
+           <div class="form-group">
+             <button id="botao" class="btn btn-default botao" type="submit"  class="btn btn-default">redefinir</button>
+             <a id="botao" class="btn btn-default botao" onclick="window.history.go(-1)">voltar</a>
+             <div class="form-group">
+             </form>
+           </div>
+           <div class="col-xs-12 col-md-4"></div>
+
+         </div>
+       </div>
+
+     </body>
+     </html>

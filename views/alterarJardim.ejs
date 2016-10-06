@@ -48,6 +48,10 @@
                      <input  class="form-control" type="text" name="nome" value="<%- jardim.nome_jardim %>" required>
                    </div>
                    <div class="form-group">
+                     <label>serial iOne</label>
+                     <input  class="form-control" type="text" name="serial" value="<%- jardim.serial %>" required>
+                   </div>
+                   <div class="form-group">
                     <label>plantas</label>
 
                     <select  class="selectpicker" data-width="100%" name="planta" multiple required>
@@ -111,19 +115,7 @@
            <legend>localização</legend>
            <label>estado</label>
            <div class="form-group">
-          <!--
-             <select  class="selectpicker" data-width="100%" name="estado" required>
-                   <%for(i=0; i<estados.length; i++){%>
-                   <option id='e<%-i%>' value="<%= estados[i].id %>" ><%= estados[i].nome %></option>
-                   <% if(jardim.estado == sensores[i].id){%>
-                   <script type="text/javascript">
-                    document.getElementById('e<%-i%>').selected=true;
-                  </script>
-                  <%}%>
-                  <%}%>
-                </select>
-            
-           -->
+          
            <select  class="selectpicker"  data-width="100%" name="estado" title="estado" required>
              <option value="<%= jardim.estado %>" selected><%= jardim.estado %></option>
            </select>
@@ -131,19 +123,7 @@
 
          <label>cidade</label>
          <div class="form-group">
-         <!--
-             <select  class="selectpicker" data-width="100%" name="cidade" required>
-                   <%for(i=0; i<cidades.length; i++){%>
-                   <option id='c<%-i%>' value="<%= cidades[i].id %>" ><%= cidades[i].nome %></option>
-                   <% if(jardim.cidade == cidades[i].id){%>
-                   <script type="text/javascript">
-                    document.getElementById('c<%-i%>').selected=true;
-                  </script>
-                  <%}%>
-                  <%}%>
-                </select>
-            
-           -->
+         
            <select  class="selectpicker"  data-width="100%" name="cidade" title="cidade" required>
              <option value="<%= jardim.cidade %>" selected><%= jardim.cidade %></option>
            </select>

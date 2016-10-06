@@ -47,6 +47,9 @@
                 <input  class="form-control" type="text" name="nome" placeholder="nome do seu jardim" required>
               </div>
               <div class="form-group">
+              <input  class="form-control" type="text" name="serial" placeholder="insira serial de seu iOne" required>
+              </div>
+              <div class="form-group">
                <select  class="selectpicker" data-width="100%" name="planta" multiple title="selecione suas plantas" required>
                  <% if(plantas.length > 0){%>
                  <%	for(i = 0; i < plantas.length; i++){ %>
@@ -90,23 +93,23 @@
            <select  class="selectpicker"  data-width="100%" name="estado" title="estado" required>
              <option value="SP">São Paulo</option>
            </select>
-           </div>
-           <div class="form-group">
-             <select  class="selectpicker"  data-width="100%" name="cidade" title="cidade" required>
+         </div>
+         <div class="form-group">
+           <select  class="selectpicker"  data-width="100%" name="cidade" title="cidade" required>
              <option value="São Paulo">São Paulo</option>
-            </select>
-            </div>
-          </fieldset>
-          <div class="form-group">
-           <button id="botao" class="btn btn-default" type="submit"  class="btn btn-default">criar</button>
-           <a id="botao" class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
+           </select>
+         </div>
+       </fieldset>
+       <div class="form-group">
+         <button id="botao" class="btn btn-default" type="submit"  class="btn btn-default">criar</button>
+         <a id="botao" class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
 
-         </form>
-       </div>
-       <div class="col-xs-12 col-md-4"></div>
+       </form>
      </div>
+     <div class="col-xs-12 col-md-4"></div>
    </div>
  </div>
+</div>
 
 </body>
 </html>
