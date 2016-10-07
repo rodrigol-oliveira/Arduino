@@ -1,14 +1,16 @@
 
 body {
-	font-family: 'Baloo Paaji', cursive;
-	/* background: url("../img/jardim-fundo8.jpg") no-repeat center center fixed;
-	width:100%; */
-	background-color: #F2F2F2;
+
+	font-family: 'Nunito', cursive;
+	/*background: url("../img/background05.jpg") no-repeat center center fixed;*/
+	width:100%;
+	
+	background-color: #F2F2D2;
 	}
 
 
-h1{text-align: center; font-size: 30px;}
-h2{text-align: center; font-size: 20px;}
+h1{text-align: center; font-size: 40px; font-weight: bold;}
+h2{text-align: center; font-size: 25px;font-weight: bold;}
 h3{text-align: center; font-size: 10px;}
 
 li{list-style-type: none;}
@@ -25,7 +27,7 @@ input.maiuscula{text-transform: uppercase;}
 #icone-usuario{width: 100px; height: 150px;}
 
 
-.header{padding-top: 60px;}
+.header{padding-top: 100px;}
 .content{padding-top: 70px;}
 .icone{ width: 175px; height: 175px;}
 .formulario{padding-top: 40px;}

@@ -10,13 +10,13 @@
 	var keyprevisao = 'd18b9453b7807f16107f9e8573492a6a';//key previsao do tempo
 
 	var app = express();
-    app.set('view engine', 'ejs');
-    app.use(bodyParser.urlencoded({ extended: false }))
-    app.use(bodyParser.json())
-    app.set('views', __dirname + '/views');
-    app.use(express.static('public'));
-    app.locals.pretty = true;
-    app.use(express.static(__dirname + '/views'));
+	app.set('view engine', 'ejs');
+	app.use(bodyParser.urlencoded({ extended: false }))
+	app.use(bodyParser.json())
+	app.set('views', __dirname + '/views');
+	app.use(express.static('public'));
+	app.locals.pretty = true;
+	app.use(express.static(__dirname + '/views'));
 	//da linha 19 a 24 se refere a seção, impedindo que acesse as paginas internas sem logar
 	app.set('trust proxy', 1)
 	app.use(session({
@@ -63,8 +63,9 @@ function relatorioPlantas(nome_jardim, nome_planta, descricao_planta, nome_grupo
 	this.descricao_grupo = validaCHARNull(descricao_grupo);
 }
 
-function relatorioUmidade(data_hora, status_umidade, clima){
+function relatorioUmidade(data_hora,media, status_umidade, clima){
 	this.data_hora = data_hora;
+	this.media = validaINTNull(media);
 	this.status_umidade = validaCHARNull(status_umidade);
 	this.clima = validaCHARNull(clima);
 }
@@ -834,147 +835,182 @@ app.post('/selectPlantas', function(req, res){
 		});
 });
 
+
+
 app.post('/selectUmidade', function(req, res){
 
 	var id = req.session.user.id;
+	var inicio = req.body.inicio;
+	var fim = req.body.fim;	
 
-	connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", status_umidade, clima '+
-		'from usuario u '+
-		'inner join jardim j on j.id_usuario = u.id '+
-		'inner join analize a on a.id_jardim = j.id '+
-		'where u.id = ?; ', [id], function(err, rows){
-			if(err){
-				console.log('erro selectUmidade');
-				throw err;
-			}else{
-				if (rows.length > 0) {
-					var array = [];
+	if(!inicio == '' && !fim == ''){
 
-					for (var i = 0; i < rows.length; i++) {
-						var umidade = new relatorioUmidade(rows[i].data_hora, rows[i].status_umidade, rows[i].clima);
+		var datainicio = inicio.substring(6)+"-"+inicio.substring(3,5)+"-"+inicio.substring(0,2);
+		var datafim = fim.substring(6)+"-"+fim.substring(3,5)+"-"+fim.substring(0,2)+" 23:59:59";
 
-						array.push(umidade);
-					}
-
-					res.render('res_umidade', {res_umidade:array});
-
+		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", media, status_umidade, clima '+
+			'from usuario u '+
+			'inner join jardim j on j.id_usuario = u.id '+
+			'inner join analize a on a.id_jardim = j.id '+
+			'where u.id = ? and '+
+			'a.data_hora between ? and ?; ', [id, datainicio, datafim], function(err, rows){
+				if(err){
+					console.log('erro selectUmidade');
+					throw err;
 				}else{
-					res.render('res_umidade', {res_umidade:''});
+					if (rows.length > 0) {
+						var array = [];
+
+						for (var i = 0; i < rows.length; i++) {
+							var umidade = new relatorioUmidade(rows[i].data_hora, rows[i].media, rows[i].status_umidade, rows[i].clima);
+
+							array.push(umidade);
+						}
+						res.render('res_umidade', {res_umidade:array});
+
+					}else{
+						res.render('res_umidade', {res_umidade:''});
+					}
 				}
-			}
-		});
+			});
+	}else{
+		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", media, status_umidade, clima '+
+			'from usuario u '+
+			'inner join jardim j on j.id_usuario = u.id '+
+			'inner join analize a on a.id_jardim = j.id '+
+			'where u.id = ?;', [id, datainicio, datafim], function(err, rows){
+				if(err){
+					console.log('erro selectUmidade');
+					throw err;
+				}else{
+					if (rows.length > 0) {
+						var array = [];
+
+						for (var i = 0; i < rows.length; i++) {
+							var umidade = new relatorioUmidade(rows[i].data_hora, rows[i].media, rows[i].status_umidade, rows[i].clima);
+
+							array.push(umidade);
+						}
+						res.render('res_umidade', {res_umidade:array});
+
+					}else{
+						res.render('res_umidade', {res_umidade:''});
+					}
+				}
+			});
+	}
 });
 
 
-app.post('/selectConsumo', function(req, res){
+		app.post('/selectConsumo', function(req, res){
 
-	var id = req.session.user.id;
+			var id = req.session.user.id;
 
-	connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", valvula, consumo, clima '+
-		'from usuario u '+
-		'inner join jardim j on j.id_usuario = u.id '+
-		'inner join analize a on a.id_jardim = j.id '+
-		'where u.id = ?; ', [id], function(err, rows){
-			if(err){
-				console.log('erro selectConsumo');
-				throw err;
-			}else{
-				if (rows.length > 0) {
-					var array = [];
+			connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", valvula, consumo, clima '+
+				'from usuario u '+
+				'inner join jardim j on j.id_usuario = u.id '+
+				'inner join analize a on a.id_jardim = j.id '+
+				'where u.id = ?; ', [id], function(err, rows){
+					if(err){
+						console.log('erro selectConsumo');
+						throw err;
+					}else{
+						if (rows.length > 0) {
+							var array = [];
 
-					for (var i = 0; i < rows.length; i++) {
-						var consumo = new relatorioConsumo(rows[i].data_hora, rows[i].valvula, rows[i].consumo, rows[i].clima);
+							for (var i = 0; i < rows.length; i++) {
+								var consumo = new relatorioConsumo(rows[i].data_hora, rows[i].valvula, rows[i].consumo, rows[i].clima);
 
-						array.push(consumo);
-					}
-
-					res.render('res_consumo', {res_consumo:array});
-
-				}else{
-					res.render('res_consumo', {res_consumo:''});
-				}
-			}
-		});
-});
-
-app.post('/selectCompleto', function(req, res){
-
-	var id = req.session.user.id;
-
-	connection.query('SELECT DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", '+
-		'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, consumo '+ 
-		'from jardim j '+ 
-		'inner join usuario u on u.id = j.id_usuario '+
-		'inner join analize a on a.id_jardim = j.id '+
-		'where u.id = ?;', [id], function(err, rows){
-			if(err){
-				console.log('erro selectCompleto');
-				throw err;
-			}else{
-				
-				if (rows.length > 0) {
-					var array = [];
-
-					for (var i = 0; i < rows.length; i++) {
-
-						var completo = new relatorioCompleto(rows[i].data_hora, rows[i].valor_S01, 
-							rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
-							rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
-
-						array.push(completo);
-					}
-
-					res.render('res_completo', {res_completo:array});
-					
-
-				}else{
-					res.render('res_completo', {res_completo:''});
-				}
-			}
-		});
-});
-
-
-
-
-app.get('/analize', function(req,res){
-
-	if(req.query.valorumidade1==null){var umidade1 = 0}else{var umidade1 = parseInt(req.query.valorumidade1)};
-	if(req.query.valorumidade2==null){var umidade2 = 0}else{var umidade2 = parseInt(req.query.valorumidade2)};
-	if(req.query.valorumidade3==null){var umidade3 = 0}else{var umidade3 = parseInt(req.query.valorumidade3)};
-	if(req.query.valorumidade4==null){var umidade4 = 0}else{var umidade4 = parseInt(req.query.valorumidade4)};
-	var serial = req.query.serial;
-
-	connection.query('select * from jardim where serial=?', [serial], function(err, rows){
-		if (err) {
-			console.log('erro select jardim em analize');
-			throw err;
-		}else{
-
-			if(rows.length == 1){
-				var id_jardim = rows[0].id;
-
-				connection.query('select g.id, g.nome_grupo, g.umidade_min, g.umidade_max '+
-					'from jardim j '+
-					'inner join jardim_planta jp on jp.id_jardim = j.id '+
-					'inner join planta p on p.id = jp.id_planta '+
-					'inner join grupo_planta gp on gp.id_planta = p.id '+
-					'inner join grupo g on g.id = gp.id_grupo '+
-					'where id_jardim=?;', [id_jardim], function(err, rows){
-						if (err) {
-							console.log('erro select grupo_planta em umidade');
-							throw err;
-						}else{
-							var grupo = new Grupo(rows[0].id, rows[0].nome_grupo, rows[0].umidade_min, rows[0].umidade_max);
-
-							var media_umidade = (umidade1+umidade2)/2;
-
-							if (media_umidade >= grupo.umidade_min) {
-								var status_umidade = "umido";
-
-							}else{
-								var status_umidade = "seco";
+								array.push(consumo);
 							}
+
+							res.render('res_consumo', {res_consumo:array});
+
+						}else{
+							res.render('res_consumo', {res_consumo:''});
+						}
+					}
+				});
+		});
+
+		app.post('/selectCompleto', function(req, res){
+
+			var id = req.session.user.id;
+
+			connection.query('SELECT DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", '+
+				'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, consumo '+ 
+				'from jardim j '+ 
+				'inner join usuario u on u.id = j.id_usuario '+
+				'inner join analize a on a.id_jardim = j.id '+
+				'where u.id = ?;', [id], function(err, rows){
+					if(err){
+						console.log('erro selectCompleto');
+						throw err;
+					}else{
+
+						if (rows.length > 0) {
+							var array = [];
+
+							for (var i = 0; i < rows.length; i++) {
+
+								var completo = new relatorioCompleto(rows[i].data_hora, rows[i].valor_S01, 
+									rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
+									rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
+
+								array.push(completo);
+							}
+
+							res.render('res_completo', {res_completo:array});
+
+
+						}else{
+							res.render('res_completo', {res_completo:''});
+						}
+					}
+				});
+		});
+
+
+
+
+		app.get('/analize', function(req,res){
+
+			if(req.query.valorumidade1==null){var umidade1 = 0}else{var umidade1 = parseInt(req.query.valorumidade1)};
+			if(req.query.valorumidade2==null){var umidade2 = 0}else{var umidade2 = parseInt(req.query.valorumidade2)};
+			if(req.query.valorumidade3==null){var umidade3 = 0}else{var umidade3 = parseInt(req.query.valorumidade3)};
+			if(req.query.valorumidade4==null){var umidade4 = 0}else{var umidade4 = parseInt(req.query.valorumidade4)};
+			var serial = req.query.serial;
+
+			connection.query('select * from jardim where serial=?', [serial], function(err, rows){
+				if (err) {
+					console.log('erro select jardim em analize');
+					throw err;
+				}else{
+
+					if(rows.length == 1){
+						var id_jardim = rows[0].id;
+
+						connection.query('select g.id, g.nome_grupo, g.umidade_min, g.umidade_max '+
+							'from jardim j '+
+							'inner join jardim_planta jp on jp.id_jardim = j.id '+
+							'inner join planta p on p.id = jp.id_planta '+
+							'inner join grupo_planta gp on gp.id_planta = p.id '+
+							'inner join grupo g on g.id = gp.id_grupo '+
+							'where id_jardim=?;', [id_jardim], function(err, rows){
+								if (err) {
+									console.log('erro select grupo_planta em umidade');
+									throw err;
+								}else{
+									var grupo = new Grupo(rows[0].id, rows[0].nome_grupo, rows[0].umidade_min, rows[0].umidade_max);
+
+									var media_umidade = (umidade1+umidade2)/2;
+
+									if (media_umidade >= grupo.umidade_min) {
+										var status_umidade = "umido";
+
+									}else{
+										var status_umidade = "seco";
+									}
 						//implementar probabilidade de chuva
 
 						connection.query('insert into analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media, '+
@@ -990,75 +1026,75 @@ app.get('/analize', function(req,res){
 							});
 					}
 				});
-			}else{
-				res.json('err');
-			}
-		}
+					}else{
+						res.json('err');
+					}
+				}
 
-	});
-});
+			});
+		});
 
-app.get('/recuperar-senha',function(req,res){
-	res.render('recuperar');
-});
+		app.get('/recuperar-senha',function(req,res){
+			res.render('recuperar');
+		});
 
 
 
-app.post('/checkemail',function(req,res){
-	var email = req.body.email;
-	connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
-		function(err, rows){
-			if(err) throw err;
-			if(rows.length === 1){
-				var id = rows[0].id;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
-				var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
-				enviaemailsenha(req, res,link,email)
-			}else{
+		app.post('/checkemail',function(req,res){
+			var email = req.body.email;
+			connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
+				function(err, rows){
+					if(err) throw err;
+					if(rows.length === 1){
+						var id = rows[0].id;
+						var nome = rows[0].nome;
+						var pwd = rows[0].senha;
+						var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
+						enviaemailsenha(req, res,link,email)
+					}else{
 				res.send("Email não encontrado");//user não cadastrado
 			}
 		});
 
-});
+		});
 
 
-app.get('/redefinir',function(req,res){
-	var key =req.query.K;
-	var id =req.query.I;
-	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-		function(err, rows){
-			if(err) throw err;
-			if(rows.length === 1){
-				var id = rows[0].id;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
-				if(pwd.substr(5,20)==key){
-					res.render('redefinir', {key: key, id:id})
-				}else {
+		app.get('/redefinir',function(req,res){
+			var key =req.query.K;
+			var id =req.query.I;
+			connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+				function(err, rows){
+					if(err) throw err;
+					if(rows.length === 1){
+						var id = rows[0].id;
+						var nome = rows[0].nome;
+						var pwd = rows[0].senha;
+						if(pwd.substr(5,20)==key){
+							res.render('redefinir', {key: key, id:id})
+						}else {
 					res.send("Dados invalidos");//user não cadastrado
 				}
 			}else{
 				res.send("Dados invalidos");//user não cadastrado
 			}
 		});
-});
+		});
 
 
-app.post('/redefinirpost',function(req,res){
-	var senha = req.body.senha;
-	var key = req.body.key;
-	var id = req.body.id;
-	var hash = bcrypt.hashSync(senha);
-	console.log(senha, hash);
-	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-		function(err, rows){
-			if(err) throw err;
-			if(rows.length === 1){
-				var id = rows[0].id;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
-				if(pwd.substr(5,20)==key){
+		app.post('/redefinirpost',function(req,res){
+			var senha = req.body.senha;
+			var key = req.body.key;
+			var id = req.body.id;
+			var hash = bcrypt.hashSync(senha);
+			console.log(senha, hash);
+			connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+				function(err, rows){
+					if(err) throw err;
+					if(rows.length === 1){
+						var id = rows[0].id;
+						var nome = rows[0].nome;
+						var pwd = rows[0].senha;
+						if(pwd.substr(5,20)==key){
 					 //criptografia
 					 connection.query('UPDATE usuario SET senha = ? WHERE id =?',[ hash,id ] , 
 					 	function(err){
@@ -1075,9 +1111,9 @@ app.post('/redefinirpost',function(req,res){
 			}
 		});
 
-});
+		});
 
-function enviaemailsenha(req, res,link,email) {
+		function enviaemailsenha(req, res,link,email) {
     // Not the movie transporter!
     var text = 'Para Trocar a sua senha click no link: http://localhost:3000'+link;
     var mailOptions = {

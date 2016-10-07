@@ -4,8 +4,14 @@
 	<meta charset="utf-8">
 	<title>iOne</title>
 
-	<!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
-	
+
+   <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.0/themes/base/jquery-ui.css" />
+   <script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+   <script src="http://code.jquery.com/ui/1.9.0/jquery-ui.js"></script>
+
+
+   <!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
+
    <script type="text/javascript" src="js/jquery-3.1.0.mim.js"></script>
    <script type="text/javascript" src="js/moment.min.js"></script>
    <script type="text/javascript" src="js/bootstrap.js"></script>
@@ -31,126 +37,135 @@
       <!--<link href="https://fonts.googleapis.com/css?family=Baloo+Paaji" rel="stylesheet"> -->
 
 
-
-
-
       <script>
-         function mostrar_opcao(obj) {
+         $(function() {
+          $( "#calendario" ).datepicker();
+       });
+    </script>
+
+
+
+
+
+    <script>
+      function mostrar_opcao(obj) {
+         document.getElementById('periodo').style.display= "none";
+         switch (obj.value) {
+            case '1':
             document.getElementById('periodo').style.display= "none";
-            switch (obj.value) {
-               case '1':
-               document.getElementById('periodo').style.display= "none";
-               break
-               case '2':
-               document.getElementById('periodo').style.display= "block";
-               break
-               case '3':
-               document.getElementById('periodo').style.display= "block";
-               break
-               case '4':
-               document.getElementById('periodo').style.display= "block";
-               break
-            }
+            break
+            case '2':
+            document.getElementById('periodo').style.display= "block";
+            break
+            case '3':
+            document.getElementById('periodo').style.display= "block";
+            break
+            case '4':
+            document.getElementById('periodo').style.display= "block";
+            break
          }
-      </script>
-
-      <script>
-         /* Javascript */
-         $('#dataInicio').focus(function(){
-            $(this).calendario({
-               target:'#dataInicio'
-            });
-         });
-      </script>
-
-      <script>
-         function Submit(obj){
-
-            switch (obj.value) {
-               case '1':
-               document.forms[0].action = '/selectPlantas'
-               break
-               case '2':
-               document.forms[0].action = '/selectUmidade'
-               break
-               case '3':
-               document.forms[0].action = '/selectConsumo'
-               break
-               case '4':
-               document.forms[0].action = '/selectCompleto'
-               break
-
-            }
-
-            document.forms[0].submit();
-
-         }
-
-      </script>
+      }
+   </script>
 
 
-   </head>
+   <script>
+      $(function() {
+       $("#calendario1, #calendario2").datepicker({
+         dateFormat: 'dd-mm-yy',
+        dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+        dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+        monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+     });
+    });
+ </script>
 
 
-   <body>
+ <script>
+   function Submit(obj){
 
-     <div class="container">
+      switch (obj.value) {
+         case '1':
+         document.forms[0].action = '/selectPlantas'
+         break
+         case '2':
+         document.forms[0].action = '/selectUmidade'
+         break
+         case '3':
+         document.forms[0].action = '/selectConsumo'
+         break
+         case '4':
+         document.forms[0].action = '/selectCompleto'
+         break
 
-      <div class="header">
-         <h1>iOne Jardim Inteligente</h1>
-         <h2>relatorio detalhado</h2>
-      </div>
+      }
 
+      document.forms[0].submit();
 
-      <div class="formulario">
-         <div class="rows">
-            <div class="col-xs-12 col-md-4"></div>
-            <div class="col-xs-12 col-md-4">
-               <form class="form" method="post">
-                  <div class="form-group">
+   }
 
-                     <label>pesquisa</label>
-                     <select  class="form-control" id="select">
-                        <option ></option>
-                        <option value="1" onclick="mostrar_opcao(this);">plantas</option>
-                        <option value="2" onclick="mostrar_opcao(this);">umidade do solo</option>
-                        <option value="3" onclick="mostrar_opcao(this);">consumo de água</option>
-                        <option value="4" onclick="mostrar_opcao(this);">relatorio completo</option>
-                     </select>          
-
-                  </div>  
-
-                  <div id="periodo" class="form-group" style="display:none;"">
-                     <label for="dataInicio">início</label>
-                     <input class="form-control" type="text" id="dataInicio">
-                     <script type="text/javascript">
-                        $(function () {
-                           $("#dataInicio").datetimepicker();
-                        });
-                     </script>
-                     <label for="dataFim">término</label>
-                     <input class="form-control" type="text" nome="dataFim" id="dataFim">
-                     <script type="text/javascript">
-                        $(function () {
-                          $('#dataFim').datetimepicker();
-                       });
-                     </script>
-                  </div>      
+</script>
 
 
+</head>
 
 
-                  <div class="form-group">
-                     <a class="btn btn-default" onclick="Submit(document.getElementById('select'));" type="submit">pesquisar</a>
-                     <a  class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
-                  </div>   
-               </form>
-            </div>
-            <div class="col-xs-12 col-md-4"></div>
-         </div>
-      </div>    
+<body>
 
+ <div class="container">
+
+   <div class="header">
+      <h1>iOne Jardim Inteligente</h1>
+      <h2>relatorio detalhado</h2>
    </div>
+
+
+   <div class="formulario">
+      <div class="rows">
+         <div class="col-xs-12 col-md-4"></div>
+         <div class="col-xs-12 col-md-4">
+            <form class="form" method="post">
+               <div class="form-group">
+
+                  <label>pesquisa</label>
+                  <select  class="form-control" id="select">
+                     <option ></option>
+                     <option value="1" onclick="mostrar_opcao(this);">plantas</option>
+                     <option value="2" onclick="mostrar_opcao(this);">umidade do solo</option>
+                     <option value="3" onclick="mostrar_opcao(this);">consumo de água</option>
+                     <option value="4" onclick="mostrar_opcao(this);">relatorio completo</option>
+                  </select>          
+
+               </div>  
+
+
+               <div id="periodo" style="display:none;"">
+                  <div class="form-group">
+                    <label for="dataInicio">início</label>
+                    <input id="calendario1" class="form-control" type="text" name="inicio" onBlur="">
+                 </div>
+                 <div class="form-group">
+                    <label for="dataFim">término</label>
+                    <input id="calendario2" class="form-control" type="text" name="fim"  onBlur="">
+                 </div> 
+              </div>
+
+
+
+
+
+              <div class="form-group">
+               <a class="btn btn-default" onclick="Submit(document.getElementById('select'));" type="submit">pesquisar</a>
+               <a  class="btn btn-default" onclick="window.history.go(-1)">voltar</a>
+            </div>   
+         </form>
+      </div>
+      <div class="col-xs-12 col-md-4"></div>
+   </div>
+</div>    
+
+</div>
 
 </body>
 </html>

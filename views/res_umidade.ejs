@@ -3,24 +3,127 @@
 <head>
 	<meta charset="utf-8">
 	<title>iOne</title>
-</head>
 
+	<script src="../js/bootstrap.js"></script>
+
+	<!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
+	<script src="../js/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="../js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="../css/bootstrap.css" />  
+	<link rel="stylesheet" href="../css/bootstrap.min.css" /> 
+	<link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+
+	<!-- Load c3.css -->
+	<link rel="stylesheet" href="../css/c3.css" type="text/css">
+	<!-- Load d3.js and c3.js -->
+	<script src="../js/d3.v3.min.js"></script> <!--não encontrado -->
+	<script src="../js/c3.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="../css/style.css">
+	<link rel="stylesheet" type="text/css" href="../css/fonts.css">
+
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+</head>
 
 <body>
 
+	<div class="container">
 
-	<% if(res_umidade.lenght == 0){%>
-	<p>vazio</p>
-	<% }else{%>
-	<% for(i = 0; i < res_umidade.length; i ++ ) { %>
-	<ul>
-		<li class="li-item">Data: <%- res_umidade[i].data_hora%></li>
-		<li class="li-item">Status Solo: <%- res_umidade[i].status_umidade%></li>
-		<li class="li-item">Clima: <%- res_umidade[i].clima%></li>
-	</ul>
-	<% }%>
+		<div class="header">
+			<h1>iOne Jardim Inteligente</h1>
+			<h2>relatorio de umidade</h2>
+		</div>
 
-<%}%>
+		<% if(res_umidade.lenght == 0){%>
+		<p>vazio</p>
+		<% }else{%>
 
+
+		<div class="content" id="container" style="min-width: 100%; height: 400px; margin: 0 auto"> 
+
+			<script type="text/javascript">
+
+
+				$(function () {
+					$('#container').highcharts({
+						title: {
+							text: 'Umidade',
+            x: -20 //center
+        },
+        xAxis: {
+        	categories: [
+
+        	<% for(i =0; i<res_umidade.length; i++) {  %>
+        		[ "<%-res_umidade[i].data_hora %>"],
+
+        		<%}%>	
+
+        		]
+        	},
+        	yAxis: {
+        		plotLines: [{
+        			value: 0,
+        			width: 1,
+        			color: '#808080'
+        		},
+        		{
+        			title:{ text: null}
+        			
+        		}]
+        	},
+
+        	
+        	series: [
+        	{
+        		name: 'umidade',
+        		data: [
+        		<% for(i =0; i<res_umidade.length; i++) {  %>
+        			[<%-res_umidade[i].media %>],
+
+        			<%}%>
+        			]
+        		}
+        		]
+
+        	});
+				});
+
+
+
+			</script>
+
+		</div>
+		
+		<div class="table-responsive content">
+			<table  class="table table-striped table-bordered">
+
+				<thead>
+					<tr>
+						<th>data</th>
+						<th>umidade</th>
+						<th>clima</th>
+						
+					</tr>
+				</thead>
+
+
+				<tbody>
+					<% for(i = 0; i < res_umidade.length; i ++ ) { %>
+					<tr>
+						<th><%- res_umidade[i].data_hora %></th>
+						<th><%- res_umidade[i].status_umidade %></th>
+						<th><%- res_umidade[i].clima %></th>
+					</tr>
+					<%}%>
+				</tbody>
+			</table>
+		</div>
+		<%}%>
+	</div>
 </body>
 </html>
+
