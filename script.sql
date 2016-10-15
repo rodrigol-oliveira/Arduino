@@ -388,12 +388,13 @@ select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", a.media, a.st
 			inner join grupo_planta gp on gp.id_planta = p.id
             inner join grupo g on g.id = gp.id_grupo 
 			inner join analize a on a.id_jardim = j.id 
-			where u.id = 1
+			where u.id = 1;
 
 
-
-
-
+SELECT p.id, p.nome_planta from planta p
+										inner join jardim_planta jp on jp.id_planta = p.id
+										inner join jardim j on j.id = jp.id_jardim 
+										where j.id = 1;
 
 
 

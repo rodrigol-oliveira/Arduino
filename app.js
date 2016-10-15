@@ -7,7 +7,7 @@
 	var bcrypt = require('bcrypt-nodejs'); <!-- criptografia-->
 	var nodemailer = require('nodemailer');//envia email
 	var request = require('request');//request previsao do tempo
-	var keyprevisao = 'd18b9453b7807f16107f9e8573492a6a';//key previsao do tempo
+	var keyprevisao = 'd18b9453b7807f16107f9e8573492a6a';//chave individual atrelada ao usuario cadastrado no site - key previsao do tempo
 
 	var app = express();
 	app.set('view engine', 'ejs');
@@ -1048,25 +1048,47 @@ app.post('/selectCompleto', function(req, res){
 });
 
 
-
-
 app.get('/analize', function(req,res){
 
-	if(req.query.valorumidade1==null){var umidade1 = 0}else{var umidade1 = parseInt(req.query.valorumidade1)};
-	if(req.query.valorumidade2==null){var umidade2 = 0}else{var umidade2 = parseInt(req.query.valorumidade2)};
-	if(req.query.valorumidade3==null){var umidade3 = 0}else{var umidade3 = parseInt(req.query.valorumidade3)};
-	if(req.query.valorumidade4==null){var umidade4 = 0}else{var umidade4 = parseInt(req.query.valorumidade4)};
+	if(req.query.umidade1==null){var umidade1 = 0}else{var umidade1 = parseInt(req.query.umidade1)};
+	if(req.query.umidade2==null){var umidade2 = 0}else{var umidade2 = parseInt(req.query.umidade2)};
+	if(req.query.umidade3==null){var umidade3 = 0}else{var umidade3 = parseInt(req.query.umidade3)};
+	if(req.query.umidade4==null){var umidade4 = 0}else{var umidade4 = parseInt(req.query.umidade4)};
 	var serial = req.query.serial;
 
-	connection.query('select * from jardim where serial=?', [serial], function(err, rows){
+	
+	connection.query('select * from jardim where serial=?', [serial], function(err, rows){ //identifica o jardim cadastrado com o serial do arduino
 		if (err) {
 			console.log('erro select jardim em analize');
 			throw err;
 		}else{
-
 			if(rows.length == 1){
-				var id_jardim = rows[0].id;
+				var id_jardim = rows[0].id; //define id do jardim com serial informado
+				//var cidade = rows[0].cidade;
 
+				//definir codigo da cidade
+				if(typeof city == 'undefined'){
+					city = '3448439';
+				}
+	//define parametro do API para obter previsao do tempo
+	var path = 'http://api.openweathermap.org/data/2.5/forecast/city?id=' + city + '&APPID=' + keyprevisao + '&units=metric';
+	
+	//executa request do API 'openWeatherMap.org'	
+	request(path, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			//res.json(JSON.parse(body));
+			var resposta = JSON.parse(body);
+	//console.log(resposta.list);
+	//console.log(resposta.list.length);
+	var clima = resposta.list[0].weather[0].description;
+	console.log(clima);
+	//console.log(resposta.list[0].main.temp_max);
+	//console.log(resposta.list[0].main.humidity);
+}else{
+	console.log(error)
+}
+
+				//identifica grupo de plantas cadastrados no jardim identificado com o serial informado
 				connection.query('select g.id, g.nome_grupo, g.umidade_min, g.umidade_max '+
 					'from jardim j '+
 					'inner join jardim_planta jp on jp.id_jardim = j.id '+
@@ -1075,103 +1097,151 @@ app.get('/analize', function(req,res){
 					'inner join grupo g on g.id = gp.id_grupo '+
 					'where id_jardim=?;', [id_jardim], function(err, rows){
 						if (err) {
-							console.log('erro select grupo_planta em umidade');
+							console.log('erro select grupo_planta em analize');
 							throw err;
 						}else{
+							//cria estância de grupo com as informações obtidas do banco
 							var grupo = new Grupo(rows[0].id, rows[0].nome_grupo, rows[0].umidade_min, rows[0].umidade_max);
 
-							var media_umidade = (umidade1+umidade2)/2;
-
-							if (media_umidade >= grupo.umidade_min) {
-								var status_umidade = "umido";
-
-							}else{
-								var status_umidade = "seco";
-							}
-						//implementar probabilidade de chuva
-
-						connection.query('insert into analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media, '+
-							'status_umidade, valvula, consumo) VALUES(?, now(), ?, ?, ?, ?, ?, ?, ?, ?);',[id_jardim, umidade1, umidade2, 
-							umidade3, umidade4, media_umidade, status_umidade, 'off', 0], 
-							function(err){
+							//identifica os sensores cadastrados no jardim com o serial informado
+							connection.query('select * from jardim_sensor where id_jardim = ?;', [id_jardim], function(err, rows){
 								if (err) {
-									console.log('erro select jardim em umidade');
-									throw err;
+									console.log('erro select jardim_sensor em analize');
+									throw err;		
 								}else{
-									res.json(status_umidade);
+									var sensores = rows.length; //captura a quantidade de sensores cadastradas no jardim
+									
+									/*
+									 com a soma dos valores de umidade recebidos do arduino, divide-se pela quantidade de sensores cadastrados.
+									 desse modo, obtem-se a media aritmética dos valores de umidade do solo e defini-se a média de umidade do jardim 
+									 */
+									 var media_umidade = (umidade1+umidade2+umidade3+umidade4)/sensores; 
+																		/*
+									compara a média de umidade do solo com o valor mínimo de umidade estabelecido no grupo que as plantas pertencem
+									*/
+									if (media_umidade >= grupo.umidade_min) {
+										var status_umidade = "umido"; 
+
+									//se a media de umidade do solo for igual ou superior o valor mínimo, entao o status do solo é definido 'umido'
+								}else{
+									var status_umidade = "seco";
+									//se a média de umidade do solo for inferior ao valor mínimo, estão o estatus do solo é definido 'seco'
 								}
-							});
-					}
-				});
-			}else{
-				res.json('err');
+
+									/*----------implementação futura por condição do api free----------
+									se o status do solo for seco, analiza-se a condição climática para definir a regra de acionamento do válvula de água.
+									Regra de acionamento:
+										se estiver chovendo, rega-se ate 50% da condição máxima de umidade do solo
+										se não estiver chovendo, mas a probabilidade de chuva é superior a 50%, então rega-se 70% da condição maxima de umidade
+										se não estiver chovendo e a probabilidade de chuva for inferior a 50%, então rega-se completamente até a condição máxima de umidade
+
+									Se o solo estiver na condição umida, então não aciona a valvula.
+									-------------------------------------------------------------------
+									--atual------------------------------------------------------------
+									
+									se o status de umidade do solo for 'seco', então verifico a condição climática atual:
+										sem chuva = rega até atingir o nivel 100% de humidade máxima da planta
+										com chuva fraca = rega até atingir 70% de umidade maxima da planta
+										com chuva moderada ou forte = rega até atingir 50% da umidade máxima da planta
+										*/
+										if(status_umidade == "seco"){
+											if(clima.match(/light rain/)){
+												var response = {'acao':'70'};
+											}else if(clima.match(/rain/)){
+												var response = {'acao':'50'};
+											}else{
+												var response = {'acao':'100'};
+											}
+										}else{
+											var response = {'acao':'0'};
+										}
+
+									//insere os valores no banco de dados e registra a nalize na hora atual
+									connection.query('insert into analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media, '+
+										'status_umidade, clima, valvula, consumo) VALUES(?, now(), ?, ?, ?, ?, ?, ?, ?,?,?);',[id_jardim, umidade1, umidade2, 
+										umidade3, umidade4, media_umidade, status_umidade, clima, 'off', 0], function(err){
+											if (err) {
+												console.log('erro insert analize');
+												throw err;
+											}else{
+												res.json(response);
+											}
+										});
+								}
+							});							
+						}
+					});
+});
+			}else{ //fim - não encontrou jardim cadastrado com o serial informado
+				res.json('err'); //retorna erro e nao consegue executar nenhuma ação no sistema
 			}
 		}
 
 	});
 });
 
-app.get('/recuperar-senha',function(req,res){
-	res.render('recuperar');
-});
+
+	app.get('/recuperar-senha',function(req,res){
+		res.render('recuperar');
+	});
 
 
 
-app.post('/checkemail',function(req,res){
-	var email = req.body.email;
-	connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
-		function(err, rows){
-			if(err) throw err;
-			if(rows.length === 1){
-				var id = rows[0].id;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
-				var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
-				enviaemailsenha(req, res,link,email)
-			}else{
+	app.post('/checkemail',function(req,res){
+		var email = req.body.email;
+		connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
+			function(err, rows){
+				if(err) throw err;
+				if(rows.length === 1){
+					var id = rows[0].id;
+					var nome = rows[0].nome;
+					var pwd = rows[0].senha;
+					var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
+					enviaemailsenha(req, res,link,email)
+				}else{
 				res.send("Email não encontrado");//user não cadastrado
 			}
 		});
 
-});
+	});
 
 
-app.get('/redefinir',function(req,res){
-	var key =req.query.K;
-	var id =req.query.I;
-	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-		function(err, rows){
-			if(err) throw err;
-			if(rows.length === 1){
-				var id = rows[0].id;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
-				if(pwd.substr(5,20)==key){
-					res.render('redefinir', {key: key, id:id})
-				}else {
+	app.get('/redefinir',function(req,res){
+		var key =req.query.K;
+		var id =req.query.I;
+		connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+			function(err, rows){
+				if(err) throw err;
+				if(rows.length === 1){
+					var id = rows[0].id;
+					var nome = rows[0].nome;
+					var pwd = rows[0].senha;
+					if(pwd.substr(5,20)==key){
+						res.render('redefinir', {key: key, id:id})
+					}else {
 					res.send("Dados invalidos");//user não cadastrado
 				}
 			}else{
 				res.send("Dados invalidos");//user não cadastrado
 			}
 		});
-});
+	});
 
 
-app.post('/redefinirpost',function(req,res){
-	var senha = req.body.senha;
-	var key = req.body.key;
-	var id = req.body.id;
-	var hash = bcrypt.hashSync(senha);
-	console.log(senha, hash);
-	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-		function(err, rows){
-			if(err) throw err;
-			if(rows.length === 1){
-				var id = rows[0].id;
-				var nome = rows[0].nome;
-				var pwd = rows[0].senha;
-				if(pwd.substr(5,20)==key){
+	app.post('/redefinirpost',function(req,res){
+		var senha = req.body.senha;
+		var key = req.body.key;
+		var id = req.body.id;
+		var hash = bcrypt.hashSync(senha);
+		console.log(senha, hash);
+		connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+			function(err, rows){
+				if(err) throw err;
+				if(rows.length === 1){
+					var id = rows[0].id;
+					var nome = rows[0].nome;
+					var pwd = rows[0].senha;
+					if(pwd.substr(5,20)==key){
 					 //criptografia
 					 connection.query('UPDATE usuario SET senha = ? WHERE id =?',[ hash,id ] , 
 					 	function(err){
@@ -1188,9 +1258,9 @@ app.post('/redefinirpost',function(req,res){
 			}
 		});
 
-});
+	});
 
-function enviaemailsenha(req, res,link,email) {
+	function enviaemailsenha(req, res,link,email) {
     // Not the movie transporter!
     var text = 'Para Trocar a sua senha click no link: http://localhost:3000'+link;
     var mailOptions = {
@@ -1231,7 +1301,7 @@ function loadWeather(req, res, city) {
 			var resposta = JSON.parse(body);
 	    //console.log(resposta.list);
 	    //console.log(resposta.list.length);
-	    console.log(resposta.list[0].main.temp_min);
+	    console.log(resposta.list[0].main.temp_min);//
 	    console.log(resposta.list[0].main.temp_max);
 	    console.log(resposta.list[0].main.humidity);
 	}else{
