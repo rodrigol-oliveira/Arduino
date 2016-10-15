@@ -128,10 +128,8 @@ CREATE TABLE IF NOT EXISTS `arduino`.`planta` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
   `nome_planta` VARCHAR(50) NOT NULL,
   `nome_cientifico` VARCHAR(50),
-  `descricao_planta` VARCHAR(500),
-  `temperatura` VARCHAR(100),
-  `luminosidade` VARCHAR(100),
-  `informacao_adicional` VARCHAR(500),
+  `temperatura` BIGINT(10),
+  `informacao` VARCHAR(500),
   `umidade_min` BIGINT(10) NOT NULL,
   `umidade_max` BIGINT(10) NOT NULL,
   PRIMARY KEY (`id`))
@@ -214,9 +212,11 @@ INSERT into sensor(nome_sensor, especificacao_sensor) VALUES ('S04A', 'ferro');
 INSERT INTO grupo(nome_grupo, descricao_grupo, umidade_min, umidade_max)
 values('A', 'grupo comum', 400, 800), ('B', 'grupo raro', 400, 800);
 
-INSERT INTO planta(nome_planta, descricao_planta, umidade_min, umidade_max) 
-VALUES('rosa', 'espécie comum',300, 700),('margarida', 'especie comum', 350, 659),
-('tulipa','especie rara', 500, 900);
+INSERT INTO planta(nome_planta, nome_cientifico, temperatura, informacao, umidade_min, umidade_max) 
+VALUES('rosa', 'rose',23,'espécie comum cultivadda em varias regiões do mundo',300, 700),
+('tulipa', 'tulipe',20,'espécie comum cultivadda em varias regiões do mundo',300, 700),
+('orquidea', 'orquidea',25,'espécie especial cultivadda em algumas regiões do mundo',400, 800);
+
 
 INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1), (1,2), (2,3);
 
@@ -369,14 +369,26 @@ join grupo_planta gp on gp.id_planta = p.id
 join grupo g on g.id = gp.id_grupo 
 where id_jardim=1;
 
-select * from analize;
+insert into analize(id_jardim, data_hora, valor_S01, valor_S02, media, status_umidade, valvula, consumo)
+values(4, '2016-10-07 00:00:00', 500, 500, 500, 'umido', 'off',0 );
+
+select * from analize order by data_hora;
+select * from analize where id_jardim = 4 and data_hora between '2016-10-04' and '2016-10-06' ;
 
 select avg(valor_S01) from analize;
 
 
 
 
-
+select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", a.media, a.status_umidade, a.clima, g.umidade_min
+			from usuario u 
+			inner join jardim j on j.id_usuario = u.id 
+			inner join jardim_planta jp on jp.id_jardim = j.id 
+			inner join planta p on p.id = jp.id_planta 
+			inner join grupo_planta gp on gp.id_planta = p.id
+            inner join grupo g on g.id = gp.id_grupo 
+			inner join analize a on a.id_jardim = j.id 
+			where u.id = 1
 
 
 

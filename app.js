@@ -54,12 +54,12 @@ function relatorioCompleto(data_hora, valor_S01, valor_S02, valor_S03, valor_S04
 	this.valvula = validaCHARNull(valvula);
 }
 
-
-function relatorioPlantas(nome_jardim, nome_planta, descricao_planta, nome_grupo, descricao_grupo){
-	this.nome_jardim = validaCHARNull(nome_jardim);
+function relatorioPlantas(nome_planta, nome_cientifico, umidade_min, temperatura, informacao, descricao_grupo){
 	this.nome_planta = validaCHARNull(nome_planta);
-	this.descricao_planta = validaCHARNull(descricao_planta);
-	this.nome_grupo = validaCHARNull(nome_grupo); 
+	this.nome_cientifico = validaCHARNull(nome_cientifico);
+	this.umidade_min = validaINTNull(umidade_min);
+	this.temperatura = validaINTNull(temperatura);
+	this.informacao = validaCHARNull(informacao);
 	this.descricao_grupo = validaCHARNull(descricao_grupo);
 }
 
@@ -77,12 +77,13 @@ function relatorioConsumo(data_hora, valvula, consumo, clima){
 	this.clima = validaCHARNull(clima);
 }
 
-function Jardim(serial, nome_jardim, estado, cidade, grupo, id_valvula, descricao_valvula, id_agua, descricao_agua){
+function Jardim(serial, nome_jardim, estado, cidade, grupo, umidade_min, id_valvula, descricao_valvula, id_agua, descricao_agua){
 	this.serial = validaCHARNull(serial);
 	this.nome_jardim = validaCHARNull(nome_jardim);
 	this.estado = validaCHARNull(estado);
 	this.cidade = validaCHARNull(cidade);
 	this.grupo = validaCHARNull(grupo);
+	this.umidade_min = validaINTNull(umidade_min);
 	this.id_valvula = validaINTNull(id_valvula);
 	this.descricao_valvula = validaCHARNull(descricao_valvula);
 	this.id_agua = validaINTNull(id_agua);
@@ -302,7 +303,7 @@ app.get('/viewPrincipal', function(req, res){
 							}else{
 								var id_jardim = rows[0].id;
 
-								connection.query('SELECT j.serial, j.nome_jardim, j.estado, j.cidade, g.nome_grupo, v.id, v.descricao_valvula, a.id, a.descricao_agua '+ 
+								connection.query('SELECT j.serial, j.nome_jardim, j.estado, j.cidade, g.nome_grupo, g.umidade_min, v.id, v.descricao_valvula, a.id, a.descricao_agua '+ 
 									'from jardim j '+ 
 									'inner join usuario u on u.id = j.id_usuario '+
 									'inner join jardim_planta jp on jp.id_jardim = j.id '+
@@ -318,12 +319,12 @@ app.get('/viewPrincipal', function(req, res){
 										}else{
 
 											var detalhesJardim = new Jardim(rows[0].serial, rows[0].nome_jardim, rows[0].estado, 
-												rows[0].cidade, rows[0].nome_grupo, rows[0].id_valvula, rows[0].descricao_valvula,
+												rows[0].cidade, rows[0].nome_grupo, rows[0].umidade_min, rows[0].id_valvula, rows[0].descricao_valvula,
 												rows[0].id_agua,  rows[0].descricao_agua);
 
 											var arrayPlanta = [];
 
-											connection.query('SELECT p.id, p.nome_planta, p.descricao_planta from planta p '+
+											connection.query('SELECT p.id, p.nome_planta from planta p '+
 												'inner join jardim_planta jp on jp.id_planta = p.id '+
 												'inner join jardim j on j.id = jp.id_jardim '+
 												'where j.id = ?', [id_jardim], function(err, rows){
@@ -332,7 +333,7 @@ app.get('/viewPrincipal', function(req, res){
 														throw err;
 													}else{
 														if (rows.length > 0) {
-															for(var i=0; i<rows.length; i++){
+															for(var i = 0; i < rows.length; i++){
 																var planta = new Planta(rows[i].id, rows[i].nome_planta, rows[i].descricao_planta);
 																arrayPlanta.push(planta);
 															}
@@ -624,7 +625,7 @@ app.get('/viewAlterarJardim',function(req,res){
 
 
 															var jardim = new Jardim(rows[0].serial, rows[0].nome_jardim, rows[0].estado, 
-																rows[0].cidade, rows[0].nome_grupo, rows[0].id_valvula, rows[0].descricao_valvula,
+																rows[0].cidade, rows[0].nome_grupo, rows[0].umidade_min, rows[0].id_valvula, rows[0].descricao_valvula,
 																rows[0].id_agua,  rows[0].descricao_agua);
 
 															
@@ -638,7 +639,7 @@ app.get('/viewAlterarJardim',function(req,res){
 																	}else{
 																		var arrayPlanta = [];
 
-																		for(var i=0; i<rows.length; i++){
+																		for(var i=0; i < rows.length; i++){
 
 																			var res_planta = new Planta(rows[i].id, rows[i].nome_planta, rows[i].descricao_planta);
 																			arrayPlanta.push(res_planta);
@@ -806,15 +807,11 @@ app.post('/novoJardim',function(req, res){
 });
 
 
-
-
-
-
 app.post('/selectPlantas', function(req, res){
 
 	var id = req.session.user.id;
 
-	connection.query('SELECT j.nome_jardim, p.nome_planta, p.descricao_planta, g.nome_grupo, g.descricao_grupo '+ 
+	connection.query('SELECT p.nome_planta, p.nome_cientifico, p.umidade_min, p.temperatura, p.informacao, g.descricao_grupo '+ 
 		'from jardim j '+ 
 		'inner join usuario u on u.id = j.id_usuario '+
 		'inner join jardim_planta jp on jp.id_jardim = j.id '+
@@ -826,11 +823,17 @@ app.post('/selectPlantas', function(req, res){
 				console.log('erro selectplantas');
 				throw err;
 			}else{
-				var plantas = new relatorioPlantas(rows[0].nome_jardim, rows[0].nome_planta, rows[0].descricao_planta,
-					rows[0].nome_grupo, rows[0].descricao_grupo);
-
-				res.render('res_planta', {res_plantas:plantas});
-
+				if(rows.length > 0){
+					var array = [];
+					for(var i=0; i<rows.length; i++){
+						var planta = new relatorioPlantas(rows[0].nome_planta, rows[0].nome_cientifico, rows[0].umidade_min, rows[0].temperatura,
+							rows[0].informacao, rows[0].descricao_grupo);
+						array.push(planta);
+					}
+					res.render('res_planta', {res_plantas:array});	
+				}else{
+					res.render('res_planta', {res_plantas:''});
+				}				
 			}
 		});
 });
@@ -848,7 +851,7 @@ app.post('/selectUmidade', function(req, res){
 		var datainicio = inicio.substring(6)+"-"+inicio.substring(3,5)+"-"+inicio.substring(0,2);
 		var datafim = fim.substring(6)+"-"+fim.substring(3,5)+"-"+fim.substring(0,2)+" 23:59:59";
 
-		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", media, status_umidade, clima '+
+		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", a.media, a.status_umidade, a.clima '+
 			'from usuario u '+
 			'inner join jardim j on j.id_usuario = u.id '+
 			'inner join analize a on a.id_jardim = j.id '+
@@ -866,6 +869,7 @@ app.post('/selectUmidade', function(req, res){
 
 							array.push(umidade);
 						}
+
 						res.render('res_umidade', {res_umidade:array});
 
 					}else{
@@ -874,7 +878,7 @@ app.post('/selectUmidade', function(req, res){
 				}
 			});
 	}else{
-		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", media, status_umidade, clima '+
+		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", a.media, a.status_umidade, a.clima '+
 			'from usuario u '+
 			'inner join jardim j on j.id_usuario = u.id '+
 			'inner join analize a on a.id_jardim = j.id '+
@@ -888,9 +892,9 @@ app.post('/selectUmidade', function(req, res){
 
 						for (var i = 0; i < rows.length; i++) {
 							var umidade = new relatorioUmidade(rows[i].data_hora, rows[i].media, rows[i].status_umidade, rows[i].clima);
-
 							array.push(umidade);
 						}
+
 						res.render('res_umidade', {res_umidade:array});
 
 					}else{
@@ -902,115 +906,188 @@ app.post('/selectUmidade', function(req, res){
 });
 
 
-		app.post('/selectConsumo', function(req, res){
+app.post('/selectConsumo', function(req, res){
 
-			var id = req.session.user.id;
+	var id = req.session.user.id;
+	var inicio = req.body.inicio;
+	var fim = req.body.fim;	
 
-			connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", valvula, consumo, clima '+
-				'from usuario u '+
-				'inner join jardim j on j.id_usuario = u.id '+
-				'inner join analize a on a.id_jardim = j.id '+
-				'where u.id = ?; ', [id], function(err, rows){
-					if(err){
-						console.log('erro selectConsumo');
-						throw err;
-					}else{
-						if (rows.length > 0) {
-							var array = [];
+	if(!inicio == '' && !fim == ''){
 
-							for (var i = 0; i < rows.length; i++) {
-								var consumo = new relatorioConsumo(rows[i].data_hora, rows[i].valvula, rows[i].consumo, rows[i].clima);
+		var datainicio = inicio.substring(6)+"-"+inicio.substring(3,5)+"-"+inicio.substring(0,2);
+		var datafim = fim.substring(6)+"-"+fim.substring(3,5)+"-"+fim.substring(0,2)+" 23:59:59";
 
-								array.push(consumo);
-							}
+		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", valvula, consumo, clima '+
+			'from usuario u '+
+			'inner join jardim j on j.id_usuario = u.id '+
+			'inner join analize a on a.id_jardim = j.id '+
+			'where u.id = ? and '+
+			'a.data_hora between ? and ?; ', [id, datainicio, datafim], function(err, rows){
+				if(err){
+					console.log('erro selectConsumo');
+					throw err;
+				}else{
+					if (rows.length > 0) {
+						var array = [];
 
-							res.render('res_consumo', {res_consumo:array});
+						for (var i = 0; i < rows.length; i++) {
+							var consumo = new relatorioConsumo(rows[i].data_hora, rows[i].valvula, rows[i].consumo, rows[i].clima);
 
-						}else{
-							res.render('res_consumo', {res_consumo:''});
+							array.push(consumo);
 						}
-					}
-				});
-		});
 
-		app.post('/selectCompleto', function(req, res){
+						res.render('res_consumo', {res_consumo:array});
 
-			var id = req.session.user.id;
-
-			connection.query('SELECT DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", '+
-				'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, consumo '+ 
-				'from jardim j '+ 
-				'inner join usuario u on u.id = j.id_usuario '+
-				'inner join analize a on a.id_jardim = j.id '+
-				'where u.id = ?;', [id], function(err, rows){
-					if(err){
-						console.log('erro selectCompleto');
-						throw err;
 					}else{
-
-						if (rows.length > 0) {
-							var array = [];
-
-							for (var i = 0; i < rows.length; i++) {
-
-								var completo = new relatorioCompleto(rows[i].data_hora, rows[i].valor_S01, 
-									rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
-									rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
-
-								array.push(completo);
-							}
-
-							res.render('res_completo', {res_completo:array});
-
-
-						}else{
-							res.render('res_completo', {res_completo:''});
-						}
+						res.render('res_consumo', {res_consumo:''});
 					}
-				});
-		});
+				}
+			});
+	}else{	
+		
+		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", valvula, consumo, clima '+
+			'from usuario u '+
+			'inner join jardim j on j.id_usuario = u.id '+
+			'inner join analize a on a.id_jardim = j.id '+
+			'where u.id = ?;', [id], function(err, rows){
+				if(err){
+					console.log('erro selectConsumo');
+					throw err;
+				}else{
+					if (rows.length > 0) {
+						var array = [];
 
+						for (var i = 0; i < rows.length; i++) {
+							var consumo = new relatorioConsumo(rows[i].data_hora, rows[i].valvula, rows[i].consumo, rows[i].clima);
 
+							array.push(consumo);
+						}
 
+						res.render('res_consumo', {res_consumo:array});
 
-		app.get('/analize', function(req,res){
+					}else{
+						res.render('res_consumo', {res_consumo:''});
+					}
+				}
+			});
+	}
+});
 
-			if(req.query.valorumidade1==null){var umidade1 = 0}else{var umidade1 = parseInt(req.query.valorumidade1)};
-			if(req.query.valorumidade2==null){var umidade2 = 0}else{var umidade2 = parseInt(req.query.valorumidade2)};
-			if(req.query.valorumidade3==null){var umidade3 = 0}else{var umidade3 = parseInt(req.query.valorumidade3)};
-			if(req.query.valorumidade4==null){var umidade4 = 0}else{var umidade4 = parseInt(req.query.valorumidade4)};
-			var serial = req.query.serial;
+app.post('/selectCompleto', function(req, res){
 
-			connection.query('select * from jardim where serial=?', [serial], function(err, rows){
-				if (err) {
-					console.log('erro select jardim em analize');
+	var id = req.session.user.id;
+	var inicio = req.body.inicio;
+	var fim = req.body.fim;	
+
+	if(!inicio == '' && !fim == ''){
+
+		var datainicio = inicio.substring(6)+"-"+inicio.substring(3,5)+"-"+inicio.substring(0,2);
+		var datafim = fim.substring(6)+"-"+fim.substring(3,5)+"-"+fim.substring(0,2)+" 23:59:59";
+
+		connection.query('SELECT DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", '+
+			'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, consumo '+ 
+			'from jardim j '+ 
+			'inner join usuario u on u.id = j.id_usuario '+
+			'inner join analize a on a.id_jardim = j.id '+
+			'where u.id = ? and '+
+			'a.data_hora between ? and ?;', [id, datainicio, datafim], function(err, rows){
+				if(err){
+					console.log('erro selectCompleto');
 					throw err;
 				}else{
 
-					if(rows.length == 1){
-						var id_jardim = rows[0].id;
+					if (rows.length > 0) {
+						var array = [];
 
-						connection.query('select g.id, g.nome_grupo, g.umidade_min, g.umidade_max '+
-							'from jardim j '+
-							'inner join jardim_planta jp on jp.id_jardim = j.id '+
-							'inner join planta p on p.id = jp.id_planta '+
-							'inner join grupo_planta gp on gp.id_planta = p.id '+
-							'inner join grupo g on g.id = gp.id_grupo '+
-							'where id_jardim=?;', [id_jardim], function(err, rows){
-								if (err) {
-									console.log('erro select grupo_planta em umidade');
-									throw err;
-								}else{
-									var grupo = new Grupo(rows[0].id, rows[0].nome_grupo, rows[0].umidade_min, rows[0].umidade_max);
+						for (var i = 0; i < rows.length; i++) {
 
-									var media_umidade = (umidade1+umidade2)/2;
+							var completo = new relatorioCompleto(rows[i].data_hora, rows[i].valor_S01, 
+								rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
+								rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
 
-									if (media_umidade >= grupo.umidade_min) {
-										var status_umidade = "umido";
+							array.push(completo);
+						}
 
-									}else{
-										var status_umidade = "seco";
-									}
+						res.render('res_completo', {res_completo:array});
+					}else{
+						res.render('res_completo', {res_completo:''});
+					}
+				}
+			});
+	}else{
+		connection.query('SELECT DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", '+
+			'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, consumo '+ 
+			'from jardim j '+ 
+			'inner join usuario u on u.id = j.id_usuario '+
+			'inner join analize a on a.id_jardim = j.id '+
+			'where u.id = ?;', [id], function(err, rows){
+				if(err){
+					console.log('erro selectCompleto');
+					throw err;
+				}else{
+
+					if (rows.length > 0) {
+						var array = [];
+
+						for (var i = 0; i < rows.length; i++) {
+
+							var completo = new relatorioCompleto(rows[i].data_hora, rows[i].valor_S01, 
+								rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].status_umidade, 
+								rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
+
+							array.push(completo);
+						}
+
+						res.render('res_completo', {res_completo:array});
+					}else{
+						res.render('res_completo', {res_completo:''});
+					}
+				}
+			});
+	}
+});
+
+
+
+
+app.get('/analize', function(req,res){
+
+	if(req.query.valorumidade1==null){var umidade1 = 0}else{var umidade1 = parseInt(req.query.valorumidade1)};
+	if(req.query.valorumidade2==null){var umidade2 = 0}else{var umidade2 = parseInt(req.query.valorumidade2)};
+	if(req.query.valorumidade3==null){var umidade3 = 0}else{var umidade3 = parseInt(req.query.valorumidade3)};
+	if(req.query.valorumidade4==null){var umidade4 = 0}else{var umidade4 = parseInt(req.query.valorumidade4)};
+	var serial = req.query.serial;
+
+	connection.query('select * from jardim where serial=?', [serial], function(err, rows){
+		if (err) {
+			console.log('erro select jardim em analize');
+			throw err;
+		}else{
+
+			if(rows.length == 1){
+				var id_jardim = rows[0].id;
+
+				connection.query('select g.id, g.nome_grupo, g.umidade_min, g.umidade_max '+
+					'from jardim j '+
+					'inner join jardim_planta jp on jp.id_jardim = j.id '+
+					'inner join planta p on p.id = jp.id_planta '+
+					'inner join grupo_planta gp on gp.id_planta = p.id '+
+					'inner join grupo g on g.id = gp.id_grupo '+
+					'where id_jardim=?;', [id_jardim], function(err, rows){
+						if (err) {
+							console.log('erro select grupo_planta em umidade');
+							throw err;
+						}else{
+							var grupo = new Grupo(rows[0].id, rows[0].nome_grupo, rows[0].umidade_min, rows[0].umidade_max);
+
+							var media_umidade = (umidade1+umidade2)/2;
+
+							if (media_umidade >= grupo.umidade_min) {
+								var status_umidade = "umido";
+
+							}else{
+								var status_umidade = "seco";
+							}
 						//implementar probabilidade de chuva
 
 						connection.query('insert into analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media, '+
@@ -1026,75 +1103,75 @@ app.post('/selectUmidade', function(req, res){
 							});
 					}
 				});
-					}else{
-						res.json('err');
-					}
-				}
+			}else{
+				res.json('err');
+			}
+		}
 
-			});
-		});
+	});
+});
 
-		app.get('/recuperar-senha',function(req,res){
-			res.render('recuperar');
-		});
+app.get('/recuperar-senha',function(req,res){
+	res.render('recuperar');
+});
 
 
 
-		app.post('/checkemail',function(req,res){
-			var email = req.body.email;
-			connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
-				function(err, rows){
-					if(err) throw err;
-					if(rows.length === 1){
-						var id = rows[0].id;
-						var nome = rows[0].nome;
-						var pwd = rows[0].senha;
-						var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
-						enviaemailsenha(req, res,link,email)
-					}else{
+app.post('/checkemail',function(req,res){
+	var email = req.body.email;
+	connection.query('SELECT * FROM usuario WHERE email = ?', [ email ] , 
+		function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
+				var link = '/redefinir?K='+pwd.substr(5,20)+'&I='+id;				
+				enviaemailsenha(req, res,link,email)
+			}else{
 				res.send("Email não encontrado");//user não cadastrado
 			}
 		});
 
-		});
+});
 
 
-		app.get('/redefinir',function(req,res){
-			var key =req.query.K;
-			var id =req.query.I;
-			connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-				function(err, rows){
-					if(err) throw err;
-					if(rows.length === 1){
-						var id = rows[0].id;
-						var nome = rows[0].nome;
-						var pwd = rows[0].senha;
-						if(pwd.substr(5,20)==key){
-							res.render('redefinir', {key: key, id:id})
-						}else {
+app.get('/redefinir',function(req,res){
+	var key =req.query.K;
+	var id =req.query.I;
+	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+		function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
+				if(pwd.substr(5,20)==key){
+					res.render('redefinir', {key: key, id:id})
+				}else {
 					res.send("Dados invalidos");//user não cadastrado
 				}
 			}else{
 				res.send("Dados invalidos");//user não cadastrado
 			}
 		});
-		});
+});
 
 
-		app.post('/redefinirpost',function(req,res){
-			var senha = req.body.senha;
-			var key = req.body.key;
-			var id = req.body.id;
-			var hash = bcrypt.hashSync(senha);
-			console.log(senha, hash);
-			connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
-				function(err, rows){
-					if(err) throw err;
-					if(rows.length === 1){
-						var id = rows[0].id;
-						var nome = rows[0].nome;
-						var pwd = rows[0].senha;
-						if(pwd.substr(5,20)==key){
+app.post('/redefinirpost',function(req,res){
+	var senha = req.body.senha;
+	var key = req.body.key;
+	var id = req.body.id;
+	var hash = bcrypt.hashSync(senha);
+	console.log(senha, hash);
+	connection.query('SELECT * FROM usuario WHERE id = ?', [ id ] , 
+		function(err, rows){
+			if(err) throw err;
+			if(rows.length === 1){
+				var id = rows[0].id;
+				var nome = rows[0].nome;
+				var pwd = rows[0].senha;
+				if(pwd.substr(5,20)==key){
 					 //criptografia
 					 connection.query('UPDATE usuario SET senha = ? WHERE id =?',[ hash,id ] , 
 					 	function(err){
@@ -1111,9 +1188,9 @@ app.post('/selectUmidade', function(req, res){
 			}
 		});
 
-		});
+});
 
-		function enviaemailsenha(req, res,link,email) {
+function enviaemailsenha(req, res,link,email) {
     // Not the movie transporter!
     var text = 'Para Trocar a sua senha click no link: http://localhost:3000'+link;
     var mailOptions = {

@@ -3,24 +3,75 @@
 <head>
 	<meta charset="utf-8">
 	<title>iOne</title>
-</head>
 
+	<script src="../js/bootstrap.js"></script>
+
+	<!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
+	<script src="../js/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="../js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="../css/bootstrap.css" />  
+	<link rel="stylesheet" href="../css/bootstrap.min.css" /> 
+	<link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
+
+	<!-- Load c3.css -->
+	<link rel="stylesheet" href="../css/c3.css" type="text/css">
+	<!-- Load d3.js and c3.js -->
+	<script src="../js/d3.v3.min.js"></script> <!--não encontrado -->
+	<script src="../js/c3.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="../css/style.css">
+	<link rel="stylesheet" type="text/css" href="../css/fonts.css">
+
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+</head>
 
 <body>
 
+	<div class="container">
 
-<% if(res_plantas.lenght == 0){%>
-<p>vazio</p>
-<% }else{%>
-   <ul>
-            <li class="li-item">Jardim: <%- res_plantas.nome_jardim%></li>
-            <li class="li-item">Planta: <%- res_plantas.nome_planta%></li>
-            <li class="li-item">Descrição: <%- res_plantas.descricao_planta%></li>
-            <li class="li-item">Grupo: <%- res_plantas.nome_grupo%></li>
-            <li class="li-item">Descrição: <%- res_plantas.descricao_grupo%></li>                      
-         </ul>
+		<div class="header">
+			<h1>iOne Jardim Inteligente</h1>
+			<h2>detalhes de Plantas</h2>
+		</div>
 
-<%}%>
+		<% if(res_plantas.lenght == 0){%>
+		<p>vazio</p>
+		<% }else{%>
 
+		<% for(i=0; i < res_plantas.length; i++) {%>
+
+		<div class="table-responsive content">
+			<table  class="table table-bordered">
+				<thead>
+					<tr>
+						<th>nome</th>
+						<th>nome científio</th>
+						<th>grupo</th>
+						<th>umidade mínima</th>
+						<th>temperatura</th>
+						<th>informações</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<th><%- res_plantas[i].nome_planta %></th>
+						<th><%- res_plantas[i].nome_cientifico %></th>
+						<th><%- res_plantas[i].descricao_grupo %></th>
+						<th><%- res_plantas[i].umidade_min %></th>
+						<th><%- res_plantas[i].temperatura %></th>
+						<th><%- res_plantas[i].informacao %></th>
+					</tr>
+					<%}%>
+				</tbody>
+			</table>
+		</div>
+
+		<%}%>
+
+	</div>
 </body>
 </html>
