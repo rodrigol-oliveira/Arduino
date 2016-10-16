@@ -1050,13 +1050,13 @@ app.post('/selectCompleto', function(req, res){
 
 app.get('/analize', function(req,res){
 
-	if(req.query.umidade1==null){var umidade1 = 0}else{var umidade1 = parseInt(req.query.umidade1)};
-	if(req.query.umidade2==null){var umidade2 = 0}else{var umidade2 = parseInt(req.query.umidade2)};
-	if(req.query.umidade3==null){var umidade3 = 0}else{var umidade3 = parseInt(req.query.umidade3)};
-	if(req.query.umidade4==null){var umidade4 = 0}else{var umidade4 = parseInt(req.query.umidade4)};
+	if(req.query.umidade1==null || Number.isNaN(umidade1)){var umidade1 = 0}else{var umidade1 = parseInt(req.query.umidade1)};
+	if(req.query.umidade2==null || Number.isNaN(umidade2)){var umidade2 = 0}else{var umidade2 = parseInt(req.query.umidade2)};
+	if(req.query.umidade3==null || Number.isNaN(umidade3)){var umidade3 = 0}else{var umidade3 = parseInt(req.query.umidade3)};
+	if(req.query.umidade4==null || Number.isNaN(umidade4)){var umidade4 = 0}else{var umidade4 = parseInt(req.query.umidade4)};
 	var serial = req.query.serial;
 
-	
+		
 	connection.query('select * from jardim where serial=?', [serial], function(err, rows){ //identifica o jardim cadastrado com o serial do arduino
 		if (err) {
 			console.log('erro select jardim em analize');
@@ -1071,22 +1071,23 @@ app.get('/analize', function(req,res){
 					city = '3448439';
 				}
 	//define parametro do API para obter previsao do tempo
-	var path = 'http://api.openweathermap.org/data/2.5/forecast/city?id=' + city + '&APPID=' + keyprevisao + '&units=metric';
+	// ----------var path = 'http://api.openweathermap.org/data/2.5/forecast/city?id=' + city + '&APPID=' + keyprevisao + '&units=metric';
 	
 	//executa request do API 'openWeatherMap.org'	
-	request(path, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
+	//request(path, function (error, response, body) {
+//		if (!error && response.statusCode == 200) {
 			//res.json(JSON.parse(body));
-			var resposta = JSON.parse(body);
+//			var resposta = JSON.parse(body);
 	//console.log(resposta.list);
 	//console.log(resposta.list.length);
-	var clima = resposta.list[0].weather[0].description;
+	//--------------------------var clima = resposta.list[0].weather[0].description;
+	var clima = 'rain';
 	console.log(clima);
 	//console.log(resposta.list[0].main.temp_max);
 	//console.log(resposta.list[0].main.humidity);
-}else{
-	console.log(error)
-}
+//}else{
+//	console.log(error)
+//}
 
 				//identifica grupo de plantas cadastrados no jardim identificado com o serial informado
 				connection.query('select g.id, g.nome_grupo, g.umidade_min, g.umidade_max '+
@@ -1155,7 +1156,7 @@ app.get('/analize', function(req,res){
 										}else{
 											var response = {'acao':'0'};
 										}
-
+console.log(umidade2, media_umidade, status_umidade, clima);
 									//insere os valores no banco de dados e registra a nalize na hora atual
 									connection.query('insert into analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media, '+
 										'status_umidade, clima, valvula, consumo) VALUES(?, now(), ?, ?, ?, ?, ?, ?, ?,?,?);',[id_jardim, umidade1, umidade2, 
@@ -1171,7 +1172,7 @@ app.get('/analize', function(req,res){
 							});							
 						}
 					});
-});
+//});
 			}else{ //fim - não encontrou jardim cadastrado com o serial informado
 				res.json('err'); //retorna erro e nao consegue executar nenhuma ação no sistema
 			}

@@ -224,6 +224,7 @@ INSERT INTO grupo_planta(id_grupo, id_planta) VALUES(1,1), (1,2), (2,3);
 -- limite de codigo do banco valido
 -- -----------------------------------------------------------------------------------
 
+/*
 insert into analize(id_jardim, data_hora, valor_S01, valor_S02,media,
 status_umidade, clima, probabilidade_chuva,valvula, consumo) 
 values(1,now(), 450, 400,300, 'seco', 'ensolarado', 20, 'on', 30);
@@ -396,7 +397,9 @@ SELECT p.id, p.nome_planta from planta p
 										inner join jardim j on j.id = jp.id_jardim 
 										where j.id = 1;
 
+insert into analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media,status_umidade, clima, valvula, consumo) VALUES(1, now(),100,200,0,0,150,'seco','sol','off',0 );
+?, now(), ?, ?, ?, ?, ?, ?, ?, ?);',[id_jardim, umidade1, umidade2, 
+										umidade3, umidade4, media_umidade, status_umidade, clima, 'off', 0
 
 
-
-
+*/
