@@ -1166,6 +1166,7 @@ console.log(umidade2, media_umidade, status_umidade, clima);
 												throw err;
 											}else{
 												res.json(response);
+												console.log(response);
 											}
 										});
 								}
