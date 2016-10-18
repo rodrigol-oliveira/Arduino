@@ -86,7 +86,7 @@
 				</div>
 
 				<fieldset>
-				<% if(!analize == ''){ %>
+				<% if(!analise == ''){ %>
 					<legend class="legend">detalhes</legend>
 					<div class="detalhes">
 						<div class="row">
@@ -110,8 +110,8 @@
         xAxis: {
         	categories: [
 
-        	<% for(i = analize.length-1; i >= 0 ; i--) {  %>
-        		[ "<%-analize[i].data_hora %>"],
+        	<% for(i = analise.length-1; i >= 0 ; i--) {  %>
+        		[ "<%-analise[i].data_hora %>"],
 
         		<%}%>	
 
@@ -134,8 +134,8 @@
         	{
         		name: 'consumo',
         		data: [
-        		<% for(i = analize.length-1; i>=0; i --) {  %>
-        			[<%-analize[i].consumo %>],
+        		<% for(i = analise.length-1; i>=0; i --) {  %>
+        			[<%-analise[i].consumo %>],
 
         			<%}%>
         			]
@@ -143,8 +143,8 @@
         		}, {
         			name: 'umidade',
         			data: [
-        			<% for(i = analize.length-1; i>=0; i --) {  %>
-        				[<%-analize[i].media %>],
+        			<% for(i = analise.length-1; i>=0; i --) {  %>
+        				[<%-analise[i].media %>],
 
         				<%}%>
         				]
@@ -153,7 +153,7 @@
         			{
         				name: 'umidade minima ideal',
         				data: [
-        				<% for(i = analize.length-1; i>=0; i --) {  %>
+        				<% for(i = analise.length-1; i>=0; i --) {  %>
         					[<%-detalhesJardim.umidade_min %>],
 
         					<%}%>
@@ -200,13 +200,13 @@
 								</thead>
 
 								<tbody>
-									<% for(i = 0; i < analize.length; i ++) { %>
+									<% for(i = 0; i < analise.length; i ++) { %>
 									<tr>
-										<td><%- analize[i].data_hora %></td>
-										<td><%- analize[i].status_umidade %></td>
-										<td><%- analize[i].clima %></td>
-										<td><%- analize[i].valvula %></td>
-										<td><%- analize[i].consumo %></td>
+										<td><%- analise[i].data_hora %></td>
+										<td><%- analise[i].status_umidade %></td>
+										<td><%- analise[i].clima %></td>
+										<td><%- analise[i].valvula %></td>
+										<td><%- analise[i].consumo %></td>
 									</tr>
 									<%}%>
 								</tbody>

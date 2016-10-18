@@ -26,7 +26,7 @@ IPAddress ip(10,0,0,2);//defini um ip a ser usado no atributo client
 
 
 const char* server = "10.0.0.3";  // server's address    
-const char* textosensor1 = "/analize?umidade1=";                    // metodo analise sensor 1
+const char* textosensor1 = "/analise?umidade1=";                    // metodo analise sensor 1
 const char* textosensor2 = "&umidade2=20";                          // metodo analise sensor 2
 const char* textosensor3 = "&umidade3=30";                          // metodo analise sensor 3
 const char* textosensor4 = "&umidade4=40";                          // metodo analise sensor 4

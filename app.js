@@ -125,7 +125,7 @@ function validaCHARNull(char){
 	}
 }
 
-function Analize(id, id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media,
+function Analise(id, id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media,
 	status_umidade, clima, probabilidade_chuva,valvula, consumo){
 	this.id = validaINTNull(id);
 	this.id_jardim =validaINTNull(id_jardim);	
@@ -358,30 +358,30 @@ app.get('/viewPrincipal', function(req, res){
 
 																	connection.query('SELECT id, id_jardim, DATE_FORMAT(data_hora, "%d/%m/%Y %H:%m:%s") as "data_hora", '+
 																		'valor_S01, valor_S02, valor_S03, valor_S04, media, status_umidade, clima, probabilidade_chuva, valvula, '+
-																		'consumo from analize where id_jardim = ? order by id desc limit 4;', [id_jardim], function(err, rows){
+																		'consumo from analise where id_jardim = ? order by id desc limit 4;', [id_jardim], function(err, rows){
 																			if (err) {
-																				console.log('erro select analize');
+																				console.log('erro select analise');
 																				throw err;
 																			}else{
 
-																				var arrayAnalize = [];
+																				var arrayanalise = [];
 
 																				if (rows.length == 0) {
 																					res.render('principal', {usuario:usuario, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
-																						plantas:arrayPlanta, sensores:arraySensor, analize:''});
+																						plantas:arrayPlanta, sensores:arraySensor, analise:''});
 																				}else{
 
 																					for (var i = 0; i < rows.length; i++) {
 
-																						var analize = new Analize(rows[i].id, rows[i].id_jardim, rows[i].data_hora,
+																						var analise = new Analise(rows[i].id, rows[i].id_jardim, rows[i].data_hora,
 																							rows[i].valor_S01, rows[i].valor_S02, rows[i].valor_S03, rows[i].valor_S04, rows[i].media,
 																							rows[i].status_umidade, rows[i].clima, rows[i].probabilidade_chuva, rows[i].valvula, rows[i].consumo);
 
-																						arrayAnalize.push(analize);
+																						arrayanalise.push(analise);
 																					}
 
 																					res.render('principal', {usuario:usuario, id_jardim:id_jardim, detalhesJardim:detalhesJardim, 
-																						plantas:arrayPlanta, sensores:arraySensor, analize:arrayAnalize});
+																						plantas:arrayPlanta, sensores:arraySensor, analise:arrayanalise});
 																				}
 																			}
 																		});
@@ -712,16 +712,16 @@ app.get('/deletarJardim', function(req, res){
 										console.log('erro ao deletar jardim_sensor');
 										throw err;
 									}else{
-										connection.query('select * from analize WHERE id_jardim = ?;', [id_jardim],
+										connection.query('select * from analise WHERE id_jardim = ?;', [id_jardim],
 											function(err, rows){
 												if(err){
-													console.log('erro select analize deletar');
+													console.log('erro select analise deletar');
 													throw err;
 												}else{
 													if (rows.length > 0) {
-														connection.query('delete from analize where id_jardim = ?;', [id_jardim], function(err){
+														connection.query('delete from analise where id_jardim = ?;', [id_jardim], function(err){
 															if (err) {
-																console.log('erro ao deletar analize');
+																console.log('erro ao deletar analise');
 																throw err;
 															}
 														});
@@ -854,7 +854,7 @@ app.post('/selectUmidade', function(req, res){
 		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", a.media, a.status_umidade, a.clima '+
 			'from usuario u '+
 			'inner join jardim j on j.id_usuario = u.id '+
-			'inner join analize a on a.id_jardim = j.id '+
+			'inner join analise a on a.id_jardim = j.id '+
 			'where u.id = ? and '+
 			'a.data_hora between ? and ?; ', [id, datainicio, datafim], function(err, rows){
 				if(err){
@@ -881,7 +881,7 @@ app.post('/selectUmidade', function(req, res){
 		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", a.media, a.status_umidade, a.clima '+
 			'from usuario u '+
 			'inner join jardim j on j.id_usuario = u.id '+
-			'inner join analize a on a.id_jardim = j.id '+
+			'inner join analise a on a.id_jardim = j.id '+
 			'where u.id = ?;', [id, datainicio, datafim], function(err, rows){
 				if(err){
 					console.log('erro selectUmidade');
@@ -920,7 +920,7 @@ app.post('/selectConsumo', function(req, res){
 		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", valvula, consumo, clima '+
 			'from usuario u '+
 			'inner join jardim j on j.id_usuario = u.id '+
-			'inner join analize a on a.id_jardim = j.id '+
+			'inner join analise a on a.id_jardim = j.id '+
 			'where u.id = ? and '+
 			'a.data_hora between ? and ?; ', [id, datainicio, datafim], function(err, rows){
 				if(err){
@@ -948,7 +948,7 @@ app.post('/selectConsumo', function(req, res){
 		connection.query('select DATE_FORMAT(data_hora, "%d/%m/%Y %H:%i:%s") as "data_hora", valvula, consumo, clima '+
 			'from usuario u '+
 			'inner join jardim j on j.id_usuario = u.id '+
-			'inner join analize a on a.id_jardim = j.id '+
+			'inner join analise a on a.id_jardim = j.id '+
 			'where u.id = ?;', [id], function(err, rows){
 				if(err){
 					console.log('erro selectConsumo');
@@ -988,7 +988,7 @@ app.post('/selectCompleto', function(req, res){
 			'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, consumo '+ 
 			'from jardim j '+ 
 			'inner join usuario u on u.id = j.id_usuario '+
-			'inner join analize a on a.id_jardim = j.id '+
+			'inner join analise a on a.id_jardim = j.id '+
 			'where u.id = ? and '+
 			'a.data_hora between ? and ?;', [id, datainicio, datafim], function(err, rows){
 				if(err){
@@ -1019,7 +1019,7 @@ app.post('/selectCompleto', function(req, res){
 			'valor_S01, valor_S02,valor_S03, valor_S04, status_umidade, clima, probabilidade_chuva, valvula, consumo '+ 
 			'from jardim j '+ 
 			'inner join usuario u on u.id = j.id_usuario '+
-			'inner join analize a on a.id_jardim = j.id '+
+			'inner join analise a on a.id_jardim = j.id '+
 			'where u.id = ?;', [id], function(err, rows){
 				if(err){
 					console.log('erro selectCompleto');
@@ -1048,18 +1048,20 @@ app.post('/selectCompleto', function(req, res){
 });
 
 
-app.get('/analize', function(req,res){
+app.get('/analise', function(req,res){
 
 	if(req.query.umidade1==null || Number.isNaN(umidade1)){var umidade1 = 0}else{var umidade1 = parseInt(req.query.umidade1)};
 	if(req.query.umidade2==null || Number.isNaN(umidade2)){var umidade2 = 0}else{var umidade2 = parseInt(req.query.umidade2)};
 	if(req.query.umidade3==null || Number.isNaN(umidade3)){var umidade3 = 0}else{var umidade3 = parseInt(req.query.umidade3)};
 	if(req.query.umidade4==null || Number.isNaN(umidade4)){var umidade4 = 0}else{var umidade4 = parseInt(req.query.umidade4)};
+	var valvula = req.query.valvula;
+	var consumo = parseInt(req.query.consumo);
 	var serial = req.query.serial;
 
 		
 	connection.query('select * from jardim where serial=?', [serial], function(err, rows){ //identifica o jardim cadastrado com o serial do arduino
 		if (err) {
-			console.log('erro select jardim em analize');
+			console.log('erro select jardim em analise');
 			throw err;
 		}else{
 			if(rows.length == 1){
@@ -1082,7 +1084,7 @@ app.get('/analize', function(req,res){
 	//console.log(resposta.list.length);
 	//--------------------------var clima = resposta.list[0].weather[0].description;
 	var clima = 'rain';
-	console.log(clima);
+	
 	//console.log(resposta.list[0].main.temp_max);
 	//console.log(resposta.list[0].main.humidity);
 //}else{
@@ -1098,7 +1100,7 @@ app.get('/analize', function(req,res){
 					'inner join grupo g on g.id = gp.id_grupo '+
 					'where id_jardim=?;', [id_jardim], function(err, rows){
 						if (err) {
-							console.log('erro select grupo_planta em analize');
+							console.log('erro select grupo_planta em analise');
 							throw err;
 						}else{
 							//cria estância de grupo com as informações obtidas do banco
@@ -1107,7 +1109,7 @@ app.get('/analize', function(req,res){
 							//identifica os sensores cadastrados no jardim com o serial informado
 							connection.query('select * from jardim_sensor where id_jardim = ?;', [id_jardim], function(err, rows){
 								if (err) {
-									console.log('erro select jardim_sensor em analize');
+									console.log('erro select jardim_sensor em analise');
 									throw err;		
 								}else{
 									var sensores = rows.length; //captura a quantidade de sensores cadastradas no jardim
@@ -1156,13 +1158,13 @@ app.get('/analize', function(req,res){
 										}else{
 											var response = {'acao':'0'};
 										}
-console.log(umidade2, media_umidade, status_umidade, clima);
+
 									//insere os valores no banco de dados e registra a nalize na hora atual
-									connection.query('insert into analize(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media, '+
+									connection.query('insert into analise(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media, '+
 										'status_umidade, clima, valvula, consumo) VALUES(?, now(), ?, ?, ?, ?, ?, ?, ?,?,?);',[id_jardim, umidade1, umidade2, 
-										umidade3, umidade4, media_umidade, status_umidade, clima, 'off', 0], function(err){
+										umidade3, umidade4, media_umidade, status_umidade, clima, valvula, consumo], function(err){
 											if (err) {
-												console.log('erro insert analize');
+												console.log('erro insert analise');
 												throw err;
 											}else{
 												res.json(response);
