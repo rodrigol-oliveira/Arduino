@@ -1055,7 +1055,7 @@ app.get('/analise', function(req,res){
 	if(req.query.umidade3==null || Number.isNaN(umidade3)){var umidade3 = 0}else{var umidade3 = parseInt(req.query.umidade3)};
 	if(req.query.umidade4==null || Number.isNaN(umidade4)){var umidade4 = 0}else{var umidade4 = parseInt(req.query.umidade4)};
 	var valvula = req.query.valvula;
-	var consumo = parseInt(req.query.consumo);
+	//var consumo = parseInt(req.query.consumo);
 	var serial = req.query.serial;
 
 		
@@ -1118,10 +1118,21 @@ app.get('/analise', function(req,res){
 									 com a soma dos valores de umidade recebidos do arduino, divide-se pela quantidade de sensores cadastrados.
 									 desse modo, obtem-se a media aritmética dos valores de umidade do solo e defini-se a média de umidade do jardim 
 									 */
-									 var media_umidade = (umidade1+umidade2+umidade3+umidade4)/sensores; 
+									 //var media_umidade = (umidade1+umidade2+umidade3+umidade4)/sensores; 
+									 var media_umidade = umidade1;
+
+									 if (media_umidade<grupo.umidade_min) {
+									 	var status_umidade='umido';
+									 }else{
+									 	var status_umidade='seco';
+									 }
 																		/*
 									compara a média de umidade do solo com o valor mínimo de umidade estabelecido no grupo que as plantas pertencem
 									*/
+
+									/*  ------------------------------------
+										acertar valores do banco e converter
+										------------------------------------
 									if (media_umidade >= grupo.umidade_min) {
 										var status_umidade = "umido"; 
 
@@ -1161,8 +1172,8 @@ app.get('/analise', function(req,res){
 
 									//insere os valores no banco de dados e registra a nalize na hora atual
 									connection.query('insert into analise(id_jardim, data_hora, valor_S01, valor_S02, valor_S03, valor_S04, media, '+
-										'status_umidade, clima, valvula, consumo) VALUES(?, now(), ?, ?, ?, ?, ?, ?, ?,?,?);',[id_jardim, umidade1, umidade2, 
-										umidade3, umidade4, media_umidade, status_umidade, clima, valvula, consumo], function(err){
+										'status_umidade, clima, valvula, consumo) VALUES(?, now(), ?, ?, ?, ?, ?, ?, ?,?,?);',[id_jardim, umidade1, 0, 
+										0, 0, media_umidade, status_umidade, clima, valvula, 0], function(err){
 											if (err) {
 												console.log('erro insert analise');
 												throw err;
