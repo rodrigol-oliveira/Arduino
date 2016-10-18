@@ -8,58 +8,106 @@
 // https://github.com/bblanchon/ArduinoJson
 // If you like this project, please add a star!
 
-#include <ArduinoJson.h>
-#include <SPI.h>
-#include <Ethernet.h>
+#include <ArduinoJson.h> //importa biblioteca Json
+#include <SPI.h>         //importa biblioteca de ação
+#include <Ethernet.h>    //importa biblioteca de Ethernet 
+//valvula
 #define sensor1 A0
+int valvula= 2;//porta logica do sensor de agua
+int valorsensor1=0 ;//valor do sensor 1
+//vazao de agua
+float vazao; //Variável para armazenar o valor em L/min
+float media=0; //Variável para tirar a média a cada 1 minuto
+int contaPulso; //Variável para a quantidade de pulsos
+int i=0; //Variável para contagem
+//
+EthernetClient client; //cria atributo da placa de rede
+IPAddress ip(10,0,0,2);//defini um ip a ser usado no atributo client
 
-int valorsensor1=0 ;
-EthernetClient client;
-IPAddress ip(10,0,0,2);
+
+const char* server = "10.0.0.3";  // server's address    
+const char* textosensor1 = "/analize?umidade1=";                    // metodo analise sensor 1
+const char* textosensor2 = "&umidade2=20";                          // metodo analise sensor 2
+const char* textosensor3 = "&umidade3=30";                          // metodo analise sensor 3
+const char* textosensor4 = "&umidade4=40";                          // metodo analise sensor 4
+const char* serial = "&serial=ioneusjt";                            // FIM do GET colocando serial
+String arduino;
+const unsigned long BAUD_RATE = 9600;                 // velocidade serial de cnexão
+const unsigned long HTTP_TIMEOUT = 10000;  // maximo tempo de resposta do servidor
+const size_t MAX_CONTENT_SIZE = 512;       // Tamanho maximo da resposta
 
 
-const char* server = "10.0.0.3";  // server's address    analize?umidade1=100&umidade2=100&umidade3=100&umidade4=100&serial=ioneusjt
-const char* textosensor1 = "/analize?umidade1=";                    // http resource
-const char* textosensor2 = "&umidade2=20";                    // http resource
-const char* textosensor3 = "&umidade3=30";                    // http resource
-const char* textosensor4 = "&umidade4=40";                    // http resource
-const char* serial = "&serial=ioneusjt";                    // http resource
 
-const unsigned long BAUD_RATE = 9600;                 // serial connection speed
-const unsigned long HTTP_TIMEOUT = 10000;  // max respone time from server
-const size_t MAX_CONTENT_SIZE = 512;       // max size of the HTTP response
-
-// The type of data that we want to extract from the page
+//tipo de dados estraido da pagina HTML (JSON)
 struct UserData {
   char acao[32];
- // char planta[32];
 };
-int valor_analogico1;
 // ARDUINO entry point #1: runs once when you press reset or power the board
+
+
 void setup() {
-  initSerial();
-  initEthernet();
-  pinMode(sensor1, INPUT);
-  pinMode(13, OUTPUT);
+  
+  
+  pinMode(sensor1, INPUT); //Instancia o pino do sensor1 e o tipo de dados (entrada)
+  pinMode(2, OUTPUT);      //Instancia o pino da valvula e o tipo de dados (saida)
+
+  initSerial();         //instancia a comunicação serial
+  initEthernet();       //instancia a placa de rede
 }
 
 // ARDUINO entry point #2: runs over and over again forever
 void loop() {
 
-  
+   //inicia conexão  
   if (connect(server)) {
+    //inicia o GET
     if (sendRequest(server, textosensor1,textosensor2) && skipResponseHeaders()) {
       char response[MAX_CONTENT_SIZE];
       readReponseContent(response, sizeof(response));
-
+     //imprimi e atribui o GET 
       UserData userData;
       if (parseUserData(response, &userData)) {
         printUserData(&userData);
       }
     }
-    disconnect();
+    //disconecta servidor
+    disconnect();    
   }
-  wait();
+  //aqui abre a valvula conforme a resposta
+  while(true){
+    if ( arduino == "50"){
+      Serial.println("Abre Valvula em 50%");
+      digitalWrite(valvula, HIGH);   // turn the Valvula on (HIGH is the voltage level)
+      delay(30000);     
+      Serial.println("Fecha Valvula");
+      digitalWrite(valvula, LOW);
+      break;
+    }
+    if ( arduino == "70"){
+      Serial.println("Abre Valvula em 70%");
+      digitalWrite(valvula, HIGH);   // turn the valvula on (HIGH is the voltage level)
+      delay(45000);     
+      Serial.println("Fecha Valvula");
+      digitalWrite(valvula, LOW);
+      break;
+    }
+    if ( arduino == "100"){
+      Serial.println("Abre Valvula em 100%");
+      digitalWrite(valvula, HIGH);   // turn the valvula on (HIGH is the voltage level)
+      delay(60000);     
+      Serial.println("Fecha Valvula");
+      digitalWrite(valvula, LOW);
+      break;
+    }
+
+
+
+
+   
+
+    
+  }
+    wait();
 }
 
 // Initialize Serial port
@@ -96,11 +144,10 @@ bool connect(const char* hostName) {
 // Send the HTTP GET request to the server
 bool sendRequest(const char* host, const char* resource, const char* agua) {
 
-//  valor_analogico1 = analogRead(sensor1);
-  //valorsensor1 = (char*)analogRead(sensor1);
+
   Serial.print("GET ");
   Serial.println(textosensor1);
-  valorsensor1 =  analogRead(sensor1);
+  valorsensor1 =  analogRead(sensor1); //defini valor do sensor1
   Serial.println(valorsensor1);
   Serial.println(textosensor2);
   //Serial.println(valorsensor2);
@@ -112,7 +159,7 @@ bool sendRequest(const char* host, const char* resource, const char* agua) {
   
   client.print("GET ");
   client.print(textosensor1);
-  client.print(analogRead(sensor1));
+  client.print(valorsensor1);
   
   client.print(textosensor2);
   //client.print(valorsensor2);
@@ -155,7 +202,6 @@ void readReponseContent(char* content, size_t maxSize) {
   Serial.println(content);
 }
 
-
 bool parseUserData(char* content, struct UserData* userData) {
   // Compute optimal size of the JSON buffer according to what we need to parse.
   // This is only required if you use StaticJsonBuffer.
@@ -192,55 +238,8 @@ bool parseUserData(char* content, struct UserData* userData) {
 void printUserData(const struct UserData* userData) {
   Serial.print("acao a tomar = ");
   Serial.println(userData->acao);
-  /*
-  int acao = (int)userData->acao;
- if(acao!=0){
-  digitalWrite(valvula, HIGH);
-    Serial.println("entrou no IF");
- switch(acao){
-  Case 50:
-  Serial.println("entrou no 50");
-      delay(5000);
-      digitalWrite(valvula, LOW);
-      delay(1000);
-      digitalWrite(valvula, HIGH);
-      delay(1000);
-      digitalWrite(valvula, LOW);
-      break;
+  arduino = (String)userData->acao;
       
-   Case 70:
-   Serial.println("entrou no 70");
-      delay(10000);
-      digitalWrite(13, LOW);
-      break;
-      
-   Case 100:   
-   Serial.println("entrou no 100");
-      delay(15000);
-      digitalWrite(valvula, LOW);
-      break;
-  } 
- }*/
-
-
-
-
-
-
-int acao = (int)userData->acao;
- while(true){
- 
- if ( acao = 50){
- Serial.println("entrou no 50");
- digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(5000);     
- digitalWrite(13, LOW);      
- break;
- }
- Serial.println("nao entrou no if"); 
- break;
- }
-  
   //Serial.print("planta = ");
   //Serial.println(userData->planta);
   //Serial.print("agua = ");
