@@ -13,7 +13,7 @@
 #include <Ethernet.h>    //importa biblioteca de Ethernet 
 //valvula
 #define sensor1 A0
-int valvula= 2;//porta logica do sensor de agua
+int valvula= 3;//porta logica do sensor de agua
 int valorsensor1=0 ;//valor do sensor 1
 //vazao de agua
 float vazao; //Variável para armazenar o valor em L/min
@@ -23,14 +23,17 @@ int i=0; //Variável para contagem
 //
 EthernetClient client; //cria atributo da placa de rede
 IPAddress ip(10,0,0,2);//defini um ip a ser usado no atributo client
-
+//localhost:3000/analise?umidade1=10&umidade2=20&umidade3=30&umidade4=40&valvula=off&consumo=0&serial=ioneusjt
 
 const char* server = "10.0.0.3";  // server's address    
 const char* textosensor1 = "/analise?umidade1=";                    // metodo analise sensor 1
 const char* textosensor2 = "&umidade2=20";                          // metodo analise sensor 2
 const char* textosensor3 = "&umidade3=30";                          // metodo analise sensor 3
 const char* textosensor4 = "&umidade4=40";                          // metodo analise sensor 4
+const char* textovalvula = "&valvula=off";                          // metodo analise sensor 4
+const char* textoconsumo = "&consumo=0";                          // metodo analise sensor 4
 const char* serial = "&serial=ioneusjt";                            // FIM do GET colocando serial
+
 String arduino;
 const unsigned long BAUD_RATE = 9600;                 // velocidade serial de cnexão
 const unsigned long HTTP_TIMEOUT = 10000;  // maximo tempo de resposta do servidor
@@ -46,13 +49,19 @@ struct UserData {
 
 
 void setup() {
-  
+  //valvula
   
   pinMode(sensor1, INPUT); //Instancia o pino do sensor1 e o tipo de dados (entrada)
-  pinMode(2, OUTPUT);      //Instancia o pino da valvula e o tipo de dados (saida)
-
+  pinMode(valvula, OUTPUT);      //Instancia o pino da valvula e o tipo de dados (saida)
+  
   initSerial();         //instancia a comunicação serial
   initEthernet();       //instancia a placa de rede
+//consumo
+   pinMode(2, INPUT);
+  attachInterrupt(0, incpulso, RISING); //Configura o pino 2(Interrupção 0) para trabalhar como interrupção
+  Serial.println("\n\nInicio\n\n"); //Imprime Inicio na serial
+
+  
 }
 
 // ARDUINO entry point #2: runs over and over again forever
@@ -81,6 +90,36 @@ void loop() {
       delay(30000);     
       Serial.println("Fecha Valvula");
       digitalWrite(valvula, LOW);
+      arduino="";
+     //consumo de agua
+      contaPulso = 0;   //Zera a variável para contar os giros por segundos
+      sei();      //Habilita interrupção
+      delay (1000); //Aguarda 1 segundo
+      cli();      //Desabilita interrupção
+  
+      vazao = contaPulso / 5.5; //Converte para L/min
+      media=media+vazao; //Soma a vazão para o calculo da media
+      i++;
+  
+      Serial.print(vazao); //Imprime na serial o valor da vazão
+      Serial.print(" L/min - "); //Imprime L/min
+      Serial.print(i); //Imprime a contagem i (segundos)
+      Serial.println("s"); //Imprime s indicando que está em segundos
+  
+        if(i==60)
+        {
+          media = media/60; //Tira a media dividindo por 60
+          Serial.print("\nMedia por minuto = "); //Imprime a frase Media por minuto =
+          Serial.print(media); //Imprime o valor da media
+          Serial.println(" L/min - "); //Imprime L/min
+          media = 0; //Zera a variável media para uma nova contagem
+          i=0; //Zera a variável i para uma nova contagem
+          Serial.println("\n\nInicio\n\n"); //Imprime Inicio indicando que a contagem iniciou
+        }
+
+
+
+      
       break;
     }
     if ( arduino == "70"){
@@ -89,6 +128,7 @@ void loop() {
       delay(45000);     
       Serial.println("Fecha Valvula");
       digitalWrite(valvula, LOW);
+      arduino="";
       break;
     }
     if ( arduino == "100"){
@@ -97,11 +137,12 @@ void loop() {
       delay(60000);     
       Serial.println("Fecha Valvula");
       digitalWrite(valvula, LOW);
+      arduino="";
       break;
     }
 
 
-
+break;
 
    
 
@@ -147,14 +188,16 @@ bool sendRequest(const char* host, const char* resource, const char* agua) {
 
   Serial.print("GET ");
   Serial.println(textosensor1);
-  valorsensor1 =  analogRead(sensor1); //defini valor do sensor1
+  //valorsensor1 =  analogRead(sensor1); //defini valor do sensor1
+  valorsensor1 =  100; //defini valor do sensor1
   Serial.println(valorsensor1);
   Serial.println(textosensor2);
   //Serial.println(valorsensor2);
   Serial.println(textosensor3);
   //Serial.println(valorsensor3);
   Serial.println(textosensor4);
-  //Serial.println(valorsensor4);
+  Serial.println(textovalvula);
+  Serial.println(textoconsumo);
   Serial.println(serial);
   
   client.print("GET ");
@@ -166,7 +209,8 @@ bool sendRequest(const char* host, const char* resource, const char* agua) {
   client.print(textosensor3);
   //client.print(valorsensor3);
   client.print(textosensor4);
-  //client.print(valorsensor4);
+  client.print(textovalvula);
+  client.print(textoconsumo);
   client.print(serial);
   
 
@@ -251,6 +295,11 @@ void disconnect() {
   Serial.println("Disconnect");
   client.stop();
 }
+
+void incpulso ()
+{ 
+  contaPulso++; //Incrementa a variável de contagem dos pulsos
+} 
 
 // Pause for a 1 minute
 void wait() {
