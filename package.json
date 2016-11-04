@@ -15,6 +15,7 @@
     "express": "*",
     "express-session": "^1.13.0",
     "mysql": "*",
-    "nodemailer": "^2.6.4"
+    "nodemailer": "^2.6.4",
+    "request": "^2.78.0"
   }
 }
