@@ -21,6 +21,8 @@
   previsaoController.setup(keyprevisao, request);
 
   var userController = require('./controllers/userController.js');
+
+
   userController.setup(connection);
 
   var app = express();
@@ -490,7 +492,7 @@ app.post('/validar', function(req, res) {
     });
 });
 
-
+/*
 //metodo de adicionar usuario no BD
 app.post('/registrar',function(req, res){
   var nome = req.body.nome;
@@ -506,7 +508,7 @@ app.post('/registrar',function(req, res){
     });
   res.render('iniciar');
 });
-
+*/
 //metodo altera o jardim - ainda dá para melhorar a query com update inner join
 app.post('/alterarJardim', function(req,res){
 
@@ -1338,6 +1340,8 @@ function loadWeather(req, res, city) {
 }
 */
 
+//app.post('/registrar', previsaoController.previsao);
+app.post('/registrar', userController.registrar);
 app.get('/previsao', previsaoController.previsao);
 
 /*

@@ -1,9 +1,11 @@
 var _this = {};
-
+var bcrypt = require('bcrypt-nodejs'); //<!-- criptografia-->
 module.exports = {
+  
   setup: function(connection) {
     _this.connection = connection;
   },
+
   viewAlterarUsuario: function(req, res) {
     if(!req.session.user || !req.session.user.nome || !req.session.user.id){
       res.redirect('/viewIniciar');
@@ -20,5 +22,24 @@ module.exports = {
         }
       });
     }
-  }
+  },
+
+  registrar:function(req, res){
+  var nome = req.body.nome;
+  var sobrenome = req.body.sobrenome;
+  var email = req.body.email;
+  var senha = req.body.senha;
+  var genero = req.body.genero;
+  var hash = bcrypt.hashSync(senha); //criptografia
+  _this.connection.query('INSERT INTO usuario(nome, sobrenome, genero, email, senha) VALUES (?,?,?,?,?);',
+    [nome, sobrenome, genero, email, hash ] ,
+    function(err, res){
+      if(err) throw err;
+    });
+  res.render('iniciar');
+  },
+
+
+
+
 };

@@ -1,0 +1,70 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'install', 'nodemon.app' ]
+2 info using npm@1.4.21
+3 info using node@v0.10.25
+4 warn package.json Arduino@0.0.0 No repository field.
+5 verbose readDependencies using package.json deps
+6 verbose cache add [ 'nodemon.app', null ]
+7 verbose cache add name=undefined spec="nodemon.app" args=["nodemon.app",null]
+8 verbose parsed url { protocol: null,
+8 verbose parsed url   slashes: null,
+8 verbose parsed url   auth: null,
+8 verbose parsed url   host: null,
+8 verbose parsed url   port: null,
+8 verbose parsed url   hostname: null,
+8 verbose parsed url   hash: null,
+8 verbose parsed url   search: null,
+8 verbose parsed url   query: null,
+8 verbose parsed url   pathname: 'nodemon.app',
+8 verbose parsed url   path: 'nodemon.app',
+8 verbose parsed url   href: 'nodemon.app' }
+9 silly lockFile b3303cd6-nodemon-app nodemon.app
+10 verbose lock nodemon.app /home/rodrigo-oliveira/.npm/b3303cd6-nodemon-app.lock
+11 silly lockFile b3303cd6-nodemon-app nodemon.app
+12 silly lockFile b3303cd6-nodemon-app nodemon.app
+13 verbose addNamed [ 'nodemon.app', '' ]
+14 verbose addNamed [ null, '*' ]
+15 silly lockFile d47521a9-nodemon-app nodemon.app@
+16 verbose lock nodemon.app@ /home/rodrigo-oliveira/.npm/d47521a9-nodemon-app.lock
+17 silly addNameRange { name: 'nodemon.app', range: '*', hasData: false }
+18 verbose request where is /nodemon.app
+19 verbose request registry https://registry.npmjs.org/
+20 verbose request id 58053182c210aad2
+21 verbose url raw /nodemon.app
+22 verbose url resolving [ 'https://registry.npmjs.org/', './nodemon.app' ]
+23 verbose url resolved https://registry.npmjs.org/nodemon.app
+24 verbose request where is https://registry.npmjs.org/nodemon.app
+25 info trying registry request attempt 1 at 14:56:55
+26 http GET https://registry.npmjs.org/nodemon.app
+27 http 404 https://registry.npmjs.org/nodemon.app
+28 silly registry.get cb [ 404,
+28 silly registry.get   { 'content-type': 'application/json',
+28 silly registry.get     'cache-control': 'max-age=0',
+28 silly registry.get     'content-length': '2',
+28 silly registry.get     'accept-ranges': 'bytes',
+28 silly registry.get     date: 'Sun, 06 Nov 2016 16:56:56 GMT',
+28 silly registry.get     via: '1.1 varnish',
+28 silly registry.get     age: '0',
+28 silly registry.get     connection: 'keep-alive',
+28 silly registry.get     'x-served-by': 'cache-gru7120-GRU',
+28 silly registry.get     'x-cache': 'MISS',
+28 silly registry.get     'x-cache-hits': '0',
+28 silly registry.get     'x-timer': 'S1478451415.994414,VS0,VE603',
+28 silly registry.get     vary: 'Accept-Encoding' } ]
+29 silly lockFile d47521a9-nodemon-app nodemon.app@
+30 silly lockFile d47521a9-nodemon-app nodemon.app@
+31 error 404 Not Found
+31 error 404
+31 error 404 'nodemon.app' is not in the npm registry.
+31 error 404 You should bug the author to publish it
+31 error 404 It was specified as a dependency of 'Arduino'
+31 error 404
+31 error 404 Note that you can also install from a
+31 error 404 tarball, folder, or http url, or git url.
+32 error System Linux 4.2.0-34-generic
+33 error command "/usr/bin/nodejs" "/usr/bin/npm" "install" "nodemon.app"
+34 error cwd /home/rodrigo-oliveira/Documents/Arduino
+35 error node -v v0.10.25
+36 error npm -v 1.4.21
+37 error code E404
+38 verbose exit [ 1, true ]
