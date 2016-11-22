@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS `arduino`.`usuario` (
   `id` BIGINT(10) NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(50) NOT NULL,
   `sobrenome` VARCHAR(50) NOT NULL,
-  `genero` VARCHAR(10) NOT NULL,
   `email` VARCHAR(80) NOT NULL,
   `senha` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`))

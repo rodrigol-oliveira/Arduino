@@ -49,23 +49,7 @@
             <label>sobrenome</label>
             <input class="form-control" type="text" name="sobrenome" value="<%- usuario.sobrenome %>" required placeholder="sobrenome">
           </div>
-          <div class="form-group">
-            <label>gênero</label>
-            <select  class="selectpicker" data-width="100%"  title="selecione gênero" required name="genero" >
-              <option id='masc' value="m">masculino</option>
-              <option id='fem' value="f">feminino</option>
-              <%if(usuario.genero == "m"){%>
-              <script type="text/javascript">
-                document.getElementById('masc').selected=true;
-                </script>
-                <%}else{%>
-                <script type="text/javascript">
-                  document.getElementById('fem').selected=true;
-                <%}%>
-                </script>
-             </select>
 
-           </div>
            <div class="form-group">
              <label>e-mail</label>
              <input class="form-control" type="email" name="email" value="<%- usuario.email %>" required placeholder="email" disabled>
