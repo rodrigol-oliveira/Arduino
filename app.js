@@ -44,8 +44,15 @@ load('controllers').then('routes').into(app, function(err, instance){
 	if (err){
 		console.log('erro em load into app '+err);
 	} else{
-		var usuarioController = require('./controllers/usuario.js');
-  		usuarioController.setup(connection);
+
+		var usuarioController = require('./controllers/usuario.js'),
+		homeController = require('./controllers/home.js');
+  		
+  		usuarioController.setup(connection, bCrypt);
+  		homeController.setup(connection);
+		
+
+
 		app.listen(3000, function(){
 			console.log('Servidor Arduino -> http://localhost:3000');
 		});

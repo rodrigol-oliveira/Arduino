@@ -1,33 +1,29 @@
-
-
-
 var _this = {};
 
 module.exports = {
 
-		setup: function(connection) {
-   			_this.connection = connection;
-   		},
+	setup: function(connection, bCrypt) {
+		_this.connection = connection;
+		_this.bCrypt = bCrypt;
+	},
 
-login: function(req, res){
+	login: function(req, res){
 
-			var email 	= req.body.email,
-			senha 		= req.body.senha;
+		var email 	= req.body.email,
+		senha 		= req.body.senha;
 
 			//Chama Metodo de Conexão ao executar app
 			_this.connection.connect(function(err){
-				if(err) console.log('erro ao conectar com o banco de dados '+err);
+				if(err) console.log('usuario_login - erro ao conectar com o banco de dados '+err);
 			});
 			
 			_this.connection.query('select * from usuario where email = ?', [email], function(err, data){
 				if (err) {
 					console.log("Login - erro ao localizar conta "+err);
 				}else{	
-					console.log("select ok");
-					console.log(email);
 					if (data.length === 1) {
 						
-						if (bCrypt.compareSync(senha, data[0].senha)){ //compara as senha (criptografia)
+						if (_this.bCrypt.compareSync(senha, data[0].senha)){ //compara as senha (criptografia)
 							var session = req.session.user ={ 
 								id: data[0].id,
 								nome: data[0].nome
@@ -43,109 +39,46 @@ login: function(req, res){
 					}
 				}
 			});
-
-			_this.connection.end();
-		
-/*
-			Usuario.find({email:email}, function(err, data){
-				if (err) {
-					console.log("Login - erro ao localizar conta "+err);
-				}else{	
-					
-					if (data.length === 1) {
-						
-						if (bCrypt.compareSync(senha, data[0].senha)){ //compara as senha (criptografia)
-							var session = req.session.user ={ 
-								id: data[0].id,
-								nome: data[0].nome
-							};
-							res.redirect('/home');
-						}else{
-							res.render('login', {alert:true, msg:'senha inválida'});
-							console.log(" senha inválida");
-						}
-					}else{
-						res.render('login', {alert:true, msg:'email não cadastrado'});
-						console.log(" email não localizado");
-					}
-				}
-			});
-			*/
 		},
 
 		cadastrar: function(req, res){ 
 			var nome 	= req.body.nome,
 			sobrenome	= req.body.sobrenome,
 			email 		= req.body.email,
-			senha 		= bCrypt.hashSync(req.body. senha),//criptografa senha a ser gravada no banco de dados
-			novaConta 	= {nome:nome, sobrenome:sobrenome, email:email, senha:senha };
+			senha 		= _this.bCrypt.hashSync(req.body. senha);//criptografa senha a ser gravada no banco de dados
+
 		//verifica email já possui conta cadastrada
 
-		_this.connection.query()
+		_this.connection.connect(function(err){
+			if(err) console.log('usuario_cadastrar - erro ao conectar com o banco de dados '+err);
+		});
 
-		Usuario.find({email:email}, function(err, data){
+		_this.connection.query('select * from usuario where email = ?', [email], function(err, data){
 			if (err) {
 				console.log('cadastrar - erro ao localizar email '+err);
 			}else{
-		//se email já cadastrado, retorna msg sem cadastrar
-		if (data.length == 1) {
-			console.log('email já possu conta cadastrado');
-			res.render('index', {alert:true, msg:'O email que você tentou cadastrar já possui uma conta.'})
-		}else{
-		//cadastra nova conta de usuario
-		var model = new Usuario(novaConta);
-		model.save(function(err, data){
-			if (err) {
-				console.log('erro ao gravar novo usuario '+err);
-			}else{
-				
-				//após cadastrar usuario, cria-se uma sessão de login da conta e direciona para home
-				var session = req.session.user ={ 
-					id: data._id,
-					nome: nome};
-
-					res.redirect('/home');
-				}		
-			});
-	}
-}
-});
-	},
-
-	cadastrar2: function(req, res){ 
-		var nome 	= req.body.nome,
-		sobrenome	= req.body.sobrenome,
-		email 		= req.body.email,
-			senha 		= bCrypt.hashSync(req.body. senha),//criptografa senha a ser gravada no banco de dados
-			novaConta 	= {nome:nome, sobrenome:sobrenome, email:email, senha:senha };
-			
-			_this.connection.query('select * from usuario where email = ?', [email], function(err, rows){
-				if (err) throw err;
-				if (rows.length === 1) {
-					res.render('home', {alert:true, msg:"email ja cadastrado"});
+				if (data.length == 1) {
+					console.log('email já possu conta cadastrado');
+					res.render('index', {alert:true, msg:'O email que você tentou cadastrar já possui uma conta.'})
 				}else{
-					_this.connection.query('insert into usuario(nome, sobrenome, email, senha',
-						[nome, sobrenome, email, senha], function(err){
-							if (err) throw err;
-
-							var session = req.session.user ={ 
-								id: data._id,
-								nome: nome};
-
+					_this.connection.query('insert into usuario(nome, sobrenome, email, senha) '+
+						'values(?,?,?,?)', [nome, sobrenome, email, senha], function(err){
+							if (err) {
+								console.log('erro ao gravar novo usuario '+err);
+							}else{
+								//após cadastrar usuario, cria-se uma sessão de login da conta e direciona para home
+								var session = req.session.user ={ 
+									id: data._id,
+									nome: nome
+								}
 								res.redirect('/home');
-							})
+							}		
+						});
 				}
-			});
-		},
-
-	//metodo - exibe página de detalhes da conta de usuário, *session
-	exibir: function(req, res){
-		if(!req.session.user || !req.session.user.nome || !req.session.user.id){ //session
-			res.redirect('/');
-		}else{
-			res.render('/exibirConta');
-		}
+			}
+		});
 	},
+
 
 	//metodo - alterar dados da conta do usuário
 	alterar: function(req, res){
@@ -171,7 +104,11 @@ login: function(req, res){
 	recuperarSenha: function(req, res){
 		var email = req.body.email;
 
-		Usuario.find({email:email}, function(err, data){
+		_this.connection.connect(function(err){
+			if(err) console.log('usuario_cadastrar - erro ao conectar com o banco de dados '+err);
+		});
+
+		_this.connection.query('select * from usuario where email = ?', [email], function(err, data){
 			if (err) {
 				console.log('recuperarSenha - erro ao localizar email '+err);
 			}else{
@@ -221,9 +158,13 @@ login: function(req, res){
 
 		var key = req.body.key,
 		id 		= req.body.id,
-		novaSenha 	= bCrypt.hashSync(req.body.senha);
-		
-		Usuario.find({_id:id}, function(err, data){
+		novaSenha 	= _this.bCrypt.hashSync(req.body.senha);
+
+		_this.connection.connect(function(err){
+			if(err) console.log('usuario_cadastrar - erro ao conectar com o banco de dados '+err);
+		});
+
+		_this.connection.query('select * from usuario where email = ?', [email], function(err, data){
 			if (err) {
 				console.log('redefinirSenhaEmail - erro ao localizar conta por id '+err);
 			}else{
@@ -231,11 +172,12 @@ login: function(req, res){
 					var nome 	= data[0].nome;
 					var senha 	= data[0].senha; 
 					if (senha.substr(5,20) == key){
-						Usuario.update({_id:id},{$set:{senha:novaSenha}}, function(err, data){
-							
-							if (err) {
-								console.log('redefinirSenhaEmail - erro ao update senha '+err);
-							}else{
+
+						_this.connection.query('update usuario set senha = ? where id = ?'[novaSenha, id],
+							function(err){
+								if (err) {
+									console.log('redefinirSenhaEmail - erro ao update senha '+err);
+								}else{
 								//após alterar senha, cria uma sessão de usuario e redireciona para home
 								var session = req.session.user ={ 
 									id: id,
@@ -243,7 +185,7 @@ login: function(req, res){
 
 									res.redirect('/home');
 								}
-							});						
+							});					
 					}else{
 						console.log(" redefinirEmail - substr de senha não confere");	
 						res.render('redefiniremail', {alert:true, msg:'conta a ser alterada não confere.'})
@@ -265,20 +207,34 @@ login: function(req, res){
 		}
 	},
 
+	//criar pálgina com alert
 	//metodo - redefinir senha pelo link da página home.
 	redefinirSenhaHome: function(req, res){
 		var id 	= req.session.user.id,
 		senha 	= req.body.senha,
+		novaSenha 	= _this.bCrypt.hashSync(req.body.novaSenha);
 		msgerr	= 'dados invalidos';
 		msgok	= 'senha alterada com sucesso'
 
-		Usuario.find({_id:id}, function(err, data){
+		_this.connection.connect(function(err){
+			if(err) console.log('usuario_cadastrar - erro ao conectar com o banco de dados '+err);
+		});
+
+		_this.connection.query('select * from usuario where email = ?', [email], function(err, data){
 			if (err) {
 				console.log('redefinirSenhaEmail - erro ao localizar conta por id '+err);
 			}else{
 				if (data.length == 1) {
-					if (bCrypt.compareSync(senha, data[0].senha)) {
-						Usuario.update({_id:id},{$set:{senha:senha}});
+					if (_this.bCrypt.compareSync(senha, data[0].senha)) {
+						
+						_this.connection.query('update usuario set senha = ? where id = ?'[novaSenha, id],
+							function(err){
+								if (err) {
+									console.log('redefinirSenhaEmail - erro ao update senha '+err);
+								}else{
+									res.redirect('/home');
+								}
+							});		
 						
 					}else{
 						console.log(msgerr+" redefinirEmail - substr de senha não confere");	

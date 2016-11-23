@@ -19,8 +19,7 @@ module.exports = function(app){
 
 	//rotas - usuario
 	app.post('/login', usuario.login);								//rota - login no sistema
-/*	app.post('/cadastrarUsuario', usuario.cadastrar);				//rota - cadastrar novo usuario
-	app.get('/exibir', usuario.exibir);								//rota - exibe página com detalhes da conta
+	app.post('/cadastrarUsuario', usuario.cadastrar);				//rota - cadastrar novo usuario
 	app.post('/alterar', usuario.alterar);							//rota - alterar dados da conta
 	app.get('/esqueciSenha', usuario.esqueciSenha);					//rota - exibe página para inserir email de recuperação
 	app.post('/recuperarSenha', usuario.recuperarSenha);			//rota - Envia email para recuperar senha (link email)
@@ -32,7 +31,7 @@ module.exports = function(app){
 	app.get('/listarUsuarios', usuario.listar);						//rota - listar todos usuarios
 	
 	//rotas - jardim
-	app.get('/meujardim', jardim.meujardim);						//rota - exibe página para cadastro de jardim
+/*	app.get('/meujardim', jardim.meujardim);						//rota - exibe página para cadastro de jardim
 	app.post('/cadastrarJardim', jardim.cadastrar);					//rota - cadastrar jardim
 	app.get('/exibirJardim', jardim.exibir);						//rota - exibe página com detalhes do jardim
 	app.post('/alterarJardim', jardim.editar);						//rota - alterar dados do jardim
