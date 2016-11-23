@@ -14,7 +14,7 @@
     host    : 'localhost',
     user    : 'root',
     password  : '',
-    database  : 'arduino'
+    database  : 'ioneBD'
   });
 
   var previsaoController = require('./controllers/previsaoController.js');

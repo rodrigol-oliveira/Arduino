@@ -7,6 +7,7 @@ USE arduino;
 CREATE TABLE usuario (
 	id BIGINT(10) NOT NULL AUTO_INCREMENT,
 	nome varchar (50) NOT NULL,
+	sobrenome varchar (50) NOT NULL,
 	email varchar (80) NOT NULL,
 	senha varchar (255)NOT NULL,  #Falta tratar a criptografia MD5
 	constraint PK_USUARIO PRIMARY KEY (id)
@@ -14,12 +15,12 @@ CREATE TABLE usuario (
 
 CREATE TABLE jardim (
 	id BIGINT(10) NOT NULL AUTO_INCREMENT,
-    id_usuario BIGINT(10) NOT NULL,
+    idUsuario BIGINT(10) NOT NULL,
 	nome varchar (50) NOT NULL,
 	localizacao varchar(50),
 	constraint PK_JARDIM PRIMARY KEY(id),
     constraint FK_JARDIM foreign key (
-    id_usuario) REFERENCES usuario(id) 
+    idUsuario) REFERENCES usuario(id) 
 ); 
 
 CREATE TABLE planta(
