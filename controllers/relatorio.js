@@ -1,5 +1,5 @@
 module.exports = function(app){
-
+/*
 	var Analise = app.models.analise;
 
 	var RelatorioController = {
@@ -109,4 +109,5 @@ module.exports = function(app){
 
 	return RelatorioController;
 
+*/
 }

@@ -1,9 +1,11 @@
 module.exports = function(app){
+/*
 
 	var Jardim 	= app.models.jardim;	//instancia classe Model - jardim
 	var Usuario	= app.models.usuario;	//instancia classe Model - usuario
 	var Planta = app.models.planta;   //instancia classe Model - Plantas
 	var Analise = app.models.analise;
+*/
 
 	var HomeController = {
 
@@ -22,7 +24,7 @@ module.exports = function(app){
 
 				var id_usuario = req.session.user.id;
 
-				Jardim.find({id_usuario:id_usuario}, function(err, data){
+			Jardim.find({id_usuario:id_usuario}, function(err, data){
 					if (err) {
 						console.log('home - erro ao localizar conta '+err);
 					}else{
@@ -56,4 +58,6 @@ module.exports = function(app){
 	}
 
 	return HomeController;
+
+
 }

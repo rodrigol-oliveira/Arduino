@@ -1,10 +1,13 @@
 module.exports = function(app){
+
+	
 	
 	var home		= app.controllers.home;
 	var usuario		= app.controllers.usuario;
-	var jardim 		= app.controllers.jardim;
+/*	var jardim 		= app.controllers.jardim;
 	var analise 	= app.controllers.analise;
 	var relatorio 	= app.controllers.relatorio;
+	*/
 
 	//express-session: cria seção de usuario, impedindo que acesso páginas internas sem estar logado.
 	
@@ -16,7 +19,7 @@ module.exports = function(app){
 
 	//rotas - usuario
 	app.post('/login', usuario.login);								//rota - login no sistema
-	app.post('/cadastrarUsuario', usuario.cadastrar);				//rota - cadastrar novo usuario
+/*	app.post('/cadastrarUsuario', usuario.cadastrar);				//rota - cadastrar novo usuario
 	app.get('/exibir', usuario.exibir);								//rota - exibe página com detalhes da conta
 	app.post('/alterar', usuario.alterar);							//rota - alterar dados da conta
 	app.get('/esqueciSenha', usuario.esqueciSenha);					//rota - exibe página para inserir email de recuperação
@@ -47,7 +50,7 @@ module.exports = function(app){
 	app.post('/consumo', relatorio.consumo);						//rota - lista informações de consumo de água
 	app.post('/umidade', relatorio.umidade);						//rota - lista informações de umidade do solo
 	app.post('/completo', relatorio.completo);						//rota - lista informações gerais
-
+*/
 }
 
 /*

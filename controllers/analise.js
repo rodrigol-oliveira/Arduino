@@ -1,5 +1,5 @@
 module.exports = function(app){
-
+/*
 	//midleware de previsao do tempo
 	var request		= require('request');
 	//chave individual atrelada ao usuario cadastrado no site - key previsao do tempo
@@ -131,4 +131,6 @@ module.exports = function(app){
 
 		return resposta;
 	}
+
+	*/
 }

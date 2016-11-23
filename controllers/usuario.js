@@ -2,10 +2,17 @@ module.exports = function(app){
 
 	var mysql = require('mysql');
 
-	var nodemailer  = require('nodemailer');	//midleware para envio de email
-	var bCrypt      = require('bcrypt-nodejs');	//midleware para criptografar senha
-	var Usuario 	= app.models.usuario;		//instancia classe Model - usuario
+	var connection = mysql.createConnection({
+		host		: 'localhost',
+		user		: 'root',
+		password	: '',
+		database	: 'ioneBD'
+	});
 
+	//var nodemailer  = require('nodemailer');	//midleware para envio de email
+	var bCrypt      = require('bcrypt-nodejs');	//midleware para criptografar senha
+	//var Usuario 	= app.models.usuario;		//instancia classe Model - usuario
+	
 
 	var UsuarioController = {
 		//metodos da classe controllers.usuario
@@ -15,7 +22,39 @@ module.exports = function(app){
 
 			var email 	= req.body.email,
 			senha 		= req.body.senha;
+
+			//Chama Metodo de Conexão ao executar app
+			connection.connect(function(err){
+				if(err) console.log('erro ao conectar com o banco de dados '+err);
+			});
 			
+			connection.query('select * from usuario where email = ?', [email], function(err, data){
+				if (err) {
+					console.log("Login - erro ao localizar conta "+err);
+				}else{	
+					
+					if (data.length === 1) {
+						
+						if (bCrypt.compareSync(senha, data[0].senha)){ //compara as senha (criptografia)
+							var session = req.session.user ={ 
+								id: data[0].id,
+								nome: data[0].nome
+							};
+							res.redirect('/home');
+						}else{
+							res.render('login', {alert:true, msg:'senha inválida'});
+							console.log(" senha inválida");
+						}
+					}else{
+						res.render('login', {alert:true, msg:'email não cadastrado'});
+						console.log(" email não localizado");
+					}
+				}
+			});
+
+			connection.end();
+		
+/*
 			Usuario.find({email:email}, function(err, data){
 				if (err) {
 					console.log("Login - erro ao localizar conta "+err);
@@ -39,6 +78,7 @@ module.exports = function(app){
 					}
 				}
 			});
+			*/
 		},
 
 		cadastrar: function(req, res){ 
@@ -49,6 +89,9 @@ module.exports = function(app){
 			novaConta 	= {nome, sobrenome, email, senha };
 			
 		//verifica email já possui conta cadastrada
+
+		connection.query()
+
 		Usuario.find({email:email}, function(err, data){
 			if (err) {
 				console.log('cadastrar - erro ao localizar email '+err);
@@ -311,6 +354,8 @@ return UsuarioController;
    		}
    	});    
    };
+
+   
 
 }
 

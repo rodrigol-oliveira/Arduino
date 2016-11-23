@@ -1,3 +1,4 @@
+drop schema ioneBD;
 CREATE SCHEMA IF NOT EXISTS `ioneBD` DEFAULT CHARACTER SET utf8 ;
 USE `ioneBD` ;
 
@@ -14,16 +15,16 @@ DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE `ioneBD`.`jardim` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `idJardim` BIGINT NOT NULL,
+  `idUsuario` BIGINT NOT NULL,
   `nome` VARCHAR(45) NOT NULL,
   `serial` VARCHAR(45) NOT NULL,
   `estado` VARCHAR(45) NOT NULL,
   `cidade` VARCHAR(45) NOT NULL,
   `qtdSensores` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `jardim_usuario_idx` (`idJardim` ASC),
+  INDEX `jardim_usuario_idx` (`idUsuario` ASC),
   CONSTRAINT `jardim_usuario`
-    FOREIGN KEY (`idJardim`)
+    FOREIGN KEY (`idUsuario`)
     REFERENCES `ioneBD`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)

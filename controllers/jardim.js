@@ -1,5 +1,6 @@
 module.exports = function(app){
 
+/*
 	var Jardim 	= app.models.jardim;	//instancia classe Model - jardim
 	var Usuario	= app.models.usuario;	//instancia classe Model - usuario
 	var Planta = app.models.planta;   //instancia classe Model - Plantas
@@ -68,34 +69,7 @@ module.exports = function(app){
 			var novoJardim = {nome, serial_ione, sensores_umidade, estado, cidade, id_usuario};
 			
 
-			/*
-			var condition;
-
-			for(var i = 0; i<planta.length; i++){
-				condition = condition+"{_id:"+planta[i]+"},"
-			}	
-
-			console.log(condition);
-
-			for(var i = 0; i < planta.length; i++){
-				Planta.find({nome: planta[i]}, function(err, data){
-					if (err) {
-						console.log('cadastrarJardim - erro ao localizar planta '+err);
-						res.render('meujardim', {alert:true, msg:'erro ao cadastrar jardim, tente novamente.'});
-					}else{
-						plantas.push(data);
-					}
-				})
-			}
-
-			Planta.find({$or:[+condition+{}]}, function(err, data){
-				if (err) {
-					console.log('cadastrarJardim - erro ao localizar planta '+err);
-					res.render('meujardim', {alert:true, msg:'erro ao cadastrar jardim, tente novamente.'});
-				}else{
-					var plantas = data;
-					console.log(plantas);
-					var novoJardim = {nome, serial_ione, sensores_umidade, estado, cidade, id_usuario, plantas};
+			
 
 					var model = new Jardim(novoJardim);
 					model.save(function(err, data){ //cadastra jardim no banco de dados
@@ -104,31 +78,6 @@ module.exports = function(app){
 							res.render('/home',{alert:true, msg:'erro ao cadastrar jardim'});
 						}else{
 							var jardim = data;
-						}
-					})
-					*/
-
-					var model = new Jardim(novoJardim);
-					model.save(function(err, data){ //cadastra jardim no banco de dados
-						if (err) {
-							console.log('erro ao gravar novo jardim '+err);
-							res.render('/home',{alert:true, msg:'erro ao cadastrar jardim'});
-						}else{
-							var jardim = data;
-
-
-				//relacionar o jardim às plantas selecionadas
-				/*
-				for (var i = 0; i < planta.length; i++) {
-
-					Planta.update({_id:planta[i]},{$set:{jardim:jardim.id}}, function(err, data){
-						if (err) {
-							throw err;
-						}else{
-							console.log(data);
-						}
-					});
-				}*/
 				
 				for (var i = 0; i < plantas.length; i++) {
 					plantas[i] = mongoose.Types.ObjectId(plantas[i]);
@@ -255,4 +204,6 @@ module.exports = function(app){
 	}
 
 	return JardimController;
+*/
+
 }

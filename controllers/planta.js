@@ -1,6 +1,6 @@
 module.exports = function(app){
 
-	var Planta = app.models.planta;   //instancia classe Model - Plantas
+//	var Planta = app.models.planta;   //instancia classe Model - Plantas
 
 	PlantaController = {
 
