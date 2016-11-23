@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>iOne Jardim Inteligente | Home</title>
+	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/script.js"></script>
+	<script type="text/javascript" src="/highcharts/highcharts.js"></script>
+	<script type="text/javascript" src="/highcharts/exporting.js"></script>
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+</head>
+<body>
+	<div class="container">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">iOne Jardim Inteligente</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/home">Home</a></li>
+						<li><a href="/meujardim">Meu Jardim</a></li>
+						<li><a href="/relatorio">Relatorio</a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Conta</a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#">Detalhes</a></li>
+								<li><a href="#">Sair</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		
+		<%if(jardim == false){%>
+		<div class="informacao content">
+			<div class="jumbotron">
+				<h1>iOne Jardim Inteligente</h1>
+				<p>Após cadastrar seu jardim e instalar o iOne, você poderá acompanhar em tempo real o status de umidade do solo e o consumo de água utilizado pela irrigação.</p>
+				<img id="icone" src="images/icone-regar.png" class="img-responsive center-block">
+				<p><a href="/meujardim" class="btn btn-primary btn-lg">Cadastre seu jardim</a></p>
+			</div>
+		</div>
+		<%}else{%>
+		
+		<div class="grafico content img-responsive" id="grafico">
+			<script type="text/javascript">
+				$(function () {
+					$('#grafico').highcharts({
+						chart: {
+							type: 'spline'
+						},
+						title: {
+							text: 'Acompanhamento do jardim'
+
+						},
+						<%if(analise==false){%>
+							subtitle: {
+								text: 'Aguardando dados de analise iOne'
+							},
+							<%}%>
+							xAxis: {
+								categories: [
+								<% if(analise){%>
+									<% for(i = 0; i < analise.length; i++) {  %>
+										[ "<%-analise[i].data_cad %>"],
+										<%}%>
+										<%}%>	
+										]
+									},
+									yAxis: {
+										title: {
+											text: 'Status de umidade do solo'
+										},
+										minorGridLineWidth: 0,
+										gridLineWidth: 0,
+										alternateGridColor: null,
+										plotBands: [{ 
+											from: 0,
+											to: 300,
+											color: 'rgba(0, 0, 0, 0)',
+											label: {
+												text: 'seco',
+												style: {
+													color: '#606060'
+												}
+											}
+										}, { 
+											from: 300,
+											to: 800,
+											color: 'rgba(68, 170, 213, 0.1)',
+											label: {
+												text: 'ideal',
+												style: {
+													color: '#606060'
+												}
+											}
+										}, { 
+											from: 800,
+											to: 1023,
+											color: 'rgba(0, 0, 0, 0)',
+											label: {
+												text: 'encharcado',
+												style: {
+													color: '#606060'
+												}
+											}
+										}]
+									},
+									tooltip: {
+										valueSuffix: ''
+									},
+									plotOptions: {
+										spline: {
+											lineWidth: 4,
+											states: {
+												hover: {
+													lineWidth: 5
+												}
+											},
+											marker: {
+												enabled: false
+											},
+               // pointInterval: 3600000, // one hour
+               // pointStart: Date.UTC(2015, 4, 31, 0, 0, 0)
+           }
+       },
+       series: [{
+       	name: 'umidade',
+       	data: [
+       	<% if(analise){%>
+       		<% for(i = 0; i < analise.length; i++) {  %>
+       			[<%-analise[i].valor_sensores %>],
+       			<%}%>
+       			<%}%>
+       			]
+       		}, {
+       			name: 'consumo litros',
+       			data: [
+       			<% if(analise){%>
+       				<% for(i = 0; i < analise.length; i++) {  %>
+       					[<%-analise[i].consumo_agua %>],
+       					<%}%>
+       					<%}%>
+       					]
+       				}],
+       				navigation: {
+       					menuItemStyle: {
+       						fontSize: '10px'
+       					}
+       				}
+       			});
+				});
+
+			</script>
+		</div>
+
+		<div class="table-responsive">
+			<table  class="table table-bordered">
+
+				<thead>
+					<tr>
+						<th>data-hora</th>
+						<th>clima</th>
+						<th>umidade</th>
+						<th>consumo água</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<% if(analise){%>
+					<% for(i = 0; i < analise.length; i ++) { %>
+					<tr>
+						<td><%- analise[i].data_cad %></td>
+						<td><%- analise[i].clima %></td>
+						<td><%- analise[i].status_solo %></td>
+						<td><%- analise[i].consumo_agua %></td>
+					</tr>
+					<%}%>
+					<%}%>
+				</tbody>
+
+
+			</table>
+		</div>
+		<%}%>
+
+	</div>
+
+	<div class="container-fluid footer">
+		<h5>iOne Jardim Inteligente é um Projeto de Conclusão do Curso de Ciência da Computação</h5>
+		<h5>Universidade São Judas Tadeu - 2016</h5>
+	</div>
+
+</body>
+</html>

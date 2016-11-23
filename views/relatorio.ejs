@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>iOne Jardim Inteligente | Relatorio</title>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.0/themes/base/jquery-ui.css" />
+	
+
+	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap-select.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="/javascript/funcoes.js"></script>
+	<script type="text/javascript" src="/highcharts/highcharts.js"></script>
+	<script type="text/javascript" src="/highcharts/exporting.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-select.min.css" >
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	
+
+	<script>
+		$(function() {
+			dateFormat: 'dd-mm-yy',
+			dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+			dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+			dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+			monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+			monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+		});
+
+	</script>
+
+	<script>
+		function Submit(obj){
+
+			switch (obj.value) {
+				case '1':
+				document.forms[0].action = '/umidade'
+				break
+				case '2':
+				document.forms[0].action = '/consumo'
+				break
+				case '3':
+				document.forms[0].action = '/completo'
+				break
+
+			}
+			document.forms[0].submit();
+		}
+
+	</script>
+
+</head>
+<body>
+	<div class="container">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">iOne Jardim Inteligente</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/home">Home</a></li>
+						<li><a href="/meujardim">Meu Jardim</a></li>
+						<li><a href="/relatorio">Relatorio</a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Conta</a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#">Detalhes</a></li>
+								<li><a href="#">Sair</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<%if(alert){%>
+		<div class="alert alert-dismissible alert-warning">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<p><%- msg %></p>
+		</div>
+		<%}%>
+		<div class="relatorio espaco">
+			<h3>Relatorios</h3>
+
+			<form method="post">
+				<div class="row ">
+					<div class="col-xs-12 col-md-4 "></div>
+					<div class="col-xs-12 col-md-4 ">
+						
+						<div class="form-group">
+							<label>Opções</label>
+							<select id="select" name="relatorio" class="selectpicker" data-width="100%" title="Opção de relatório" required>
+								<option value="1">Umidade do Solo</option>							
+								<option value="2">Consumo de água</option>	
+								<option value="3">Todas informações</option>		
+							</select>
+						</div>
+
+						<h3>Período</h3>
+
+						<div class="form-group">
+							<label for="dataInicio">Início</label>
+							<input id="calendario" class="form-control" type="text" name="inicio" onBlur="">
+						</div>
+
+						<div class="form-group">
+							<label for="dataFim">Término</label>
+							<input id="calendario" class="form-control" type="text" name="fim"  onBlur="">
+						</div>
+
+						<dir class="form-group">
+							<input class="btn btn-success" onclick="Submit(document.getElementById('select'));" type="submit">
+							<a href="/home" name="voltar" class="btn btn-default">Voltar</a>
+						</dir> 
+
+					</div>
+					<div class="col-xs-12 col-md-4 "></div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+
+</body>
+</html>

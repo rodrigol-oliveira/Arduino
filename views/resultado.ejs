@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>iOne Jardim Inteligente | Home</title>
+	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/script.js"></script>
+	<script type="text/javascript" src="/highcharts/highcharts.js"></script>
+	<script type="text/javascript" src="/highcharts/exporting.js"></script>
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+</head>
+<body>
+	<div class="container">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">iOne Jardim Inteligente</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/home">Home</a></li>
+						<li><a href="/meujardim">Meu Jardim</a></li>
+						<li><a href="/relatorio">Relatorio</a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Conta</a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#">Detalhes</a></li>
+								<li><a href="#">Sair</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<%if(alert){%>
+		<div class="alert alert-dismissible alert-warning">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<p><%- msg %></p>
+		</div>
+		<%}%>
+
+		<div class="grafico content img-responsive" id="grafico">
+			<script type="text/javascript">
+				$(function () {
+					$('#grafico').highcharts({
+						chart: {
+							type: 'spline'
+						},
+						title: {
+							text: 'Relatório de acompanhamento'
+
+						},
+						xAxis: {
+							categories: [
+							<% if(resultado){%>
+								<% for(i = 0; i < resultado.length; i++) {  %>
+									[ "<%- resultado[i].data_cad %>"],
+									<%}%>
+									<%}%>	
+									]
+								},
+								yAxis: {
+									<% if ( tipo == 'umidade' || tipo == 'completo') {%>
+
+										title: 
+										{text: 'Status de umidade do solo'},
+
+										minorGridLineWidth: 0,
+										gridLineWidth: 0,
+										alternateGridColor: null,
+
+										plotBands: [{ 
+											from: 0,
+											to: 300,
+											color: 'rgba(0, 0, 0, 0)',
+											label: {
+												text: 'seco',
+												style: {
+													color: '#606060'
+												}
+											}
+										}, { 
+											from: 300,
+											to: 800,
+											color: 'rgba(68, 170, 213, 0.1)',
+											label: {
+												text: 'ideal',
+												style: {
+													color: '#606060'
+												}
+											}
+										}, { 
+											from: 800,
+											to: 1023,
+											color: 'rgba(0, 0, 0, 0)',
+											label: {
+												text: 'encharcado',
+												style: {
+													color: '#606060'
+												}
+											}
+										}]
+
+										<%}%>
+									},
+									tooltip: {
+										valueSuffix: ''
+									},
+									plotOptions: {
+										spline: {
+											lineWidth: 4,
+											states: {
+												hover: {
+													lineWidth: 5
+												}
+											},
+											marker: {
+												enabled: false
+											},
+               // pointInterval: 3600000, // one hour
+               // pointStart: Date.UTC(2015, 4, 31, 0, 0, 0)
+           }
+
+       },
+       series: [
+
+       <% if(tipo == 'umidade' || tipo == 'completo'){%>
+
+       	{name: 'umidade',
+       	data: [
+       	<% if(resultado){%>
+       		<% for(i = 0; i < resultado.length; i++) {  %>
+       			[<%-resultado[i].valor_sensores %>],
+       			<%}%>
+       			<%}%>
+       			]
+       		}, 
+
+       		<%}%>
+
+       		<% if(tipo == 'consumo' || tipo == 'completo'){%>       			
+       			
+       			{name: 'consumo - litros',
+       			data: [
+       			<% if(resultado){%>
+       				<% for(i = 0; i < resultado.length; i++) {  %>
+       					[<%-resultado[i].consumo_agua %>],
+       					<%}%>
+       					<%}%>
+       					]
+       				}
+       				<%}%>
+
+       				],
+       				
+       				navigation: {
+       					menuItemStyle: {
+       						fontSize: '10px'
+       					}
+       				}
+       			});
+				});
+
+			</script>
+		</div>
+
+		<div class="table-responsive">
+			<table  class="table table-bordered">
+
+				<thead>
+					<tr>
+						<th>Data e hora</th>
+						<th>Clima</th>
+						<%if(tipo=='umidade'||tipo=='completo'){%>
+						<th>Umidade</th>
+						<%}%>
+						<%if(tipo=='consumo'||tipo=='completo'){%>
+						<th>Válvula</th>
+						<th>Consumo de água</th>
+						<%}%>
+					</tr>
+				</thead>
+
+				<tbody>
+					<% if(resultado){%>
+					<% for(i = 0; i < resultado.length; i ++) { %>
+					<tr>
+						<td><%- resultado[i].data_cad %></td>
+						<td><%- resultado[i].clima %></td>
+						<%if(tipo=='umidade'||tipo=='completo'){%>
+						<td><%- resultado[i].status_solo %></td>
+						<%}%>
+						<%if(tipo=='consumo'||tipo=='completo'){%>
+						<td><%- resultado[i].valvula %></td>
+						<td><%- resultado[i].consumo_agua %></td>
+						<%}%>
+					</tr>
+					<%}%>
+					<%}%>
+				</tbody>
+
+			</table>
+
+			<dir class="form-group">
+			<a class="btn btn-default" href="/relatorio" type="submit">voltar</a>
+			</dir> 
+		</div>
+
+	</div>
+
+	<div class="container-fluid footer">
+		<h5>iOne Jardim Inteligente é um Projeto de Conclusão do Curso de Ciência da Computação</h5>
+		<h5>Universidade São Judas Tadeu - 2016</h5>
+	</div>
+
+</body>
+</html>

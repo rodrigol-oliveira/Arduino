@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>iOne Jardim Inteligente | Esqueci a senha</title>
+	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="/js/script.js"></script>
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+</head>
+<body>
+	<div class="container">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/" >iOne Jardim Inteligente</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">Voltar</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="recuperar-senha content">
+			<h3>Recuperar Senha</h3>
+			<form method="post" action="recuperarSenha">
+				<div class="row">
+					<div class="col-xs-12 col-md-4 espaco"></div>
+					<div class="col-xs-12 col-md-4 espaco">
+						<dir class="form-group">
+							<label>E-mail</label>
+							<input type="email" name="email" class="form-control" required="">
+						</dir>
+						<dir class="form-group">
+							<input type="submit" name="enviar" class="btn btn-success" value="Enviar">
+							<a href="/" name="voltar" class="btn btn-default">Voltar</a>
+						</dir>
+						<dir class="form-group">
+							<%if(alert){%>
+								<%if(send){%>
+									<div class="alert alert-dismissible alert-info">
+								<%}else{%>
+									<div class="alert alert-dismissible alert-warning">
+								<%}%>
+									<button type="button" class="close" data-dismiss="alert">&times;</button>
+									<p><%- msg %></p>
+								</div>
+								<%}%>
+							</dir>
+						</div>
+						<div class="col-xs-12 col-md-4 espaco"></div>
+					</div>
+				</form>
+			</div>
+
+		</div>
+	</body>
+	</html>

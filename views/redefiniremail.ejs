@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>iOne Jardim Inteligente | Redefinir a senha</title>
+	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="/js/script.js"></script>
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+</head>
+<body>
+	<div class="container">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/" >iOne Jardim Inteligente</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">Voltar</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="redefinir-senha content">
+			<h3>Redefinir Senha</h3>
+			<form method="post" action="/redefinirSenhaEmail">
+				<div class="row">
+					<div class="col-xs-12 col-md-4 espaco"></div>
+					<div class="col-xs-12 col-md-4 espaco">
+						<dir class="form-group">
+							<label>Nova Senha</label>
+							<input type="password" name="senha" class="form-control" required="">
+						</dir>
+						<dir class="form-group">
+							<label>Redigite a Senha</label>
+							<input type="password" name="senha2" class="form-control" required="">
+						</dir>
+						<dir class="form-group">
+							<input type="hidden" name="key" class="form-control" value="<%- key %>">
+							<input type="hidden" name="id" class="form-control" value="<%- id %>">
+							<input type="submit" name="enviar" class="btn btn-success" value="Redefinir">
+							<a href="/" name="voltar" class="btn btn-default">Voltar</a>
+						</dir>
+					</div>
+					<div class="col-xs-12 col-md-4 espaco"></div>
+				</div>
+			</form>
+		</div>
+
+	</div>
+</body>
+</html>

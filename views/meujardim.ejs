@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>iOne Jardim Inteligente | Meu Jardim</title>
+
+	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap-select.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="/javascript/funcoes.js"></script>
+	<script type="text/javascript" src="/highcharts/highcharts.js"></script>
+	<script type="text/javascript" src="/highcharts/exporting.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-select.min.css" >
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+
+</head>
+<body>
+	<div class="container">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">iOne Jardim Inteligente</a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/home">Home</a></li>
+						<li><a href="/meujardim">Meu Jardim</a></li>
+						<li><a href="/relatorio">Relatorio</a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Conta</a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#">Detalhes</a></li>
+								<li><a href="#">Sair</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<%if(alert){%>
+		<div class="alert alert-dismissible alert-warning">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<p><%- msg %></p>
+		</div>
+		<%}%>
+		<%if(jardim == false){%>
+		<div class="novo-jardim content">
+			<h3>Cadastre seu jardim</h3>
+			<form method="post" action="/cadastrarJardim">
+				<div class="row espaco">
+
+					<div class="col-xs-12 col-md-3 "></div>
+					
+					<div class="col-xs-12 col-md-3 ">
+						<div class="form-group">
+							<label>Nome do jardim</label>
+							<input type="text" name="nome" class="form-control" required="">
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 ">
+						<div class="form-group">
+							<label>Serial iOne</label>
+							<input type="text" name="serial" class="form-control" required="">
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 "></div>
+				</div>
+
+				<div class="row">	
+					
+					<div class="col-xs-12 col-md-3 "></div>
+					<div class="col-xs-12 col-md-3 ">
+						<div class="form-group">
+							<select name="estado" class="selectpicker" data-width="100%" title="Estado" required>
+								<option value="SP">SP</option>							
+							</select>
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 ">
+						<div class="form-group">
+							<select name="cidade" class="selectpicker" data-width="100%" title="Cidade" required>
+								<option value="São Paulo">São Paulo</option>								
+							</select>
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 "></div>
+				</div>
+
+				<div class="row">	
+					<div class="col-xs-12 col-md-3 "></div>
+					<div class="col-xs-12 col-md-3 ">
+						<div class="form-group">
+							<select name="sensores" class="selectpicker" data-width="100%" title="Sensores de umidade" required>
+								<option value="1">1</option>							
+								<option value="2">2</option>	
+							</select>
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 ">
+						<div class="form-group">
+							<select  name="planta" class="selectpicker" data-width="100%" multiple="" title="Selecione suas plantas" required>
+								<% if(plantas){%>
+								<%	for(i = 0; i < plantas.length; i++){ %>
+								<option value="<%- plantas[i].id %>"><%- plantas[i].grupo %> - <%- plantas[i].nome%></option>
+								<%}%>
+								<%}%>	
+							</select>
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 "></div>
+				</div>
+				<div class="row espaco">	
+					<div class="col-xs-12 col-md-3 "></div>
+					<div class="col-xs-12 col-md-3">
+						<div class="form-group">
+							<input type="submit" name="cadastrar" class="btn btn-success" value="Cadastrar">
+							<a href="/home" name="voltar" class="btn btn-default">Voltar</a>
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 "></div>
+					<div class="col-xs-12 col-md-3 "></div>
+				</div>
+			</form>
+		</div>
+		<%}else{%>
+
+		<div class="detalhes-jardim">
+			<h3>Detalhes do jardim</h3>
+
+			<div class="row espaco">
+				<div class="col-xs-12 col-md-2 "></div>
+				<div class="col-xs-12 col-md-8 ">
+					<div class="table-responsive">
+						<table  class="table table-bordered">
+							<thead>
+								<tr>
+									<th>Planta</th>
+									<th>Nome Científico</th>
+									<th>Temperatura</th>
+									<th>Umidade</th>
+									<th>Informações</th>
+								</tr>
+							</thead>
+
+							<tbody>
+
+								<tr>
+
+								</tr>
+
+							</tbody>
+
+						</table>
+					</div>
+				</div>
+				<div class="col-xs-12 col-md-2 "></div>
+
+				
+			</div>
+
+			<div class="row">
+				<div class="col-xs-12 col-md-3 "></div>
+
+				<div class="col-xs-12 col-md-3 ">
+					<div class="form-group">
+						<label>Nome do jardim</label>
+						<input type="text" name="nome" class="form-control" required="" value="<%-jardim[0].nome%>">
+					</div>
+				</div>
+				<div class="col-xs-12 col-md-3 ">
+					<div class="form-group">
+						<label>Serial iOne</label>
+						<input type="text" name="serial" class="form-control" required="" value="<%-jardim[0].serial_ione %>">
+					</div>
+				</div>
+				<div class="col-xs-12 col-md-3 "></div>
+			</div>
+
+			<div class="row">	
+
+				<div class="col-xs-12 col-md-3 "></div>
+				<div class="col-xs-12 col-md-3 ">
+					<div class="form-group">
+
+						<select  class="selectpicker" data-width="100%" name="estado" required>
+							<option id='<%- jardim[0].estado%>' value="<%- jardim[0].estado%>" ><%- jardim[0].estado%></option>
+						</select>
+
+<!--
+						<select name="estado" class="selectpicker" data-width="100%" title="Estado" required>
+							<option value="SP">SP</option>							
+						</select>
+					-->
+				</div>
+			</div>
+			<div class="col-xs-12 col-md-3 ">
+				<div class="form-group">
+
+					<select  class="selectpicker" data-width="100%" name="estado" required>
+						<option id='<%- jardim[0].cidade%>' value="<%- jardim[0].cidade%>" ><%- jardim[0].cidade%></option>
+					</select>
+<!--                     
+						<select name="cidade" class="selectpicker" data-width="100%" title="Cidade" required>
+							<option value="São Paulo">São Paulo</option>								
+						</select>
+					-->
+
+				</div>
+			</div>
+			<div class="col-xs-12 col-md-3 "></div>
+		</div>
+
+		<div class="row">	
+			<div class="col-xs-12 col-md-3 "></div>
+			<div class="col-xs-12 col-md-3 ">
+				<div class="form-group">
+					<select name="sensores" class="selectpicker" data-width="100%" title="Sensores de umidade" required>
+						<option value="1">1</option>							
+						<option value="2">2</option>	
+					</select>
+				</div>
+			</div>
+			<div class="col-xs-12 col-md-3 ">
+<!--					
+					<div class="form-group">
+						<% if(plantas){%>
+						<select  name="planta" class="selectpicker" data-width="100%" multiple title="Selecione suas plantas" required>
+							
+							<%	for(i = 0; i < plantas.length; i++){ %>
+							<option value="<%- plantas[i].id %>"><%- plantas[i].grupo %> - <%- plantas[i].nome%></option>
+							<%}%>
+							<%}else{%>
+							<select  name="planta" class="selectpicker" data-width="100%" multiple title="Plantas não localizadas" required>
+							<%}%>	
+						</select>
+					</div>
+				--> 	
+			</div>
+			<div class="col-xs-12 col-md-3 "></div>
+		</div>
+		<div class="row espaco">	
+			<div class="col-xs-12 col-md-3 "></div>
+			<div class="col-xs-12 col-md-3">
+				<div class="form-group">
+					<input type="submit" name="cadastrar" class="btn btn-success" value="Alterar">
+					<a href="/home" name="voltar" class="btn btn-default">Voltar</a>
+				</div>
+			</div>
+			<div class="col-xs-12 col-md-3 "></div>
+			<div class="col-xs-12 col-md-3 "></div>
+		</div>
+
+	</div>
+
+	<%}%>
+</div>
+
+<div class="container-fluid footer">
+	<h5>iOne Jardim Inteligente é um Projeto de Conclusão do Curso de Ciência da Computação</h5>
+	<h5>Universidade São Judas Tadeu - 2016</h5>
+</div>
+
+</body>
+</html>

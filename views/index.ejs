@@ -1,53 +1,147 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-	<meta charset="utf-8">
-	<title>iOne</title>
+	<title>iOne Jardim Inteligente | Index</title>
+	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="/js/script.js"></script>
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+</head>
+<body>
+	<div class="container">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">iOne Jardim Inteligente</a>
+				</div>
 
-	<!-- jQuery (necessary for Bootstrap'<s></s> JavaScript plugins) -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="js/bootstrap.min.js"></script>
-  <script src="js/component.min.js"></script>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="#projeto">Projeto</a></li>
+						<li><a href="#tecnologias">Tecnologias</a></li>
+						<li><a href="#cadastro">Cadastro</a></li>
+						<li><a href="#parceiro">Parceria</a></li>
+						<li><a href="/login">Login</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 
-  <!-- Bootstrap -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
+		<div id="projeto">
+			
+		</div>
+		<% if(alert){ %>
+		<div class="alert alert-dismissible alert-warning">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<h5><%- msg %></h5>
+			<a href="/esqueceuSenha" class="alert-link"><h6>Recupere sua senha</h6></a>
+		</div>
+		<%}%>
 
-  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-      <![endif]-->
+		<div class="logo">
+			<img src="images/logo-ione.png" class="img-responsive center-block" id="logo">
+		</div>
 
-      <link rel="stylesheet" type="text/css" href="../css/style.css">
-      <link rel="stylesheet" type="text/css" href="../css/component.css">
-      <link rel="stylesheet" type="text/css" href="css/fonts.css">
-      <link href="https://fonts.googleapis.com/css?family=Baloo+Paaji" rel="stylesheet"> 
+		<div class="projeto content">
+			<h1>iOne Jardim Inteligente</h1>
+			<h3>Conheça as vantagens de ter iOne em seu jardim.</h3>
+			<div class="row">
+				<div class="col-xs-12 col-md-4 espaco">
+					<h4>Monitoramento</h4>
+					<p> Sensores dispostos pelo jardim monitoram o nível de umidade do solo e enviam para o servidor na núvem para que sejam armazenados e auxiliem na tomada de decisão do melhor momento para efetuar a irrigação automática, levando em conta o clima local.</p>
+				</div>
+				<div class="col-xs-12 col-md-4 espaco">
+					<h4>Acompanhamento</h4>
+					<p>Acesse o status e relatorios de umidade e consumo de água do seu jardim no computador ou dispositivo mobile através do serviço web. </p>
+				</div>
+				<div class="col-xs-12 col-md-4 espaco">
+					<h4>Controle</h4>
+					<p>Com iOne você poderá acompanhar de perto a qualidade do solo de seu jardim e controlar o consumo de água, mantendo a saúde de suas plantas em boas condições e evitando o desperdício.</p>
+				</div>
+			</div>
+		</div>
 
+		<div class="tecnologias content" id="tecnologias">
+			<h3>Tecnologias utilizadas no desenvolvimento</h3>
+			<div class="row">
+				<div class="col-xs-6 col-md-2 espaco">
+					<img class="img-responsive center-block" src="/images/icone-arduino.png">
+				</div>
+				<div class="col-xs-6 col-md-2 espaco">
+					<img class="img-responsive center-block" src="/images/icone-nodejs.png">
+				</div>
+				<div class="col-xs-6 col-md-2 espaco">
+					<img class="img-responsive center-block" src="/images/icone-mysql.jpg">
+				</div>
+				<div class="col-xs-6 col-md-2 espaco">
+					<img class="img-responsive center-block" src="/images/icone-api.png">
+				</div>
+				<div class="col-xs-6 col-md-2 espaco">
+					<img class="img-responsive center-block" src="/images/icone-bootstrap.png">
+				</div>
+				<div class="col-xs-6 col-md-2 espaco">
+					<img class="img-responsive center-block" src="/images/icone-html-css-js.png">
+				</div>
+			</div>
+		</div>
 
-    </head>
-    <body>
+		<div class="cadastro content" id="cadastro">
+			<h3>Cadastre-se e experimente</h3>
+			<form method="post" action="cadastrarUsuario">
+				<div class="row">
+					<div class="col-xs-12 col-md-3 espaco"></div>
+					<div class="col-xs-12 col-md-3 espaco">
+						<div class="form-group has-success">
+							<label>Nome</label>
+							<input type="text" name="nome" class="form-control" required="">
+						</div>
+						<div class="form-group has-success">
+							<label>Sobrenome</label>
+							<input type="text" name="sobrenome" class="form-control" required="">
+						</div>
+						<div class="form-group has-success">
+						<label>E-mail</label>
+							<input type="email" name="email" class="form-control" required="">
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 espaco">
+						<div class="form-group has-success">
+							<label>Senha</label>
+							<input type="password" name="senha" class="form-control" required="">
+						</div>
+						<div class="form-group has-success">
+							<label>Redigite a senha</label>
+							<input type="password" name="senha2" class="form-control" required="">
+						</div>
+						<div class="form-group has-success">
+							<br>
+							<input type="submit" name="enviar" class="btn btn-success" value="Cadastrar">
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 espaco"></div>
+				</div>
+			</form>
+		</div>
 
-     <div class="container">
+		<div class="parceiro content" id="parceiro">
+			<h2>Parciros</h2>
+			<h3>Seja um parceiro iOne e contribua para um negócio de sucesso</h3>
+			<a href="#"><h3>contato@ione.com.br</h3></a>
+		</div>
+	</div>
 
-      <div class="header">
-       <h1>iOne Jardim Inteligente</h1>
-     </div>
-     <div class="content">
-       <div class="row">
-        <div class="col-xs-12 col-md-6">
-         <input type="image" id="registrar" class="img-resposive center-block icone" name="registrar" src="./img/icone-novousuario.png" onclick= "window.location.assign('viewRegistrar')">
-         <h2>registrar</h2>
-       </div>
-       <div class="col-xs-12 col-md-6">
-         <input type="image" id="iniciar" class="img-resposive center-block icone" name="registrar" src="./img/icone-flor2.png" onclick= "window.location.assign('viewIniciar')">
-         <h2>iniciar sessão</h2>
-       </div
-
-    </div>
-  </div>
-</div>
+	<div class="container-fluid footer">
+		<h5>iOne Jardim Inteligente é um Projeto de Conclusão do Curso de Ciência da Computação</h5>
+		<h5>Universidade São Judas Tadeu - 2016</h5>
+	</div>
 
 </body>
 </html>
