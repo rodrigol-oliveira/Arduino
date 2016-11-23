@@ -1,38 +1,30 @@
-module.exports = function(app){
 
-	var mysql = require('mysql');
 
-	var connection = mysql.createConnection({
-		host		: 'localhost',
-		user		: 'root',
-		password	: '',
-		database	: 'ioneBD'
-	});
 
-	//var nodemailer  = require('nodemailer');	//midleware para envio de email
-	var bCrypt      = require('bcrypt-nodejs');	//midleware para criptografar senha
-	//var Usuario 	= app.models.usuario;		//instancia classe Model - usuario
-	
+var _this = {};
 
-	var UsuarioController = {
-		//metodos da classe controllers.usuario
+module.exports = {
 
-		//metodo - login
-		login: function(req, res){
+		setup: function(connection) {
+   			_this.connection = connection;
+   		},
+
+login: function(req, res){
 
 			var email 	= req.body.email,
 			senha 		= req.body.senha;
 
 			//Chama Metodo de Conexão ao executar app
-			connection.connect(function(err){
+			_this.connection.connect(function(err){
 				if(err) console.log('erro ao conectar com o banco de dados '+err);
 			});
 			
-			connection.query('select * from usuario where email = ?', [email], function(err, data){
+			_this.connection.query('select * from usuario where email = ?', [email], function(err, data){
 				if (err) {
 					console.log("Login - erro ao localizar conta "+err);
 				}else{	
-					
+					console.log("select ok");
+					console.log(email);
 					if (data.length === 1) {
 						
 						if (bCrypt.compareSync(senha, data[0].senha)){ //compara as senha (criptografia)
@@ -52,7 +44,7 @@ module.exports = function(app){
 				}
 			});
 
-			connection.end();
+			_this.connection.end();
 		
 /*
 			Usuario.find({email:email}, function(err, data){
@@ -86,11 +78,10 @@ module.exports = function(app){
 			sobrenome	= req.body.sobrenome,
 			email 		= req.body.email,
 			senha 		= bCrypt.hashSync(req.body. senha),//criptografa senha a ser gravada no banco de dados
-			novaConta 	= {nome, sobrenome, email, senha };
-			
+			novaConta 	= {nome:nome, sobrenome:sobrenome, email:email, senha:senha };
 		//verifica email já possui conta cadastrada
 
-		connection.query()
+		_this.connection.query()
 
 		Usuario.find({email:email}, function(err, data){
 			if (err) {
@@ -126,14 +117,14 @@ module.exports = function(app){
 		sobrenome	= req.body.sobrenome,
 		email 		= req.body.email,
 			senha 		= bCrypt.hashSync(req.body. senha),//criptografa senha a ser gravada no banco de dados
-			novaConta 	= {nome, sobrenome, email, senha };
+			novaConta 	= {nome:nome, sobrenome:sobrenome, email:email, senha:senha };
 			
-			connection.query('select * from usuario where email = ?', [email], function(err, rows){
+			_this.connection.query('select * from usuario where email = ?', [email], function(err, rows){
 				if (err) throw err;
 				if (rows.length === 1) {
 					res.render('home', {alert:true, msg:"email ja cadastrado"});
 				}else{
-					connection.query('insert into usuario(nome, sobrenome, email, senha',
+					_this.connection.query('insert into usuario(nome, sobrenome, email, senha',
 						[nome, sobrenome, email, senha], function(err){
 							if (err) throw err;
 
@@ -317,6 +308,23 @@ module.exports = function(app){
 
 		});
 	}
+
+
+}//FIM
+
+/*
+
+module.exports = {
+
+		
+
+	var UsuarioController = {
+		//metodos da classe controllers.usuario
+
+		
+
+		//metodo - login
+		
 }
 
 return UsuarioController;
@@ -325,6 +333,7 @@ return UsuarioController;
    //funções app.controllers.usuario
 
    //função para enviar email
+   
    function enviarEmailSenha(req, res,link,email) {
 
    	//cria instancia de email a ser enviado
@@ -357,5 +366,5 @@ return UsuarioController;
 
    
 
-}
+}*/
 

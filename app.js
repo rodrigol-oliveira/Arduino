@@ -4,11 +4,20 @@ var bodyParser  = require('body-parser');
 var ejs         = require('ejs');
 //var mongoose    = require('mongoose').set('debug', true);
 var session     = require('express-session');
-//var mysql 		= require('mysql');
+var bcrypt = require('bcrypt-nodejs'); 
+var mysql 		= require('mysql');
 var bCrypt      = require('bcrypt-nodejs');	//midleware para criptografar senha
 
+var connection = mysql.createConnection({
+    host    : 'localhost',
+    user    : 'root',
+    password  : '',
+    database  : 'ioneBD'
+  });
 
 var app = express();
+
+
 
 // view engine setup
 app.set('view engine', 'ejs');
@@ -35,11 +44,14 @@ load('controllers').then('routes').into(app, function(err, instance){
 	if (err){
 		console.log('erro em load into app '+err);
 	} else{
+		var usuarioController = require('./controllers/usuario.js');
+  		usuarioController.setup(connection);
 		app.listen(3000, function(){
 			console.log('Servidor Arduino -> http://localhost:3000');
 		});
 	}
 });
+
 
 
 /*
