@@ -14,6 +14,11 @@ module.exports = {
 		res.render('login', {alert:false});
 	},
 
+	sair: function(req, res){
+		var session = req.session.user = {}; //finaliza a seção (cria uma em branco) e chama index
+		res.redirect('/');
+	},
+
 	home: function(req, res){
 			if(!req.session.user || !req.session.user.nome || !req.session.user.id){ //session
 				res.redirect('/');
@@ -21,9 +26,9 @@ module.exports = {
 
 				var idUsuario = req.session.user.id;
 
-				_this.connection.connect(function(err){
+		/*		_this.connection.connect(function(err){
 					if(err) console.log('home - erro ao conectar com o banco de dados '+err);
-				});
+				}); */
 
 				_this.connection.query('select * from jardim where idUsuario = ?', [idUsuario],
 					function(err, data){
@@ -55,5 +60,5 @@ module.exports = {
 					});	
 
 			}
+		}
 	}
-}

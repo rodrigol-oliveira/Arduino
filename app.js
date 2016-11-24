@@ -2,10 +2,10 @@ var express     = require('express');
 var load        = require('express-load');
 var bodyParser  = require('body-parser');
 var ejs         = require('ejs');
-//var mongoose    = require('mongoose').set('debug', true);
 var session     = require('express-session');
-var bcrypt = require('bcrypt-nodejs'); 
+var bcrypt 		= require('bcrypt-nodejs'); 
 var mysql 		= require('mysql');
+var nodemailer 	= require('nodemailer');//envia email
 var bCrypt      = require('bcrypt-nodejs');	//midleware para criptografar senha
 
 var connection = mysql.createConnection({
@@ -46,10 +46,12 @@ load('controllers').then('routes').into(app, function(err, instance){
 	} else{
 
 		var usuarioController = require('./controllers/usuario.js'),
-		homeController = require('./controllers/home.js');
+		homeController = require('./controllers/home.js'),
+		jardimController = require('./controllers/jardim.js');
   		
-  		usuarioController.setup(connection, bCrypt);
-  		homeController.setup(connection);
+  		usuarioController.setup(connection, bCrypt, nodemailer);
+  		homeController.setup(connection),
+  		jardimController.setup(connection);
 		
 
 

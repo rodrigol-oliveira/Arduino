@@ -1,58 +1,71 @@
-module.exports = function(app){
+var _this = {};
 
-/*
-	var Jardim 	= app.models.jardim;	//instancia classe Model - jardim
-	var Usuario	= app.models.usuario;	//instancia classe Model - usuario
-	var Planta = app.models.planta;   //instancia classe Model - Plantas
+module.exports = {
 
-	var mongoose = require('mongoose');	
-
-	var JardimController = {
+	setup: function(connection) {
+		_this.connection = connection;
+	},
 
 		//metodo exibe pagina de cadastro
 		meujardim: function(req, res){
 			if(!req.session.user || !req.session.user.nome || !req.session.user.id){ //session
 				res.redirect('/');
 			}else{
-				
-				Jardim.find({id_usuario:req.session.user.id}, function(err, data){
-					if (err) {
-						console.log('meujardim - erro ao consultar plantas '+err);
-						res.render('meujardim', {alert:false, jardim:false, plantas:false});
-					}else{
-						if (data.length > 0) {
-							var jardim = data;
-							Planta.find(function(err, data){
-								if (err) {
-									console.log('meujardim - erro ao consultar plantas '+err);
-									res.render('meujardim', {alert:false, jardim:false, plantas:false});
-								}else{
-									if (data.length > 0) {
-										res.render('meujardim', {alert:false, jardim:jardim, plantas:data});
-									}else{
-										res.render('meujardim', {alert:false, jardim:jardim, plantas:false});
-									}
-								}
+				var idUsuario = req.session.user.id;
 
-							});
-						}else{
-							Planta.find(function(err, data){
-								if (err) {
-									console.log('meujardim - erro ao consultar plantas '+err);
-									res.render('meujardim', {alert:false, jardim:false, plantas:false});
-								}else{
-									if (data.length > 0) {
-										res.render('meujardim', {alert:false, jardim:false, plantas:data});
-									}else{
+				_this.connection.query('select * from jardim where idUsuario = ?', [idUsuario], 
+					function(err, data){
+						if (err) {
+							console.log('meujardim - erro ao consultar jardim '+err);
+							res.render('meujardim', {alert:false, jardim:false, plantas:false, jardimPlanta:false});
+						}else{	
+							if (data.length > 0) {
+								var jardim = data;
+
+								_this.connection.query('select p.id, p.nome, p.grupo, p.cientifico, p.temperatura, p.informacoes '+
+								'from planta p '+
+								'inner join jardim_planta jp on jp.idPlanta = p.id '+
+								'inner join jardim j on j.id = jp.idJardim '+
+								'where idJardim = ?', [jardim[0].id],
+									function(err, data){
+										if (err) {
+											console.log('meujardim - erro ao consultar jardim_plantas '+err);
+											res.render('meujardim', {alert:true, jardim:jardim, plantas:false, jardimPlanta:false, msg:'erro ao localizar as plantas do jardim'});
+										}else{	
+											var jardimPlanta = data;
+
+											_this.connection.query('select * from planta', function(err, data){
+												if (err) {
+													console.log('meujardim - erro ao consultar plantas '+err);
+													res.render('meujardim', {alert:true, jardim:jardim, plantas:false, jardimPlanta:jardimPlanta, msg:'plantas não localizadas no BD'});
+												}else{	
+													if (data.length > 0) {
+														var plantas = data;
+														res.render('meujardim', {alert:false, jardim:jardim, plantas:plantas, jardimPlanta:jardimPlanta});
+													}else{
+														res.render('meujardim', {alert:false, jardim:jardim, plantas:false, jardimPlanta:jardimPlanta});
+													}
+												}
+											});
+
+										}
+									});
+							}else{
+								_this.connection.query('select * from planta', function(err, data){
+									if (err) {
+										console.log('meujardim - erro ao consultar plantas '+err);
 										res.render('meujardim', {alert:false, jardim:false, plantas:false});
+									}else{	
+										if (data.length > 0) {
+											res.render('meujardim', {alert:false, jardim:false, plantas:data});
+										}else{
+											res.render('meujardim', {alert:false, jardim:false, plantas:false});
+										}
 									}
-								}
-							});
+								});
+							}
 						}
-
-					}
-				});
-
+					});
 			}
 		},
 
@@ -60,51 +73,45 @@ module.exports = function(app){
 		cadastrar: function(req, res){
 
 			var nome 			= req.body.nome,
-			serial_ione			= req.body.serial,
-			sensores_umidade	= req.body.sensores,
-			id_usuario			= req.session.user.id,
+			serial 				= req.body.serial,
+			sensores 			= req.body.sensores,
+			idUsuario			= req.session.user.id,
 			estado				= req.body.estado,
 			cidade				= req.body.cidade,
 			plantas				= req.body.planta;
-			var novoJardim = {nome, serial_ione, sensores_umidade, estado, cidade, id_usuario};
-			
 
-			
+			_this.connection.query('insert into jardim(idUsuario, nome, serial, estado, cidade, qtdSensores) '+
+				'values(?,?,?,?,?,?)',[idUsuario, nome, serial, estado, cidade, sensores], function(err){
+					if (err) {
+						console.log('cadastrar - erro ao inserir jardim '+err);
+						res.render('/home', {alert:true, msg:'erro ao cadastrar jardim'});
+					}else{	
+						_this.connection.query('select * from jardim where idUsuario = ?',[idUsuario],
+							function(err, data){
+								if (err) {
+									console.log('cadastrar - erro ao consultar novo jardim '+err);
+									res.render('/home', {alert:true, msg:'erro ao cadastrar jardim'});
+								}else{	
+									var jardim = data;
 
-					var model = new Jardim(novoJardim);
-					model.save(function(err, data){ //cadastra jardim no banco de dados
-						if (err) {
-							console.log('erro ao gravar novo jardim '+err);
-							res.render('/home',{alert:true, msg:'erro ao cadastrar jardim'});
-						}else{
-							var jardim = data;
-				
-				for (var i = 0; i < plantas.length; i++) {
-					plantas[i] = mongoose.Types.ObjectId(plantas[i]);
-				}
-
-				Planta.update({_id:{$in:[mongoose.Types.ObjectId(plantas[0]),mongoose.Types.ObjectId(plantas[1])]}}, {$set: {jardim: jardim.id}}, {multi: true}, function(err,data){
-					if (err) {throw err;}
-					else {console.log(data);}
-				});
-
-
-				//relacionar o jardim à conta de usuario
-				Usuario.update({_id:id_usuario},{$set:{jardim: jardim.id}}, function(err, data){
-					if (err){
-						console.log('cadastrarJardim - associar conta usuario '+err);
-						res.render('/home',{alert:true, msg:'erro ao cadastrar jardim'});
-					}else{
-						res.redirect('/home');
+									//associar as plantas ao jardim (jardim_planta)
+									for (var i = 0; i < plantas.length; i++) {
+										_this.connection.query('insert into jardim_planta values(?,?)',[jardim[0].id, plantas[i]],
+											function(err){
+												if (err) {
+													console.log('cadastrar - erro ao cadastrar jardim_planta '+err);
+													res.render('/home', {alert:true, msg:'erro ao cadastrar jardim'});
+												}
+											});
+									}
+								}
+							});
 					}
 				});
 
-			}				
+		},
 
-		});
-
-				},
-
+/*
 		//metodo exibir detalhes do jardim
 		exibir: function(req, res){
 
@@ -130,6 +137,7 @@ module.exports = function(app){
 		}
 	})
 		},
+		*/
 
 		//metodo alterar dados do jardim
 		editar: function(req, res){
@@ -174,6 +182,7 @@ module.exports = function(app){
 
 			var id_usuario = req.session.user.id;
 
+
 			Jardim.delete({id_usuario:id_usuario}, function(err, data){
 				if (err) {
 					console.log('deletarJardim - erro ao deletar jardim '+err);
@@ -201,9 +210,8 @@ module.exports = function(app){
 		listar: function(req, res){
 			//opção de administrador do sistema - fora do escopo
 		}
+
+
 	}
 
-	return JardimController;
-*/
-
-}
+	//falta metodos editar e deletar jardim

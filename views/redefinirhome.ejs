@@ -33,23 +33,31 @@
 
 		<div class="redefinir-senha content">
 			<h3>Redefinir Senha</h3>
-			<form method="post" action="/redefinirSenhaEmail">
+			<form method="post" action="/redefinirSenhaHome">
 				<div class="row">
 					<div class="col-xs-12 col-md-4 espaco"></div>
 					<div class="col-xs-12 col-md-4 espaco">
 						<dir class="form-group">
-							<label>Nova Senha</label>
+							<label>Senha atual</label>
+							<input type="password" name="senha" class="form-control" required="">
+						</dir>
+						<dir class="form-group">
+							<label>Nova senha</label>
 							<input type="password" name="novasenha" class="form-control" required="">
 						</dir>
 						<dir class="form-group">
-							<label>Redigite a Senha</label>
+							<label>Redigite a senha</label>
 							<input type="password" name="novasenha2" class="form-control" required="">
 						</dir>
+						<%if(alert){%>
+						<div class="alert alert-dismissible alert-warning">
+							<button type="button" class="close" data-dismiss="alert">&times;</button>
+							<p><%- msg %></p>
+						</div>
+						<%}%>
 						<dir class="form-group">
-							<input type="hidden" name="key" class="form-control" value="<%- key %>">
-							<input type="hidden" name="id" class="form-control" value="<%- id %>">
-							<input type="submit" name="enviar" class="btn btn-success" value="Redefinir">
-							<a href="/" name="voltar" class="btn btn-default">Voltar</a>
+							<input type="submit" name="redefinir" class="btn btn-success" value="Redefinir">
+							<a href="/home" name="voltar" class="btn btn-default">Voltar</a>
 						</dir>
 					</div>
 					<div class="col-xs-12 col-md-4 espaco"></div>

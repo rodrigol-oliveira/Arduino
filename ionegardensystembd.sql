@@ -1,71 +1,70 @@
-drop schema ioneBD;
 CREATE SCHEMA IF NOT EXISTS `ioneBD` DEFAULT CHARACTER SET utf8 ;
-USE `ioneBD` ;
+USE `ionegardensystemdb` ;
 
-CREATE TABLE `ioneBD`.`usuario` (
+CREATE TABLE `ionegardensystemdb`.`usuario` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(45) NOT NULL,
   `sobrenome` VARCHAR(45) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
-  `senha` VARCHAR(255) NOT NULL,
+  `senha` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
-CREATE TABLE `ioneBD`.`jardim` (
+CREATE TABLE `ionegardensystemdb`.`jardim` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `idUsuario` BIGINT NOT NULL,
+  `idJardim` BIGINT NOT NULL,
   `nome` VARCHAR(45) NOT NULL,
   `serial` VARCHAR(45) NOT NULL,
   `estado` VARCHAR(45) NOT NULL,
   `cidade` VARCHAR(45) NOT NULL,
   `qtdSensores` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `jardim_usuario_idx` (`idUsuario` ASC),
+  INDEX `jardim_usuario_idx` (`id_jardim` ASC),
   CONSTRAINT `jardim_usuario`
-    FOREIGN KEY (`idUsuario`)
-    REFERENCES `ioneBD`.`usuario` (`id`)
+    FOREIGN KEY (`id_jardim`)
+    REFERENCES `ionegardensystemdb`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
-CREATE TABLE `ioneBD`.`planta` (
+CREATE TABLE `ionegardensystemdb`.`planta` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(45) NOT NULL,
   `grupo` BIGINT NULL,
-  `cientifico` VARCHAR(45) NULL,
-  `temperatura` VARCHAR(45) NULL,
-  `umidade_min` BIGINT NULL,
-  `umidade_max` BIGINT NULL,
+  `nomeCientifico` VARCHAR(45) NULL,
+  `temperaturaIdeal` VARCHAR(45) NULL,
+  `umidadeMin` BIGINT NULL,
+  `umidadeMax` BIGINT NULL,
   `informacoes` VARCHAR(1000) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
-CREATE TABLE `ioneBD`.`jardim_planta` (
+CREATE TABLE `ionegardensystemdb`.`jardim_planta` (
   `idJardim` BIGINT NOT NULL,
   `idPlanta` BIGINT NOT NULL,
-  INDEX `jardim_planta_idx` (`idJardim` ASC),
-  INDEX `jardim_planta_planta_idx` (`idPlanta` ASC),
+  INDEX `jardim_planta_idx` (`id_jardim` ASC),
+  INDEX `jardim_planta_planta_idx` (`id_planta` ASC),
   CONSTRAINT `jardim_planta_jardim`
-    FOREIGN KEY (`idJardim`)
-    REFERENCES `ioneBD`.`jardim` (`id`)
+    FOREIGN KEY (`id_jardim`)
+    REFERENCES `ionegardensystemdb`.`jardim` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `jardim_planta_planta`
-    FOREIGN KEY (`idPlanta`)
-    REFERENCES `ioneBD`.`planta` (`id`)
+    FOREIGN KEY (`id_planta`)
+    REFERENCES `ionegardensystemdb`.`planta` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
-CREATE TABLE `ioneBD`.`analise` (
+CREATE TABLE `ionegardensystemdb`.`analise` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `idJardim` BIGINT NOT NULL,
   `dataHora` DATETIME NOT NULL,
@@ -79,10 +78,10 @@ CREATE TABLE `ioneBD`.`analise` (
   `valvula`  VARCHAR(45) NULL,
   `consumo` BIGINT NULL,
   PRIMARY KEY (`id`),
-  INDEX `jardim_analise_idx` (`idJardim` ASC),
+  INDEX `jardim_analise_idx` (`id_jardim` ASC),
   CONSTRAINT `jardim_analise`
-    FOREIGN KEY (`idJardim`)
-    REFERENCES `ioneBD`.`jardim` (`id`)
+    FOREIGN KEY (`id_jardim`)
+    REFERENCES `ionegardensystemdb`.`jardim` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -119,13 +118,5 @@ values('Lírio da Paz','Spathiphyllum wallisii', 614, 818, 3, '15°C - 30°C','C
 insert into planta(nome, cientifico, umidade_min, umidade_max, grupo, temperatura, informacoes)
 values('Jasmin','Jasminum officinale', 614, 818, 3, '10°C - 40°C',' Cresce melhor em pleno sol ou pleno sol com sombreamento.');
 
-select * from jardim;
-
-delete from jardim where id =2;
-
-select * from jardim_planta;
-
-select p.id, p.nome, p.grupo, p.cientifico, p.temperatura, p.informacoes from planta p 
-inner join jardim_planta jp on jp.idPlanta = p.id 
-inner join jardim j on j.id = jp.idJardim 
-where idJardim = 2;
+select * from usuario;
+delete from usuario where id = 5;
