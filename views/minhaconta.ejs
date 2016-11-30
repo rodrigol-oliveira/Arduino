@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>iOne Jardim Inteligente | Meu Jardim</title>
+	<title>iOne Jardim Inteligente | Minha Conta</title>
 
 	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
@@ -17,6 +17,26 @@
 	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 
+	<script type="text/javascript">
+
+		function opcao(obj){
+			switch (obj){
+
+				case 'alterar':
+				document.forms[0].action='alterarConta'
+				break;
+				
+				case 'deletar':
+				decisao = confirm("Ao deletar a conta todas as informações de jardim relacionadas a ela também serão apagadas. Deseja prosseguir?");
+				if (!decisao) {
+					return false;
+				}
+				document.forms[0].action='desativarConta'		
+				break
+			}
+			document.forms[0].submit();		
+		}
+	</script>
 	
 </head>
 <body>
@@ -31,7 +51,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/">iOne Jardim Inteligente</a>
+					<a class="navbar-brand" href="/home">iOne Jardim Inteligente</a>
 				</div>
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
@@ -54,7 +74,7 @@
 		<div class="detalhes-conta">
 			<h3>Minha Conta</h3>
 
-			<form method="post" action="/alterar">
+			<form method="post"  >
 				<div class="row">
 					<div class="col-xs-12 col-md-4 espaco"></div>
 					<div class="col-xs-12 col-md-4 espaco">
@@ -78,9 +98,10 @@
 						<%}%>
 						<div class="form-group ">
 							<br>
-							<input type="submit" class="btn btn-success" id="alterar" name="alterar" class="btn btn-success" value="Alterar" disabled=true>
-							<a href="/redefinirHome" name="redefinirsenha" class="btn btn-default">Redefinir Senha</a>
-							<a href="/home" name="voltar" class="btn btn-default">Voltar</a>
+
+							<button class="btn btn-success" id="alterar" onclick="return opcao($('#alterar').val())" name="alterar" class="btn btn-success" value="alterar" disabled=true>Alterar</button>
+							<a href="/redefinirHome" name="redefinirsenha" class="btn btn-info">Redefinir Senha</a>							
+							<button type="submit" id="deletar" onclick="return opcao($('#deletar').val())" class="btn btn-warning" class="btn btn-success" value="deletar">Desativar</button>
 						</div>
 					</div>
 					<div class="col-xs-12 col-md-4 espaco">
@@ -88,14 +109,12 @@
 					</div>
 				</div>
 			</form>
-		</div>
-
-		
+		</div>		
 
 		<script>
-				$( ".target" ).change(function() {
-					document.getElementById('alterar').disabled=false;
-				});
+			$( ".target" ).change(function() {
+				document.getElementById('alterar').disabled=false;
+			});
 			
 		</script>
 

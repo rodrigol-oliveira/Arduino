@@ -118,7 +118,7 @@ module.exports = {
 				}); */
 
 				_this.connection.query('update usuario set nome = ?, sobrenome = ? where id = ?', [nome, sobrenome, id], 
-					function(err, data){
+					function(err){
 						if (err) {
 							console.log('alterar - erro alterar dados '+err);
 						}else{
@@ -304,7 +304,66 @@ module.exports = {
 
 	//metodo - desativar conta
 	desativar: function(req, res){
-		
+		var idUsuario = req.session.user.id,
+		nome = req.session.user.nome,
+		sobrenome = req.session.user.sobrenome,
+		email = req.session.user.email;
+
+		_this.connection.query('select * from jardim where idUsuario = ?', [idUsuario], function(err, data){
+			if (err) {
+				console.log('desativar - erro ao select jardim '+ err);
+				res.render('minhaconta', {alert:true, msg:'Erro ao desativar conta', nome:nome, sobrenome:sobrenome, email:email});
+			}else{
+				//se possuir jardim, remove jardim_planta e analise se houver;
+				if (data.length > 0) {
+					var jardim = data;
+					_this.connection.query('delete from jardim_planta where idJardim = ?', [jardim[0].id], function(err){
+						if (err) {
+							console.log('desativar - erro ao deletar jardim_planta '+err);
+							res.render('minhaconta', {alert:true, msg:'Erro ao desativar conta', nome:nome, sobrenome:sobrenome, email:email});
+						}else{
+							
+							_this.connection.query('delete from analise where idJardim = ?', [jardim[0].id], function(err){
+								if (err) {
+									console.log('desativar - erro ao deletar analise '+err);
+								}else{
+									
+									_this.connection.query('delete from jardim where id = ?', [jardim[0].id], function(err){
+										if (err) {
+											console.log('desativar - erro ao deletar jardim '+err);
+										}else{
+											
+											//deleta conta do usuario;
+											_this.connection.query('delete from usuario where id = ?', [idUsuario], function(err){
+												if (err) {
+													console.log('desativar - erro ao deletar conta '+err);
+													res.render('minhaconta', {alert:true, msg:'Erro ao desativar conta', nome:nome, sobrenome:sobrenome, email:email});
+												}else{
+													res.redirect('/');
+												}
+											});
+
+										}
+
+									});
+								}
+							});
+						}
+					});
+				}else{
+
+					//deleta conta do usuario;
+					_this.connection.query('delete from usuario where id = ?', [idUsuario], function(err){
+						if (err) {
+							console.log('desativar - erro ao deletar conta '+err);
+							res.render('minhaconta', {alert:true, msg:'Erro ao desativar conta', nome:nome, sobrenome:sobrenome, email:email});
+						}else{
+							res.redirect('/');
+						}
+					});
+				}				
+			}
+		})
 	},
 
 	//metodo - listar todos as contas

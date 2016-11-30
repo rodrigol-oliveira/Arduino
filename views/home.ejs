@@ -22,7 +22,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/">iOne Jardim Inteligente</a>
+					<a class="navbar-brand" href="/home">iOne Jardim Inteligente</a>
 				</div>
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
@@ -63,7 +63,6 @@
 						},
 						title: {
 							text: 'Acompanhamento do jardim'
-
 						},
 						<%if(analise==false){%>
 							subtitle: {
@@ -72,11 +71,11 @@
 							<%}%>
 							xAxis: {
 								categories: [
-								<% if(analise){%>
-									<% for(i = 0; i < analise.length; i++) {  %>
-										[ "<%-analise[i].data_cad %>"],
+								<%if(analise){%>
+									<% for(i = analise.length-1; i >= 0 ; i--) {  %>
+										[ "<%-analise[i].dataHora %>"],
 										<%}%>
-										<%}%>	
+										<%}%>
 										]
 									},
 									yAxis: {
@@ -88,7 +87,11 @@
 										alternateGridColor: null,
 										plotBands: [{ 
 											from: 0,
-											to: 300,
+											<%if(planta){%>
+											to: <%- planta[0].umidade_min %>,
+											<%}else{%>
+												to: 400,
+												<%}%>
 											color: 'rgba(0, 0, 0, 0)',
 											label: {
 												text: 'seco',
@@ -97,8 +100,13 @@
 												}
 											}
 										}, { 
-											from: 300,
-											to: 800,
+											<%if(planta){%>
+											from: <%- planta[0].umidade_min %>,
+											to: <%- planta[0].umidade_max %>,
+											<%}else{%>
+												from: 401,
+												to: 800,
+												<%}%>
 											color: 'rgba(68, 170, 213, 0.1)',
 											label: {
 												text: 'ideal',
@@ -107,8 +115,12 @@
 												}
 											}
 										}, { 
-											from: 800,
-											to: 1023,
+											<%if(planta){%>
+											from: <%- planta[0].umidade_max %>,
+											<%}else{%>
+												from:801,
+												<%}%>
+											to: 1300,
 											color: 'rgba(0, 0, 0, 0)',
 											label: {
 												text: 'encharcado',
@@ -139,28 +151,29 @@
        series: [{
        	name: 'umidade',
        	data: [
-       	<% if(analise){%>
-       		<% for(i = 0; i < analise.length; i++) {  %>
-       			[<%-analise[i].valor_sensores %>],
+       	
+       	<% for(i = analise.length-1; i >= 0 ; i--) {  %>
+       		[<%-analise[i].mediaSensores %>],
+       		<%}%>
+
+       		]
+       	}, {
+       		name: 'consumo litros',
+       		data: [
+
+       		<% for(i = analise.length-1; i >= 0 ; i--) {  %>
+       			[<%-analise[i].consumo %>],
        			<%}%>
-       			<%}%>
+
        			]
-       		}, {
-       			name: 'consumo litros',
-       			data: [
-       			<% if(analise){%>
-       				<% for(i = 0; i < analise.length; i++) {  %>
-       					[<%-analise[i].consumo_agua %>],
-       					<%}%>
-       					<%}%>
-       					]
-       				}],
-       				navigation: {
-       					menuItemStyle: {
-       						fontSize: '10px'
-       					}
-       				}
-       			});
+       		}],
+       		navigation: {
+       			menuItemStyle: {
+       				fontSize: '10px'
+       			}
+       		}
+
+       	});
 				});
 
 			</script>
@@ -171,10 +184,10 @@
 
 				<thead>
 					<tr>
-						<th>data-hora</th>
-						<th>clima</th>
-						<th>umidade</th>
-						<th>consumo água</th>
+						<th>Data e Hora</th>
+						<th>Clima</th>
+						<th>Status do solo</th>
+						<th>Consumo água</th>
 					</tr>
 				</thead>
 
@@ -182,10 +195,10 @@
 					<% if(analise){%>
 					<% for(i = 0; i < analise.length; i ++) { %>
 					<tr>
-						<td><%- analise[i].data_cad %></td>
+						<td><%- analise[i].dataHora %></td>
 						<td><%- analise[i].clima %></td>
-						<td><%- analise[i].status_solo %></td>
-						<td><%- analise[i].consumo_agua %></td>
+						<td><%- analise[i].statusUmidade %></td>
+						<td><%- analise[i].consumo %></td>
 					</tr>
 					<%}%>
 					<%}%>

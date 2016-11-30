@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>iOne Jardim Inteligente | Home</title>
+	<title>iOne Jardim Inteligente | Resultado</title>
 	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
 	<script type="text/javascript" src="/bootstrap/js/script.js"></script>
@@ -22,7 +22,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/">iOne Jardim Inteligente</a>
+					<a class="navbar-brand" href="/home">iOne Jardim Inteligente</a>
 				</div>
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
@@ -63,8 +63,8 @@
 						xAxis: {
 							categories: [
 							<% if(resultado){%>
-								<% for(i = 0; i < resultado.length; i++) {  %>
-									[ "<%- resultado[i].data_cad %>"],
+								<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
+									[ "<%- resultado[i].dataHora %>"],
 									<%}%>
 									<%}%>	
 									]
@@ -139,8 +139,8 @@
        	{name: 'umidade',
        	data: [
        	<% if(resultado){%>
-       		<% for(i = 0; i < resultado.length; i++) {  %>
-       			[<%-resultado[i].valor_sensores %>],
+       		<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
+       			[<%-resultado[i].mediaSensores %>],
        			<%}%>
        			<%}%>
        			]
@@ -153,8 +153,8 @@
        			{name: 'consumo - litros',
        			data: [
        			<% if(resultado){%>
-       				<% for(i = 0; i < resultado.length; i++) {  %>
-       					[<%-resultado[i].consumo_agua %>],
+       				<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
+       					[<%-resultado[i].consumo %>],
        					<%}%>
        					<%}%>
        					]
@@ -193,16 +193,16 @@
 
 				<tbody>
 					<% if(resultado){%>
-					<% for(i = 0; i < resultado.length; i ++) { %>
+					<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
 					<tr>
-						<td><%- resultado[i].data_cad %></td>
+						<td><%- resultado[i].dataHora %></td>
 						<td><%- resultado[i].clima %></td>
 						<%if(tipo=='umidade'||tipo=='completo'){%>
-						<td><%- resultado[i].status_solo %></td>
+						<td><%- resultado[i].statusUmidade %></td>
 						<%}%>
 						<%if(tipo=='consumo'||tipo=='completo'){%>
 						<td><%- resultado[i].valvula %></td>
-						<td><%- resultado[i].consumo_agua %></td>
+						<td><%- resultado[i].consumo %></td>
 						<%}%>
 					</tr>
 					<%}%>

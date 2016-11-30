@@ -17,6 +17,38 @@
 	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 
+	<script type="text/javascript">
+		function validaGrupo(){
+			var planta = $('#planta').val();
+			for (var i = 0; i < planta.length; i++) {
+				if (planta[0].substring(0,1) != planta[i].substring(0,1)) {
+					alert('Por gentileza selecione apenas plantas do mesmo grupo.');
+					return false;
+				}
+			}
+		}
+
+		function opcao(obj){
+			switch (obj){
+
+				case 'alterar':
+				document.forms[0].action='alterarJardim'
+				break;
+				
+				case 'deletar':
+				decisao = confirm("Ao deletar o jardim todas as informações referentes a ele serão apagadas. Deseja prosseguir?");
+				if (!decisao) {
+					return false;
+				}
+				document.forms[0].action='deletarJardim'		
+				break
+			}
+			document.forms[0].submit();		
+			
+		}
+
+	</script>
+
 </head>
 <body>
 	<div class="container">
@@ -30,7 +62,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/">iOne Jardim Inteligente</a>
+					<a class="navbar-brand" href="/home">iOne Jardim Inteligente</a>
 				</div>
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
@@ -60,7 +92,7 @@
 		<%if(jardim == false){%>
 		<div class="novo-jardim content">
 			<h3>Cadastre seu jardim</h3>
-			<form method="post" action="/cadastrarJardim">
+			<form method="post" action="/cadastrarJardim" onsubmit="return validaGrupo()">
 				<div class="row espaco">
 
 					<div class="col-xs-12 col-md-3 "></div>
@@ -85,6 +117,7 @@
 					<div class="col-xs-12 col-md-3 "></div>
 					<div class="col-xs-12 col-md-3 ">
 						<div class="form-group">
+							<label>Estado</label>
 							<select name="estado" class="selectpicker" data-width="100%" title="Estado" required>
 								<option value="SP">SP</option>							
 							</select>
@@ -92,6 +125,7 @@
 					</div>
 					<div class="col-xs-12 col-md-3 ">
 						<div class="form-group">
+							<label>Cidade</label>
 							<select name="cidade" class="selectpicker" data-width="100%" title="Cidade" required>
 								<option value="São Paulo">São Paulo</option>								
 							</select>
@@ -104,18 +138,22 @@
 					<div class="col-xs-12 col-md-3 "></div>
 					<div class="col-xs-12 col-md-3 ">
 						<div class="form-group">
+							<label>Quantidade de sensores</label>
 							<select name="sensores" class="selectpicker" data-width="100%" title="Sensores de umidade" required>
 								<option value="1">1</option>							
 								<option value="2">2</option>	
+								<option value="3">3</option>	
+								<option value="4">4</option>	
 							</select>
 						</div>
 					</div>
 					<div class="col-xs-12 col-md-3 ">
 						<div class="form-group">
-							<select  name="planta" class="selectpicker" data-width="100%" multiple="" title="Selecione suas plantas" required>
+							<label>Plantas</label>
+							<select id='planta' name="planta" class="selectpicker" data-size="5" data-width="100%" multiple="" title="Selecione suas plantas" required>
 								<% if(plantas){%>
 								<%	for(i = 0; i < plantas.length; i++){ %>
-								<option value="<%- plantas[i].id %>"><%- plantas[i].grupo %> - <%- plantas[i].nome%></option>
+								<option value="<%- plantas[i].id %>" data-subtext="grupo <%- plantas[i].grupo %>"><%- plantas[i].nome%></option>
 								<%}%>
 								<%}%>	
 							</select>
@@ -123,7 +161,18 @@
 					</div>
 					<div class="col-xs-12 col-md-3 "></div>
 				</div>
-				<div class="row espaco">	
+				<div class="row">
+					<div class="col-xs-12 col-md-3 "></div>
+					<div class="col-xs-12 col-md-6 ">
+						<div class="alert alert-dismissible alert-info">
+							<button type="button" class="close" data-dismiss="alert">&times;</button>
+							<p>As plantas estão agrupadas conforme os níveis de umidade.</p><br>
+							<p>Selecione somente plantas do mesmo grupo.</p>
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-3 "></div>
+				</div>
+				<div class="row">	
 					<div class="col-xs-12 col-md-3 "></div>
 					<div class="col-xs-12 col-md-3">
 						<div class="form-group">
@@ -140,72 +189,72 @@
 
 		<div class="detalhes-jardim">
 			<h3>Detalhes das plantas</h3>
+			<form method="post">
+				<div class="plantas ">
+					<div class="row espaco">
+						<div class="col-xs-12 col-md-2 "></div>
+						<div class="col-xs-12 col-md-8 ">
+							<div class="table-responsive">
+								<table  class="table table-bordered">
+									<% if(jardimPlanta){%>
+									<thead>
+										<tr class="info">
+											<th>Planta</th>
+											<th>Nome Científico</th>
+											<!--<th>Grupo</th>-->
+											<th>Temperatura ideal</th>
+											<th>Informações</th>
+										</tr>
+									</thead>
+									<%for(i=0; i<jardimPlanta.length; i++){%>
+									<tbody>
 
-			<div class="plantas ">
-				<div class="row espaco">
-					<div class="col-xs-12 col-md-2 "></div>
-					<div class="col-xs-12 col-md-8 ">
-						<div class="table-responsive">
-							<table  class="table table-bordered">
-								<% if(jardimPlanta){%>
-								<%for(i=0; i<jardimPlanta.length; i++){%>
-								<thead>
-									<tr class="info">
-										<th>Planta</th>
-										<th>Nome Científico</th>
-										<th>Grupo</th>
-										<th>Temperatura</th>
-										<th>Informações</th>
-									</tr>
-								</thead>
+										<tr class="active">
+											<th><%-jardimPlanta[i].nome %></th>
+											<th><%-jardimPlanta[i].cientifico %></th>
+											<!--<th><%-jardimPlanta[i].grupo %></th>-->
+											<th><%-jardimPlanta[i].temperatura %></th>
+											<th><%-jardimPlanta[i].informacoes %></th>
 
-								<tbody>
-
-									<tr class="active">
-										<th><%-jardimPlanta[i].nome %></th>
-										<th><%-jardimPlanta[i].cientifico %></th>
-										<th><%-jardimPlanta[i].grupo %></th>
-										<th><%-jardimPlanta[i].temperatura %></th>
-										<th><%-jardimPlanta[i].informacoes %></th>
-
-									</tr>
-								</tbody>
-								<%}%>
-								<%}%>
-							</table>
+										</tr>
+									</tbody>
+									<%}%>
+									<%}%>
+								</table>
+							</div>
 						</div>
+						<div class="col-xs-12 col-md-2 "></div>
 					</div>
-					<div class="col-xs-12 col-md-2 "></div>
-				</div>
-			</div>
-
-			<div class="detalhes">
-			<h3>Detalhes do jardim</h3>
-				<div class="row espaco">
-					<div class="col-xs-12 col-md-3 "></div>
-
-					<div class="col-xs-12 col-md-3 ">
-						<div class="form-group">
-							<label>Nome do jardim</label>
-							<input type="text" name="nome" class="form-control" required="" value="<%-jardim[0].nome%>">
-						</div>
-					</div>
-					<div class="col-xs-12 col-md-3 ">
-						<div class="form-group">
-							<label>Serial iOne</label>
-							<input type="text" name="serial" class="form-control" required="" value="<%-jardim[0].serial %>">
-						</div>
-					</div>
-					<div class="col-xs-12 col-md-3 "></div>
 				</div>
 
-				<div class="row">	
+				<div class="detalhes">
+					<h3>Detalhes do jardim</h3>
+					<div class="row espaco">
+						<div class="col-xs-12 col-md-3 "></div>
 
-					<div class="col-xs-12 col-md-3 "></div>
-					<div class="col-xs-12 col-md-3 ">
-						<div class="form-group">
+						<div class="col-xs-12 col-md-3 ">
+							<div class="form-group">
+								<label>Nome do jardim</label>
+								<input type="text" name="nome" class="form-control target" required="" value="<%-jardim[0].nome%>">
+							</div>
+						</div>
+						<div class="col-xs-12 col-md-3 ">
+							<div class="form-group">
+								<label>Serial iOne</label>
+								<input type="text" name="serial" class="form-control target" required="" value="<%-jardim[0].serial %>">
+							</div>
+						</div>
+						<div class="col-xs-12 col-md-3 "></div>
+					</div>
 
-							<select  class="selectpicker" data-width="100%" name="estado" required>
+					<div class="row">	
+
+						<div class="col-xs-12 col-md-3 "></div>
+						<div class="col-xs-12 col-md-3 ">
+							<div class="form-group">
+								<label>Estado</label>
+								<select  class="selectpicker target" data-width=
+								"100%" name="estado" required>
 								<option id='<%- jardim[0].estado%>' value="<%- jardim[0].estado%>" ><%- jardim[0].estado%></option>
 							</select>
 
@@ -218,8 +267,8 @@
 			</div>
 			<div class="col-xs-12 col-md-3 ">
 				<div class="form-group">
-
-					<select  class="selectpicker" data-width="100%" name="estado" required>
+					<label>Cidade</label>
+					<select  class="selectpicker target" data-width="100%" name="cidade" required>
 						<option id='<%- jardim[0].cidade%>' value="<%- jardim[0].cidade%>" ><%- jardim[0].cidade%></option>
 					</select>
 <!--                     
@@ -237,27 +286,23 @@
 			<div class="col-xs-12 col-md-3 "></div>
 			<div class="col-xs-12 col-md-3 ">
 				<div class="form-group">
-					<select name="sensores" class="selectpicker" data-width="100%" title="Sensores de umidade" required>
-						<option value="1">1</option>							
-						<option value="2">2</option>	
+					<label>Sensores de umidade</label>
+
+					<select name="sensores" class="selectpicker target" multiple="" data-max-options="1" data-width="100%" title="Sensores de umidade" required>
+						<% for (i = 1; i < 5; i++ ){%>
+						<option id="<%-i%>" value="<%-i%>"><%-i%></option>							
+						<% if(jardim[0].qtdSensores == i){%>
+						<script type="text/javascript">
+							document.getElementById("<%-i%>").selected=true;
+						</script>
+						<%}%>
+						<%}%>
+						
 					</select>
 				</div>
 			</div>
 			<div class="col-xs-12 col-md-3 ">
-<!--					
-					<div class="form-group">
-						<% if(plantas){%>
-						<select  name="planta" class="selectpicker" data-width="100%" multiple title="Selecione suas plantas" required>
-							
-							<%	for(i = 0; i < plantas.length; i++){ %>
-							<option value="<%- plantas[i].id %>"><%- plantas[i].grupo %> - <%- plantas[i].nome%></option>
-							<%}%>
-							<%}else{%>
-							<select  name="planta" class="selectpicker" data-width="100%" multiple title="Plantas não localizadas" required>
-							<%}%>	
-						</select>
-					</div>
-				--> 	
+
 			</div>
 			<div class="col-xs-12 col-md-3 "></div>
 		</div>
@@ -265,19 +310,24 @@
 			<div class="col-xs-12 col-md-3 "></div>
 			<div class="col-xs-12 col-md-3">
 				<div class="form-group">
-					<input type="submit" name="cadastrar" class="btn btn-success" value="Alterar">
+					<button type="submit" id="alterar" name="alterar" class="btn btn-success" value="alterar" disabled="true" onclick="return opcao($('#alterar').val());">Alterar</button>
+					<button type="submit" id="deletar" name="deletar" class="btn btn-warning" value="deletar" onclick="return opcao($('#deletar').val());">Deletar</button>
 					<a href="/home" name="voltar" class="btn btn-default">Voltar</a>
-					<a href="/deletarJardim" name="deletar" class="btn btn-warning">Deletar</a>
+					
 				</div>
 			</div>
 			<div class="col-xs-12 col-md-3 "></div>
 			<div class="col-xs-12 col-md-3 "></div>
 		</div>
 	</div>
-
 </div>
-
+</form>
 <%}%>
+<script>
+	$( ".target" ).change(function() {
+		document.getElementById('alterar').disabled=false;
+	});
+</script>
 </div>
 
 <div class="container-fluid footer">

@@ -1,136 +1,339 @@
-module.exports = function(app){
-/*
-	//midleware de previsao do tempo
-	var request		= require('request');
-	//chave individual atrelada ao usuario cadastrado no site - key previsao do tempo
-	var keyprevisao	= 'd18b9453b7807f16107f9e8573492a6a';
-	//instancia as classes models
 
+var _this = {};
+var keyprevisao = 'd18b9453b7807f16107f9e8573492a6a';
+//chave individual atrelada ao usuario cadastrado no site - key previsao do tempo
 
-	var AnaliseController = {
-		
+module.exports = {
+
+	setup: function(connection, request) {
+		_this.connection	= connection;
+		_this.request		= request;
+	},
+
 		//metodo cadadastrar analise
 		cadastrar: function(req, res){
 
-		//trata possível erro no recebimento do valor do sensor e atribui a  variavel valor_sensores.
-		if(req.query.umidade1==null || Number.isNaN(umidade1)){
-			var valor_sensores	= 0;
-		}else{
-			var valor_sensores	= parseInt(req.query.umidade1);
-		}
-		var serial_ione		= req.query.serial;
-		var consumo_agua	= req.query.consumo;
-		var status_solo		= new calculaStatus(valor_sensores, serial_ione);
+			if(req.query.umidade1 == '0'){ var sensor1 = 0}else{var sensor1	= 1023 - (parseInt(req.query.umidade1))}
+				if(req.query.umidade2 == '0'){ var sensor2 = 0}else{var sensor2	= 1023 - (parseInt(req.query.umidade2))}
+					if(req.query.umidade3 == '0'){ var sensor3 = 0}else{var sensor3	= 1023 - (parseInt(req.query.umidade3))}
+						if(req.query.umidade4 == '0'){ var sensor4 = 0}else{var sensor4	= 1023 - (parseInt(req.query.umidade4))}
 
-		//consulta jardim com serial enviado pelo hardware
-		Jardim.find({serial_ione:serial_ione}, function(err, data){
+							var serial	= req.query.serial;
+						var consumo = req.query.consumo;
+
+		//-----------------------------------------------------------------
+		// valida e soma valores oriundos do jardim
+		// se valor do sensor = 0 implica em sensor desligado ou danificad
+		//-----------------------------------------------------------------
+		var soma = 0;
+		if (sensor1 > 0) {soma += sensor1};
+		if (sensor2 > 0) {soma += sensor2};
+		if (sensor3 > 0) {soma += sensor3};
+		if (sensor4 > 0) {soma += sensor4};
+		//----------------------------------------------------------------
+
+
+		//identifica qual o jardim cadastrado com o serial iOne.
+		_this.connection.query('select * from jardim where serial = ?', [serial], function(err, data){
 			if (err) {
-				console.log('cadastrarAnalise - erro pesquisar jardim por serial '+err);
+				console.log('cadastrarAnalise - erro ao select jardim '+err);
+				res.json({erro:'erro ao localizar jardim'})
 			}else{
-				var jardim = data[0].id,
-				cidade = data[0].cidade;
+				if (data.length === 1) {
+					var jardim = data;
 
-					//definir codigo da cidade
-					if(typeof cidade == 'undefined'){
-						cidade = '3448439'; //default sao paulo
-					}
+		//----------------------------------------------------------------
+		// calcula média aritmética dos valores de umidade recebidos
+		// de acordo com o numero de sensores cadastrados no jardim
+		//----------------------------------------------------------------
+		var mediaSensores = soma/jardim[0].qtdSensores;
+		//----------------------------------------------------------------
 
-					//define parametro do API para obter previsao do tempo
-					var path = 'http://api.openweathermap.org/data/2.5/forecast/city?id=' + cidade + '&APPID=' + keyprevisao + '&units=metric';
+		//consulta as caracteristicas das plantas cadastradas no jardim
+		_this.connection.query('select p.umidade_min, p.umidade_max from planta p '+
+			'inner join jardim_planta jp on jp.idPlanta = p.id '+
+			'inner join jardim j on j.id = jp.idJardim '+
+			'where idJardim = ?', [jardim[0].id],
+			function(err, data){
+				if (err) {
+					console.log('cadastrarAnalise - erro ao consultar as plantas do jardim');
+					res.json({erro: 'erro ao consultar as plantas do jardim'});
+				}else{	
+					var plantas = data;
 
-					//executa request do API 'openWeatherMap.org'
-					request(path, function (error, response, body){
-						if (!error && response.statusCode == 200){
-							//res.json(JSON.parse(body));
-							var resposta = JSON.parse(body);
-							//console.log(resposta.list);
-							//console.log(resposta.list.length);
-							
-							// atribui clima da resposta do API
-							var clima = resposta.list[0].weather[0].description;
+		//----------------------------------------------------------------
+		// calcula status de umidade do solo de acordo com
+		// as características das plantas cadastradas no jardim
+		//----------------------------------------------------------------
+		var umidadeMin 	= parseInt(plantas[0].umidade_min),
+		umidadeMax 		= parseInt(plantas[0].umidade_max),
+		statusUmidade	= 'indefinido';
 
-							var novaAnalise = {jardim, nome, clima, valor_sensores, status_solo, consumo_agua};
-							var model 		= new Analise(novaAnalise);
-							//grava analise no banco de dados
-							model.save(function(err, data){
-								if (err) {
-									console.log('erro ao gravar nova analise '+err);
-								}else{
-									console.log('analise gravada com sucesso.');
-									//define resposta ao hardware
-									var resposta = new resposta(status_solo, clima);
-									res.json(resposta);
-								}
-							});
-						}
-					});	
-				}
-			});
-	},
+		if(mediaSensores < umidadeMin){ 
+			statusUmidade = 'seco';
+		}else if(mediaSensores > umidadeMin && mediaSensores < umidadeMax){
+			statusUmidade = 'umido';
+		}else{
+			statusUmidade = 'encharcado';
+		}
+		//----------------------------------------------------------------
 
-		//metodo editar analise
-		editar: function(req, res){
-			//fora do escopo
-		},
+		
+		//----------------------------------------------------------------
+		// estabelece conexão com API de previsão do tempo para
+		// identificar o clima atual da localização cadastrada no jardim
+		//----------------------------------------------------------------
+		//var cidade = jardim[0].cidade;
 
-		//metodo deletar analise
-		deletar: function(req, res){
-			//fora do escopo
-		},
+		//definir codigo da cidade
+		if(typeof cidade == 'undefined'){
+			//default sao paulo
+			cidade = '3448439'; 
+		}
 
-		//metodo listar analise
-		listar: function(req, res){
-
-		},
-
+		//define parametro do API para obter previsao do tempo
+		var path = 'http://api.openweathermap.org/data/2.5/forecast/city?id=' + cidade + '&APPID=' + keyprevisao + '&units=metric';
+		console.log(path);
+		//executa request do API 'openWeatherMap.org'
+		_this.request(path, function (error, response, body){
+			if (!error && response.statusCode == 200){
+		//res.json(JSON.parse(body));
+		var resposta = JSON.parse(body);
+		//console.log(resposta.list);
+		//console.log(resposta.list.length);
+		
+		// atribui clima da resposta do API
+		// levado em consideração a descrição do clima, pois possui informações complementares
+		var clima = resposta.list[0].weather[0].description;
 	}
-	return AnaliseController;
+		//----------------------------------------------------------------
 
-	//funções app.controller.analise
 
-	//função que calcula o status do solo conforme o grupo do jardim
-	function calculaStatus(valor, serial){
-		Planta.find({jardim:{$exist:true}}, function(err, data){
-			if(err){
-				console.log('func calculaStatus - erro ao pesquisar planta associada a jardim '+err);
-			}else{
-				if (data.length > 0) {
-					var umidade_minima = parseInt(data[0].umidade_minima);
-					if (valor >= umidade_minima) {
-						var status = 'umido';
-					}else{
-						var status = 'seco';
-					}
-					return status;
-				}else{
-					var status = 'indefinido' 
-				}
-				return status;
-			}
-		});
-	}
-
-	function resposta(status, clima){
-		//verifica candiçõa do solo
-		if (status == 'seco') {
-			//verifica intensidade da chuva
+		//----------------------------------------------------------------
+		// define resposta a ser enviada ao microcontrolador para acionar
+		// o sistema de irrigação. 
+		// a vazão de água varia conforme o tipo de material utilizado no 
+		// sistema de irrigação, bem como a pressão e a capacidade da 
+		// valvula solenóide empregada. Desse modo, para efeito de protótipo,
+		// definimos o tempo padrão para acionamento da valvula em 1 minuto. 
+		//----------------------------------------------------------------		
+		// o acionamento será realizado caso o solo esteja SECO e seu tempo 
+		// varia conforme intensidade da chuva, sendo o caso.
+		// sem chuva	= acionamento em 100% do tempo = 60s
+		// chuva fraca	= acionamento em 70% do tempo ~= 40s
+		// chuva 		= acionamento em 50% do tempo ~= 30s
+		//----------------------------------------------------------------
+		if(statusUmidade == 'seco'){
 			if(clima.match(/light rain/)){
-				//atribui 70% do tempo de acionamento da valvula
-				var response = {'acao':'70'};
+				var resposta = {'acao':'70'};
 			}else if(clima.match(/rain/)){
-				//atribui 50% do tempo de acionamento da valvula
-				var response = {'acao':'50'};
+				var resposta = {'acao':'50'};
 			}else{
-				//atribui 100% do tempo de acionamento da valvula
-				var response = {'acao':'100'};
+				var resposta = {'acao':'100'};
 			}
 		}else{
-			//não aciona a valvula
 			var resposta = {'acao':'0'};
 		}
+		//----------------------------------------------------------------
 
-		return resposta;
+
+		//----------------------------------------------------------------
+		// define o status da valvula
+		//----------------------------------------------------------------
+		if (consumo > 0) {var valvula = 'ligada'}else{var valvula = 'desligada'}
+		//----------------------------------------------------------------
+
+
+		//salva os valores recebido em analise
+		_this.connection.query('insert into analise(idJardim, dataHora, sensor1, sensor2, sensor3, sensor4, '+
+			'mediaSensores, statusUmidade, clima, valvula, consumo) values(?, now(),?,?,?,?,?,?,?,?,?)',
+			[jardim[0].id, sensor1, sensor2, sensor3, sensor4, mediaSensores,
+			statusUmidade, clima, valvula, consumo], function(err){
+				if (err) {
+					console.log('cadastrarAnalise - erro ao salvar dados em analise '+err);
+					res.json({erro: 'dados de analise não salvos'});
+				}else{
+					res.json(resposta);
+				}
+			});
+	});
 	}
-
-	*/
+});
+}else{
+	console.log('cadastrarAnalise - nenhum jardim cadastrado com serial informado');
+	res.json({erro: 'nenhum jardim cadastrado com o serial informado'});
 }
+}
+});
+
+},
+
+// ------------------------------------------------------------------------------------------
+// métodos referentes aos relatórios
+// ------------------------------------------------------------------------------------------
+
+//pagina inicial de relatorios
+index: function(req, res){
+			if(!req.session.user || !req.session.user.nome || !req.session.user.id){ //session
+				res.redirect('/');
+			}else{
+				res.render('relatorio', {alert:false});
+			}
+		},
+
+		consumo: function(req, res){
+			var idUsuario = req.session.user.id,
+			inicio = req.body.inicio,
+			fim	   = req.body.fim;
+
+
+			if(inicio == '' || fim == ''){
+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", valvula, consumo, clima '+
+					'from usuario u '+
+					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join analise a on a.idJardim = j.id '+
+					'where u.id = ? order by a.id desc ', [idUsuario], function(err, data){
+						if (err) {
+							console.log('relatorioConsumo - erro select analise '+err);
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+						}else{
+							var resultado = data;
+							if (resultado.length > 0) {
+								res.render('resultado', {alert:false, resultado:resultado, tipo:'consumo'});	
+							}else{
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'consumo'});
+							}
+						}
+					});
+			}else{
+
+
+				inicio = inicio.substring(6)+"-"+inicio.substring(3,5)+"-"+inicio.substring(0,2);
+				fim = fim.substring(6)+"-"+fim.substring(3,5)+"-"+fim.substring(0,2)+" 23:59:59";
+
+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", valvula, consumo, clima '+
+					'from usuario u '+
+					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join analise a on a.idJardim = j.id '+
+					'where u.id = ? and '+
+					'a.dataHora between ? and ? order by a.id desc; ', [idUsuario, inicio, fim], function(err, data){
+						if (err) {
+							console.log('relatorioConsumo - erro select analise '+err);
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+						}else{
+							var resultado = data;
+							if (resultado.length > 0) {
+								res.render('resultado', {alert:false, resultado:resultado, tipo:'consumo'});	
+							}else{
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'consumo'});
+							}
+						}
+					});
+			}
+		},
+
+		umidade: function(req, res){
+			var idUsuario = req.session.user.id,
+			inicio = req.body.inicio,
+			fim	   = req.body.fim;
+
+
+			if(inicio == '' || fim == ''){
+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", statusUmidade, mediaSensores, clima '+
+					'from usuario u '+
+					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join analise a on a.idJardim = j.id '+
+					'where u.id = ? order by a.id desc ', [idUsuario], function(err, data){
+						if (err) {
+							console.log('relatorioConsumo - erro select analise '+err);
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+						}else{
+							var resultado = data;
+							if (resultado.length > 0) {
+								res.render('resultado', {alert:false, resultado:resultado, tipo:'umidade'});	
+							}else{
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'umidade'});
+							}
+						}
+					});
+			}else{
+
+				inicio = inicio.substring(6)+"-"+inicio.substring(3,5)+"-"+inicio.substring(0,2);
+				fim = fim.substring(6)+"-"+fim.substring(3,5)+"-"+fim.substring(0,2)+" 23:59:59";
+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", statusUmidade, mediaSensores, clima '+
+					'from usuario u '+
+					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join analise a on a.idJardim = j.id '+
+					'where u.id = ? and '+
+					'a.dataHora between ? and ? order by a.id desc; ', [idUsuario, inicio, fim], function(err, data){
+						if (err) {
+							console.log('relatorioConsumo - erro select analise '+err);
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+						}else{
+							var resultado = data;
+							if (resultado.length > 0) {
+								res.render('resultado', {alert:false, resultado:resultado, tipo:'umidade'});	
+							}else{
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'umidade'});
+							}
+						}
+					});
+			}
+		},
+
+		completo: function(req, res){
+			var idUsuario = req.session.user.id,
+			inicio = req.body.inicio,
+			fim	   = req.body.fim;
+
+
+			if(inicio == '' || fim == ''){
+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", valvula, consumo, clima, '+
+					'statusUmidade, mediaSensores '+
+					'from usuario u '+
+					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join analise a on a.idJardim = j.id '+
+					'where u.id = ? order by a.id desc', [idUsuario], function(err, data){
+						if (err) {
+							console.log('relatorioConsumo - erro select analise '+err);
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+						}else{
+							var resultado = data;
+							if (resultado.length > 0) {
+								res.render('resultado', {alert:false, resultado:resultado, tipo:'completo'});	
+							}else{
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'completo'});
+							}
+						}
+					});
+			}else{
+				inicio = inicio.substring(6)+"-"+inicio.substring(3,5)+"-"+inicio.substring(0,2);
+				fim = fim.substring(6)+"-"+fim.substring(3,5)+"-"+fim.substring(0,2)+" 23:59:59";
+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", valvula, consumo, clima, '+
+					'statusUmidade, mediaSensores '+
+					'from usuario u '+
+					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join analise a on a.idJardim = j.id '+
+					'where u.id = ? and '+
+					'a.dataHora between ? and ? order by a.id desc; ', [idUsuario, inicio, fim], function(err, data){
+						if (err) {
+							console.log('relatorioConsumo - erro select analise '+err);
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+						}else{
+							var resultado = data;
+							if (resultado.length > 0) {
+								res.render('resultado', {alert:false, resultado:resultado, tipo:'completo'});	
+							}else{
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'completo'});
+							}
+						}
+					});
+			}
+		}
+	}

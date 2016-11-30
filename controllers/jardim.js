@@ -23,10 +23,10 @@ module.exports = {
 								var jardim = data;
 
 								_this.connection.query('select p.id, p.nome, p.grupo, p.cientifico, p.temperatura, p.informacoes '+
-								'from planta p '+
-								'inner join jardim_planta jp on jp.idPlanta = p.id '+
-								'inner join jardim j on j.id = jp.idJardim '+
-								'where idJardim = ?', [jardim[0].id],
+									'from planta p '+
+									'inner join jardim_planta jp on jp.idPlanta = p.id '+
+									'inner join jardim j on j.id = jp.idJardim '+
+									'where idJardim = ?', [jardim[0].id],
 									function(err, data){
 										if (err) {
 											console.log('meujardim - erro ao consultar jardim_plantas '+err);
@@ -85,7 +85,7 @@ module.exports = {
 					if (err) {
 						console.log('cadastrar - erro ao inserir jardim '+err);
 						res.render('/home', {alert:true, msg:'erro ao cadastrar jardim'});
-					}else{	
+					}else{							
 						_this.connection.query('select * from jardim where idUsuario = ?',[idUsuario],
 							function(err, data){
 								if (err) {
@@ -93,9 +93,8 @@ module.exports = {
 									res.render('/home', {alert:true, msg:'erro ao cadastrar jardim'});
 								}else{	
 									var jardim = data;
-
 									//associar as plantas ao jardim (jardim_planta)
-									for (var i = 0; i < plantas.length; i++) {
+									for(var i = 0; i < plantas.length; i++) {
 										_this.connection.query('insert into jardim_planta values(?,?)',[jardim[0].id, plantas[i]],
 											function(err){
 												if (err) {
@@ -104,6 +103,8 @@ module.exports = {
 												}
 											});
 									}
+
+									res.redirect('/meujardim');
 								}
 							});
 					}
@@ -111,99 +112,119 @@ module.exports = {
 
 		},
 
-/*
-		//metodo exibir detalhes do jardim
-		exibir: function(req, res){
-
-			var id = req.session.user.id;
-
-			//procura jardim no banco de dados
-			Jardim.find({id_usuario:id}, function(err, data){
-				if (err) {
-					console.log('exibirJardim - erro localizar jardim '+err);
-				}else{
-					var jardim = data;
-
-			//pricura as plantas que estão associadas ao jardim no banco de dados
-			Planta.find({jardim:{$exist:true}}, function(err, data){
-				if (err) {
-					console.log('exibirJardim - erro localizar plantas '+err);		
-				}else{
-					var plantas = data;
-
-					res.render('meujardim', {jardim:jardim, plantas:plantas});
-				}
-			});
-		}
-	})
-		},
-		*/
-
 		//metodo alterar dados do jardim
 		editar: function(req, res){
 			var nome 			= req.body.nome,
-			serial_ione 		= req.body.serial,
-			sensores_umidade 	= req.body.sensores,
-			id_usuario			= req.session.user.id,
-			planta 				= req.body.planta;
+			serial 				= req.body.serial,
+			sensores 			= req.body.sensores,
+			estado 				= req.body.estado,
+			cidade 				= req.body.cidade,
+			idUsuario			= req.session.user.id,
+			plantas 			= req.body.planta;
 
-			//altera os dados do jardim cadastrado
-			Jardim.update({id_usuario:id_usuario},{$set:{
-				nome:nome,
-				serial_ione:serial_ione,
-				sensores_umidade:sensores_umidade}}, function(err, data){
-					if(err){
-						console.log('alterarJardim - erro update jardim '+err);
+			_this.connection.query('update jardim set nome = ?, serial = ?, qtdSensores = ?, estado = ?, cidade = ? '+
+				'where idUsuario = ?', [nome, serial, sensores, estado, cidade, idUsuario], 
+				function(err){
+					if (err) {
+						console.log('editarJardim - erro update jardim '+err);
 					}else{
-						
-						//atualiza a associação do jardim às plantas
+						_this.connection.query('select * from jardim where idUsuario = ?', [idUsuario], 
+							function(err, data){
+								if (err) {
+									console.log('editar - erro select jardim '+err);
+									res.render('/home', {alert:true, msg:'erro ao altearar jardim'});
+								}else{
+									var jardim = data;
 
-						//remove associação do jardim
-						Planta.update({jardim:{$exist:true}},{$unset:{jardim:1}}, function(err, data){
-							if (err) {
-								console.log('alterarJardim - erro remover jardim das plantas '+err);		
-							}else{
-						//insere associação do jardim
-						for (var i = 0; i < planta.length; i++) {
-							Planta.update({nome:planta[i]},{$set:{jardim:data[0].nome}}, function(err,data){
-								if (err) console.log('alterarJardim - associar planta '+err);
-							});
-						}	
-						res.render('/home');
+								/*	_this.connection.query('delete from jardim_planta where idJardim = ?', [jardim[0].id], 
+										function(err){
+											if (err) {
+												console.log('editar - erro deletar jardimPlanta '+err);
+												res.render('home', {alert:true, msg:'erro ao altearar jardim'});
+											}else{
+												for (var i = 0; i < plantas.length; i++) {
+													_this.connection.query('insert into jardim_planta values(?,?)',[jardim[0].id, plantas[i]],
+														function(err){
+															if (err) {
+																console.log('cadastrar - erro ao cadastrar jardim_planta '+err);
+																res.render('home', {alert:true, msg:'erro ao altearar jardim'});
+															}
+														});
+												}
+												*/
+												_this.connection.query('select p.id, p.nome, p.grupo, p.cientifico, p.temperatura, p.informacoes '+
+													'from planta p '+
+													'inner join jardim_planta jp on jp.idPlanta = p.id '+
+													'inner join jardim j on j.id = jp.idJardim '+
+													'where idJardim = ?', [jardim[0].id],
+													function(err, data){
+														if (err) {
+															console.log('alterarJardim - erro ao consultar jardim_plantas '+err);
+															res.render('home', {alert:true, msg:'erro ao altearar jardim'});
+														}else{	
+															var jardimPlanta = data;
+															res.render('meujardim', {alert:true, msg:'Jardim alterado com sucesso',jardim:jardim, jardimPlanta:jardimPlanta});
+
+													/*	_this.connection.query('select * from planta', function(err, data){
+																if (err) {
+																	console.log('alterarJardim - erro ao consultar plantas '+err);
+																	res.render('home', {alert:true, msg:'erro ao alterar jardim'});
+																}else{	
+																	if (data.length > 0) {
+																		var plantas = data;
+																		res.render('meujardim', {alert:false, jardim:jardim, jardimPlanta:jardimPlanta, plantas:plantas});
+																	}else{
+																		res.render('home', {alert:true, msg:'erro ao altearar jardim'});
+																	}
+																}
+															});*/
+
+														}
+													});
+
+											}
+										});
 					}
 				});
-					}
-				});
+
+					//}
+			//	});
 
 		},
 
 		//metodo deletar jardim
 		deletar: function(req, res){
 
-			var id_usuario = req.session.user.id;
+			var idUsuario = req.session.user.id;
 
-
-			Jardim.delete({id_usuario:id_usuario}, function(err, data){
+			_this.connection.query('select * from jardim where idUsuario = ?', [idUsuario], function(err, data){
 				if (err) {
-					console.log('deletarJardim - erro ao deletar jardim '+err);
+					console.log('deletarJardim - erro select jardim '+err);
 				}else{
-					//remove associação do jardim com as plantas
-					Planta.update({jardim:{$exist:true}},{$unset:{jardim:1}}, function(err, data){
+					jardim = data;
+					_this.connection.query('delete from jardim_planta where idJardim = ?', [jardim[0].id], function(err){
 						if (err) {
-							console.log('deletarJardim - erro remover jardim das plantas '+err);
+							console.log('deletarJardim - erro delete jardim_planta '+err);
 						}else{
-							Usuario.update({_id:id_usuario}, {$unset:{jardim:1}}, function(err, data){
+							_this.connection.query('delete from analise where idJardim = ?', [jardim[0].id], function(err){
 								if (err) {
-									console.log('deletarJardim - erro remover jardim de conta do usuario '+err);
+									console.log('deletarJardim - erro delete analise '+err);
 								}else{
-									res.redirect('/home');
+									_this.connection.query('delete from jardim where id = ?', [jardim[0].id], function(err){
+										if (err) {
+											console.log('deletarJardim - erro delete jardim '+err);
+										}else{
+
+											res.redirect('/home');
+										}
+									});
 								}
 							});
-
 						}
 					});
+
 				}
-			});
+			})
 		},
 
 		//metodo listar jardim

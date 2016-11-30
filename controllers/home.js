@@ -34,27 +34,46 @@ module.exports = {
 					function(err, data){
 						if (err) {
 							console.log("Login - erro ao localizar conta "+err);
+
 						}else{
 							if(data.length == 0){
-								res.render("home", {alert:false, jardim:false, analise:false});	
+								res.render("home", {alert:false, jardim:false, planta:false, analise:false});	
 							}else{
-								var jardim = data;
+								var jardim = data;	
 
-								_this.connection.query('select * from analise where idJardim = ? limit 5', [jardim[0].id],
-									function(err, data){
+								_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", valvula, consumo, clima, '+
+									'statusUmidade, mediaSensores '+
+									'from usuario u '+
+									'inner join jardim j on j.idUsuario = u.id '+
+									'inner join analise a on a.idJardim = j.id '+
+									'where u.id = ? order by a.id desc limit 5', [idUsuario], function(err, data){
 										if (err) {
 											console.log('home - erro ao localizar analise '+err);
+											res.render("home", {alert:true, msg:'erro ao carregar acompanhamento', jardim:jardim, planta:false, analise:false});	
 										}else{
 											if (data.length > 0) {
 												var analise = data;
-												res.render("home", {alert:false, jardim:jardim, analise:analise});	
+											
+												_this.connection.query('select p.umidade_min, p.umidade_max from planta p '+
+													'inner join jardim_planta jp on jp.idPlanta = p.id '+
+													'inner join jardim j on j.id = jp.idJardim '+
+													'where idJardim = ?', [jardim[0].id],
+													function(err, data){
+														if (err) {
+															console.log('home - erro ao localizar plantas '+err);
+															res.render("home", {alert:true, msg:'erro ao carregar acompanhamento', jardim:jardim, planta:false, analise:false});	
+														}else{
+															var planta = data;
+															res.render("home", {alert:false, jardim:jardim, planta:planta, analise:analise});	
+														}
+													});
 											}else{
-												res.render("home", {alert:false, jardim:jardim, analise:false});	
+												res.render("home", {alert:false, jardim:jardim, planta:false, analise:false});	
 											}
 										}
 									});
 
-								
+
 							}
 						}
 					});	

@@ -8,6 +8,34 @@
 	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+
+	<script type="text/javascript">
+		function validaSenha(){ 
+
+			var senha = $('#senha').val();
+			var senha2 = $('#senha2').val();
+			
+			if(senha.length < 6){
+				alert('senha deve ter no mínimo seis caracteres');
+				return false;
+			}
+			if(senha != senha2){
+				alert('senhas não coincidem');
+				return false;
+			}
+			return true;
+		} 
+	</script>
+
+	<script type="text/javascript">
+		jQuery(document).ready(function($) { 
+			$(".scroll").click(function(event){        
+				event.preventDefault();
+				$('html,body').animate({scrollTop:$(this.hash).offset().top}, 500);
+			});
+		});
+	</script>
+
 </head>
 <body>
 	<div class="container">
@@ -25,10 +53,9 @@
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="#projeto">Projeto</a></li>
-						<li><a href="#tecnologias">Tecnologias</a></li>
-						<li><a href="#cadastro">Cadastro</a></li>
-						<li><a href="#parceiro">Parceria</a></li>
+						<li><a class="scroll" href="#projeto">Projeto</a></li>
+						<li><a class="scroll" href="#tecnologias">Tecnologias</a></li>
+						<li><a class="scroll" href="#cadastro">Cadastro</a></li>
 						<li><a href="/login">Login</a></li>
 					</ul>
 				</div>
@@ -42,7 +69,7 @@
 		<div class="alert alert-dismissible alert-warning">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			<h5><%- msg %></h5>
-			<a href="/esqueceuSenha" class="alert-link"><h6>Recupere sua senha</h6></a>
+			<a href="/esqueciSenha" class="alert-link"><h6>Recupere sua senha</h6></a>
 		</div>
 		<%}%>
 
@@ -95,7 +122,7 @@
 
 		<div class="cadastro content" id="cadastro">
 			<h3>Cadastre-se e experimente</h3>
-			<form method="post" action="cadastrarUsuario">
+			<form method="post" action="cadastrarUsuario" onsubmit=" return validaSenha();">
 				<div class="row">
 					<div class="col-xs-12 col-md-3 espaco"></div>
 					<div class="col-xs-12 col-md-3 espaco">
@@ -108,33 +135,27 @@
 							<input type="text" name="sobrenome" class="form-control" required="">
 						</div>
 						<div class="form-group has-success">
-						<label>E-mail</label>
+							<label>E-mail</label>
 							<input type="email" name="email" class="form-control" required="">
 						</div>
 					</div>
 					<div class="col-xs-12 col-md-3 espaco">
 						<div class="form-group has-success">
 							<label>Senha</label>
-							<input type="password" name="senha" class="form-control" required="">
+							<input type="password" id="senha" title="a senha deverá conter letra maiuscula, minuscula e número" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" name="senha" class="form-control" required="">
 						</div>
 						<div class="form-group has-success">
 							<label>Redigite a senha</label>
-							<input type="password" name="senha2" class="form-control" required="">
+							<input type="password" id="senha2"  name="senha2" class="form-control" required="">
 						</div>
 						<div class="form-group has-success">
 							<br>
-							<input type="submit" name="enviar" class="btn btn-success" value="Cadastrar">
+							<input type="submit" name="enviar"  class="btn btn-success" value="Cadastrar">	
 						</div>
 					</div>
 					<div class="col-xs-12 col-md-3 espaco"></div>
 				</div>
 			</form>
-		</div>
-
-		<div class="parceiro content" id="parceiro">
-			<h2>Parceiros</h2>
-			<h3>Seja um parceiro iOne e contribua para um negócio de sucesso</h3>
-			<a href="#"><h3>contato@ione.com.br</h3></a>
 		</div>
 	</div>
 
@@ -142,6 +163,8 @@
 		<h5>iOne Jardim Inteligente é um Projeto de Conclusão do Curso de Ciência da Computação</h5>
 		<h5>Universidade São Judas Tadeu - 2016</h5>
 	</div>
+
+	
 
 </body>
 </html>

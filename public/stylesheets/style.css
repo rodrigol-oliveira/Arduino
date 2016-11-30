@@ -5,6 +5,7 @@ p{text-align: justify; 	font-family: 'Times new Roman'; }
 
 table{text-align: justify; 	font-family: 'Times new Roman';}
 
+
 .content {padding-top: 50px; padding-bottom: 30px;}
 .footer {margin-bottom: 0;	padding: 20px;	background: gray; 	text-align: center;	color: white; }
 
@@ -16,6 +17,8 @@ table{text-align: justify; 	font-family: 'Times new Roman';}
 #logo{width: auto; height: 150px; padding-top: 20px;}
 #icone{width: auto; height: 200px;}
 #esqueci{color: blue; font-family: 'Times new Roman';}
+
+
 
 
 /*

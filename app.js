@@ -7,6 +7,8 @@ var bcrypt 		= require('bcrypt-nodejs');
 var mysql 		= require('mysql');
 var nodemailer 	= require('nodemailer');//envia email
 var bCrypt      = require('bcrypt-nodejs');	//midleware para criptografar senha
+var request 	= require('request');//request previsao do tempo
+
 
 var connection = mysql.createConnection({
     host    : 'localhost',
@@ -21,7 +23,6 @@ var app = express();
 
 // view engine setup
 app.set('view engine', 'ejs');
-//app.set('view engine', 'jade');//***
 app.set('views', __dirname + '/views');
 
 app.use(express.static(__dirname + '/views'));
@@ -45,13 +46,15 @@ load('controllers').then('routes').into(app, function(err, instance){
 		console.log('erro em load into app '+err);
 	} else{
 
-		var usuarioController = require('./controllers/usuario.js'),
-		homeController = require('./controllers/home.js'),
-		jardimController = require('./controllers/jardim.js');
+		var homeController	= require('./controllers/home.js'),
+		usuarioController 	= require('./controllers/usuario.js'),
+		jardimController 	= require('./controllers/jardim.js'),
+		analiseController 	= require('./controllers/analise.js');
   		
-  		usuarioController.setup(connection, bCrypt, nodemailer);
   		homeController.setup(connection),
-  		jardimController.setup(connection);
+  		usuarioController.setup(connection, bCrypt, nodemailer);
+  		jardimController.setup(connection),
+  		analiseController.setup(connection, request);
 		
 
 

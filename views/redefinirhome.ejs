@@ -8,6 +8,24 @@
 	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+
+	<script type="text/javascript">
+		function validaSenha(){ 
+
+			var senha = $('#novasenha').val();
+			var senha2 = $('#novasenha2').val();
+			
+			if(senha.length < 6){
+				alert('senha deve ter no mínimo seis caracteres');
+				return false;
+			}else if(senha != senha2){
+				alert('senhas não coincidem');
+				return false;
+			}
+			return true;
+		} 
+	</script>
+
 </head>
 <body>
 	<div class="container">
@@ -20,7 +38,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/" >iOne Jardim Inteligente</a>
+					<a class="navbar-brand" href="/home" >iOne Jardim Inteligente</a>
 				</div>
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
@@ -33,7 +51,7 @@
 
 		<div class="redefinir-senha content">
 			<h3>Redefinir Senha</h3>
-			<form method="post" action="/redefinirSenhaHome">
+			<form method="post" action="redefinirSenhaHome" onsubmit="return validaSenha()">
 				<div class="row">
 					<div class="col-xs-12 col-md-4 espaco"></div>
 					<div class="col-xs-12 col-md-4 espaco">
@@ -43,21 +61,21 @@
 						</dir>
 						<dir class="form-group">
 							<label>Nova senha</label>
-							<input type="password" name="novasenha" class="form-control" required="">
+							<input type="password" id="novasenha" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" title="a senha deverá conter letra maiuscula, minuscula e número" name="novasenha" class="form-control" required="">
 						</dir>
 						<dir class="form-group">
 							<label>Redigite a senha</label>
-							<input type="password" name="novasenha2" class="form-control" required="">
+							<input type="password" id="novasenha2" name="novasenha2" class="form-control" required="">
 						</dir>
 						<%if(alert){%>
-						<div class="alert alert-dismissible alert-warning">
+						<div class="alert alert-dismissible alert-info">
 							<button type="button" class="close" data-dismiss="alert">&times;</button>
 							<p><%- msg %></p>
 						</div>
 						<%}%>
 						<dir class="form-group">
 							<input type="submit" name="redefinir" class="btn btn-success" value="Redefinir">
-							<a href="/home" name="voltar" class="btn btn-default">Voltar</a>
+							<a href="/minhaconta" name="voltar" class="btn btn-default">Voltar</a>
 						</dir>
 					</div>
 					<div class="col-xs-12 col-md-4 espaco"></div>
