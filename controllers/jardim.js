@@ -80,6 +80,8 @@ module.exports = {
 			cidade				= req.body.cidade,
 			plantas				= req.body.planta;
 
+
+
 			_this.connection.query('insert into jardim(idUsuario, nome, serial, estado, cidade, qtdSensores) '+
 				'values(?,?,?,?,?,?)',[idUsuario, nome, serial, estado, cidade, sensores], function(err){
 					if (err) {
@@ -94,11 +96,23 @@ module.exports = {
 								}else{	
 									var jardim = data;
 									//associar as plantas ao jardim (jardim_planta)
-									for(var i = 0; i < plantas.length; i++) {
-										_this.connection.query('insert into jardim_planta values(?,?)',[jardim[0].id, plantas[i]],
+
+									if (Array.isArray(plantas)) {
+										for(var i = 0; i < plantas.length; i++) {
+											_this.connection.query('insert into jardim_planta values(?,?)',[jardim[0].id, plantas[i]],
+												function(err){
+													if (err) {
+														console.log('cadastrar - erro ao cadastrar jardim_planta '+err);
+														res.render('/home', {alert:true, msg:'erro ao cadastrar jardim'});
+													}
+												});	
+										}
+
+									}else{
+										_this.connection.query('insert into jardim_planta values(?,?)',[jardim[0].id, plantas],
 											function(err){
 												if (err) {
-													console.log('cadastrar - erro ao cadastrar jardim_planta '+err);
+													console.log('cadastrar - erro ao cadastrar jardim_planta No Array '+err);
 													res.render('/home', {alert:true, msg:'erro ao cadastrar jardim'});
 												}
 											});
