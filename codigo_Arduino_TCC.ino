@@ -18,7 +18,7 @@ int valorsensor1=0 ;//valor do sensor 1
 int valorsensor2=0 ;//valor do sensor 1
 int valorsensor3=0 ;//valor do sensor 1
 int valorsensor4=0 ;//valor do sensor 1
-char* valorvalvula="off" ;//valor do sensor 1
+char valorvalvula[]="off" ;//valor do sensor 1
 int valorconsumo=0 ;//valor do sensor 1
 
 //vazao de agua
@@ -62,6 +62,12 @@ void setup() {
   
   initSerial();         //instancia a comunicação serial
   initEthernet();       //instancia a placa de rede
+//consumo
+  Serial.begin(9600); //Inicia a serial com um baud rate de 9600  
+  pinMode(2, INPUT);
+  attachInterrupt(0, incpulso, RISING); //Configura o pino 2(Interrupção 0) para trabalhar como interrupção
+  Serial.println("\n\nInicio\n\n"); //Imprime Inicio na serial
+
   
 }
 
@@ -88,33 +94,103 @@ void loop() {
     if ( arduino == "50"){
       Serial.println("Abre Valvula em 50%");
       digitalWrite(valvula, HIGH);   // turn the Valvula on (HIGH is the voltage level)
-      delay(7000);     
+      contaPulso = 0;   //Zera a variável para contar os giros por segundos
+  //sei();      //Habilita interrupção
+  delay (1000); //Aguarda 1 segundo
+  //cli();      //Desabilita interrupção
+  
+  vazao = contaPulso / 5.5; //Converte para L/min
+  media=media+vazao; //Soma a vazão para o calculo da media
+  i++;
+  
+  Serial.print(vazao); //Imprime na serial o valor da vazão
+  Serial.print(" L/min - "); //Imprime L/min
+  Serial.print(i); //Imprime a contagem i (segundos)
+  Serial.println("s"); //Imprime s indicando que está em segundos
+  
+  if(i==9)
+  {
+    media = media/10; //Tira a media dividindo por 60
+    valorconsumo=media;
+    Serial.print("\nMedia por minuto = "); //Imprime a frase Media por minuto =
+    Serial.print(media); //Imprime o valor da media
+    Serial.println(" L/min - "); //Imprime L/min
+    Serial.println("\n\nInicio\n\n"); //Imprime Inicio indicando que a contagem iniciou
+  }    
       Serial.println("Fecha Valvula");
       digitalWrite(valvula, LOW);
       arduino="";
-      valorvalvula="on";
-      valorconsumo=50;
+      strcpy(valorvalvula,"on");
+      
       break;
     }
     if ( arduino == "70"){
       Serial.println("Abre Valvula em 70%");
       digitalWrite(valvula, HIGH);   // turn the valvula on (HIGH is the voltage level)
-      delay(10000);  
+//
+      contaPulso = 0;   //Zera a variável para contar os giros por segundos
+  sei();      //Habilita interrupção
+  delay (1000); //Aguarda 1 segundo
+  cli();      //Desabilita interrupção
+  
+  vazao = contaPulso / 5.5; //Converte para L/min
+  media=media+vazao; //Soma a vazão para o calculo da media
+  i++;
+  
+  Serial.print(vazao); //Imprime na serial o valor da vazão
+  Serial.print(" L/min - "); //Imprime L/min
+  Serial.print(i); //Imprime a contagem i (segundos)
+  Serial.println("s"); //Imprime s indicando que está em segundos
+  
+  if(i==9)
+  {
+    media = media/10; //Tira a media dividindo por 60
+    valorconsumo=media;
+    Serial.print("\nMedia por minuto = "); //Imprime a frase Media por minuto =
+    Serial.print(media); //Imprime o valor da media
+    Serial.println(" L/min - "); //Imprime L/min
+    Serial.println("\n\nInicio\n\n"); //Imprime Inicio indicando que a contagem iniciou
+  }   
+//     
       Serial.println("Fecha Valvula");
       digitalWrite(valvula, LOW);
       arduino="";
-      valorvalvula="on";
+      strcpy(valorvalvula,"on");
       valorconsumo=70;
       break;
     }
     if ( arduino == "100"){
       Serial.println("Abre Valvula em 100%");
       digitalWrite(valvula, HIGH);   // turn the valvula on (HIGH is the voltage level)
-      delay(15000);     
+//
+      contaPulso = 0;   //Zera a variável para contar os giros por segundos
+  sei();      //Habilita interrupção
+  delay (1000); //Aguarda 1 segundo
+  cli();      //Desabilita interrupção
+  
+  vazao = contaPulso / 5.5; //Converte para L/min
+  media=media+vazao; //Soma a vazão para o calculo da media
+  i++;
+  
+  Serial.print(vazao); //Imprime na serial o valor da vazão
+  Serial.print(" L/min - "); //Imprime L/min
+  Serial.print(i); //Imprime a contagem i (segundos)
+  Serial.println("s"); //Imprime s indicando que está em segundos
+  
+  if(i==9)
+  {
+    media = media/10; //Tira a media dividindo por 60
+    valorconsumo=media;
+    Serial.print("\nMedia por minuto = "); //Imprime a frase Media por minuto =
+    Serial.print(media); //Imprime o valor da media
+    Serial.println(" L/min - "); //Imprime L/min
+    Serial.println("\n\nInicio\n\n"); //Imprime Inicio indicando que a contagem iniciou
+  }   
+//     
       Serial.println("Fecha Valvula");
       digitalWrite(valvula, LOW);
       arduino="";
-      valorvalvula="on";
+      strcpy(valorvalvula,"on");
       valorconsumo=100;
       break;
     }
@@ -165,15 +241,15 @@ bool sendRequest(const char* host, const char* resource, const char* agua) {
 
 
   Serial.print("GET ");
-  
+  Serial.println(textosensor1);
   valorsensor1 =  analogRead(sensor1); //defini valor do sensor1
-  Serial.print(textosensor1);
+  //valorsensor1 =  100; //defini valor do sensor1
   Serial.print(valorsensor1);
   Serial.print(textosensor2);
   Serial.print(valorsensor2);
-  Serial.print(textosensor3);  
+  Serial.print(textosensor3);
   Serial.print(valorsensor3);
-  Serial.print(textosensor4);  
+  Serial.print(textosensor4);
   Serial.print(valorsensor4);
   Serial.print(textovalvula);
   Serial.print(valorvalvula);
@@ -184,12 +260,12 @@ bool sendRequest(const char* host, const char* resource, const char* agua) {
   client.print("GET ");
   client.print(textosensor1);
   client.print(valorsensor1);
+  
   client.print(textosensor2);
   client.print(valorsensor2);
   client.print(textosensor3);
   client.print(valorsensor3);
   client.print(textosensor4);
-  client.print(valorsensor4);
   client.print(textovalvula);
   client.print(valorvalvula);
   client.print(textoconsumo);
@@ -202,8 +278,8 @@ bool sendRequest(const char* host, const char* resource, const char* agua) {
   client.println(server);
   client.println("Connection: close");
   client.println();
-  valorvalvula="off";
-  valorconsumo=0;
+  strcpy(valorvalvula,"off");
+ 
   return true;
 }
 
