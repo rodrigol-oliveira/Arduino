@@ -118,7 +118,7 @@ module.exports = {
 											});
 									}
 
-									res.redirect('/meujardim');
+									res.redirect('/home');
 								}
 							});
 					}

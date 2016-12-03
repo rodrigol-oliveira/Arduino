@@ -13,6 +13,8 @@ module.exports = {
 		//metodo cadadastrar analise
 		cadastrar: function(req, res){
 
+		
+
 		if(req.query.umidade1 == '0'){ var sensor1 = 0}else{var sensor1	= 1023 - (parseInt(req.query.umidade1))}
 		if(req.query.umidade2 == '0'){ var sensor2 = 0}else{var sensor2	= 1023 - (parseInt(req.query.umidade2))}
 		if(req.query.umidade3 == '0'){ var sensor3 = 0}else{var sensor3	= 1023 - (parseInt(req.query.umidade3))}
@@ -21,6 +23,27 @@ module.exports = {
 		var serial	= req.query.serial;
 		var consumo = req.query.consumo;
 		var valvula = req.query.valvula;
+
+		console.log('valores recebidos: serial: '+serial)
+		console.log('====================================')
+		console.log('valores originais dos sensores.')
+		console.log('====================================')
+		console.log('sensor de umidade 1: '+req.query.umidade1)
+		console.log('sensor de umidade 2: '+req.query.umidade2)
+		console.log('sensor de umidade 3: '+req.query.umidade3)
+		console.log('sensor de umidade 4: '+req.query.umidade4)
+		console.log('====================================')
+		console.log('valores convertidos.')
+		console.log('====================================')
+		console.log('sensor de umidade 1: '+sensor1)
+		console.log('sensor de umidade 2: '+sensor2)
+		console.log('sensor de umidade 3: '+sensor3)
+		console.log('sensor de umidade 4: '+sensor4)
+		console.log('valvula: '+valvula)
+		console.log('consumo: '+consumo)
+		console.log('====================================')
+
+
 		//-----------------------------------------------------------------
 		// valida e soma valores oriundos do jardim
 		// se valor do sensor = 0 implica em sensor desligado ou danificad
@@ -135,7 +158,8 @@ module.exports = {
 			var resposta = {'acao':'0'};
 		}
 		//----------------------------------------------------------------
-
+		console.log('resposta do sistema ao hardware')
+		console.log(resposta)
 
 		//----------------------------------------------------------------
 		// define o status da valvula
