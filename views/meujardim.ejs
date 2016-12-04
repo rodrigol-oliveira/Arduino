@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8">
 	<title>iOne Jardim Inteligente | Meu Jardim</title>
 
 	<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
@@ -19,10 +20,11 @@
 
 	<script type="text/javascript">
 		function validaGrupo(){
+			
 			var planta = $('#planta').val();
 			for (var i = 0; i < planta.length; i++) {
 				if (planta[0].substring(0,1) != planta[i].substring(0,1)) {
-					alert('Por gentileza selecione apenas plantas do mesmo grupo.');
+					alert('Selecione apenas plantas do mesmo grupo.');
 					return false;
 				}
 			}
@@ -48,6 +50,46 @@
 		}
 
 	</script>
+
+	<script type="text/javascript"> 
+        
+        $(document).ready(function () {
+        
+            $.getJSON('api_cidades.json', function (data) {
+                var items = [];
+                var options = '<option selected value="0">escolha um estado</option>';    
+                $.each(data, function (key, val) {
+                    options += '<option value="' + val.uf + '">' + val.uf + '</option>';
+                });                 
+                $("#estado").html(options);                
+                
+                $("#estado").change(function () {              
+                
+                    var options_cidades = '';
+                    var str = "";                   
+                    
+                    $("#estado option:selected").each(function () {
+                        str += $(this).text();
+                    });
+                    
+                    $.each(data, function (key, val) {
+                        if(val.uf == str) {                           
+                            $.each(val.cidades, function (key_city, val_city) {
+                                options_cidades += '<option value="' + val_city.id +" "+val_city.nome+ '">' + val_city.nome+'</option>';
+                            });                         
+                        }
+                    });
+                    $("#cidade").html(options_cidades);
+                    
+                }).change();   
+
+            });
+        
+        });
+
+
+        
+    </script>       
 
 </head>
 <body>
@@ -118,16 +160,17 @@
 					<div class="col-xs-12 col-md-3 ">
 						<div class="form-group">
 							<label>Estado</label>
-							<select name="estado" class="selectpicker" data-width="100%" title="Estado" required>
-								<option value="SP">SP</option>							
+							<select name="estado" id="estado" class="form-control" data-width="100%" title="Estado" required>
+							<option value=""></option>
+							<!--	<option value="SP">SP</option> -->							
 							</select>
 						</div>
 					</div>
 					<div class="col-xs-12 col-md-3 ">
 						<div class="form-group">
 							<label>Cidade</label>
-							<select name="cidade" class="selectpicker" data-width="100%" title="Cidade" required>
-								<option value="São Paulo">São Paulo</option>								
+							<select name="cidade" id="cidade" class="form-control" data-width="100%" title="Cidade" required>
+								<!--<option value="São Paulo">São Paulo</option>-->								
 							</select>
 						</div>
 					</div>
@@ -139,7 +182,7 @@
 					<div class="col-xs-12 col-md-3 ">
 						<div class="form-group">
 							<label>Quantidade de sensores</label>
-							<select name="sensores" class="selectpicker" data-width="100%" title="Sensores de umidade" required>
+							<select name="sensores" id="sensores" class="selectpicker" data-width="100%" title="Sensores de umidade" required>
 								<option value="1">1</option>							
 								<option value="2">2</option>	
 								<option value="3">3</option>	
@@ -253,8 +296,8 @@
 						<div class="col-xs-12 col-md-3 ">
 							<div class="form-group">
 								<label>Estado</label>
-								<select  class="selectpicker target" data-width=
-								"100%" name="estado" required>
+								<select  class="form-control target" data-width=
+								"100%" name="estado" id="estado2"  disabled="">
 								<option id='<%- jardim[0].estado%>' value="<%- jardim[0].estado%>" ><%- jardim[0].estado%></option>
 							</select>
 
@@ -268,8 +311,8 @@
 			<div class="col-xs-12 col-md-3 ">
 				<div class="form-group">
 					<label>Cidade</label>
-					<select  class="selectpicker target" data-width="100%" name="cidade" required>
-						<option id='<%- jardim[0].cidade%>' value="<%- jardim[0].cidade%>" ><%- jardim[0].cidade%></option>
+					<select  class="form-control target" data-width="100%" name="cidade" id="cidade2" disabled="">
+						<option id='<%- jardim[0].cidade%>' value="<%- jardim[0].cidade%>" ><%- jardim[0].cidade.substring(8) %></option>
 					</select>
 <!--                     
 						<select name="cidade" class="selectpicker" data-width="100%" title="Cidade" required>

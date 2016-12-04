@@ -77,10 +77,10 @@ module.exports = {
 			sensores 			= req.body.sensores,
 			idUsuario			= req.session.user.id,
 			estado				= req.body.estado,
+			plantas				= req.body.planta,
 			cidade				= req.body.cidade,
-			plantas				= req.body.planta;
-
-
+			codCidade 			= cidade.substring(0,7),
+			nomeCidade 			= cidade.substring(8);
 
 			_this.connection.query('insert into jardim(idUsuario, nome, serial, estado, cidade, qtdSensores) '+
 				'values(?,?,?,?,?,?)',[idUsuario, nome, serial, estado, cidade, sensores], function(err){
@@ -131,13 +131,11 @@ module.exports = {
 			var nome 			= req.body.nome,
 			serial 				= req.body.serial,
 			sensores 			= req.body.sensores,
-			estado 				= req.body.estado,
-			cidade 				= req.body.cidade,
 			idUsuario			= req.session.user.id,
 			plantas 			= req.body.planta;
 
-			_this.connection.query('update jardim set nome = ?, serial = ?, qtdSensores = ?, estado = ?, cidade = ? '+
-				'where idUsuario = ?', [nome, serial, sensores, estado, cidade, idUsuario], 
+			_this.connection.query('update jardim set nome = ?, serial = ?, qtdSensores = ? '+
+				'where idUsuario = ?', [nome, serial, sensores, idUsuario], 
 				function(err){
 					if (err) {
 						console.log('editarJardim - erro update jardim '+err);

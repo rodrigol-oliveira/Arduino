@@ -13,8 +13,6 @@ module.exports = {
 		//metodo cadadastrar analise
 		cadastrar: function(req, res){
 
-		
-
 		if(req.query.umidade1 == '0'){ var sensor1 = 0}else{var sensor1	= 1023 - (parseInt(req.query.umidade1))}
 		if(req.query.umidade2 == '0'){ var sensor2 = 0}else{var sensor2	= 1023 - (parseInt(req.query.umidade2))}
 		if(req.query.umidade3 == '0'){ var sensor3 = 0}else{var sensor3	= 1023 - (parseInt(req.query.umidade3))}
@@ -109,14 +107,16 @@ module.exports = {
 		//var cidade = jardim[0].cidade;
 
 		//definir codigo da cidade
-		if(typeof cidade == 'undefined'){
+		//if(typeof cidade == 'undefined'){
 			//default sao paulo
-			cidade = '3448439'; 
-		}
+		//	cidade = '3448439'; 
+		//}
+
+		var cidade = jardim[0].cidade.substring(0,7);
 
 		//define parametro do API para obter previsao do tempo
 		var path = 'http://api.openweathermap.org/data/2.5/forecast/city?id=' + cidade + '&APPID=' + keyprevisao + '&units=metric';
-		console.log(path);
+		
 		//executa request do API 'openWeatherMap.org'
 		_this.request(path, function (error, response, body){
 			if (!error && response.statusCode == 200){
@@ -158,6 +158,8 @@ module.exports = {
 			var resposta = {'acao':'0'};
 		}
 		//----------------------------------------------------------------
+		console.log('====================================')
+		console.log('clima: '+clima)
 		console.log('resposta do sistema ao hardware')
 		console.log(resposta)
 
