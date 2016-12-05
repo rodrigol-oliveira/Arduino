@@ -7,9 +7,30 @@
 	<script type="text/javascript" src="/bootstrap/js/script.js"></script>
 	<script type="text/javascript" src="/highcharts/highcharts.js"></script>
 	<script type="text/javascript" src="/highcharts/exporting.js"></script>
+	<script type="text/javascript" src="/javascript/jquery.dataTables.min.js"></script>
+	
 	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/jquery.dataTables.min.css">
+	
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#tbResultado').DataTable({
+				"language": {
+					"lengthMenu": "Exibindo _MENU_ registros por página",
+					"zeroRecords": "Nenhum registro encontrado",
+					"info": "exibindo página _PAGE_ de _PAGES_",
+					"infoEmpty": "Nenhum registro disponível",
+					"infoFiltered": "(filtrado de _MAX_ registros no total)"
+				}
+			});
+
+		});
+
+
+	</script>
 </head>
 <body>
 	<div class="container">
@@ -49,84 +70,88 @@
 		</div>
 		<%}%>
 
-		<div class="grafico content img-responsive" id="grafico">
-			<script type="text/javascript">
-				$(function () {
-					$('#grafico').highcharts({
-						chart: {
-							type: 'spline'
-						},
-						title: {
-							text: 'Relatório de acompanhamento'
+		<div class="resultado content">
+			<h3>Relatório</h3>
 
-						},
-						xAxis: {
-							categories: [
-							<% if(resultado){%>
-								<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
-									[ "<%- resultado[i].dataHora %>"],
-									<%}%>
-									<%}%>	
-									]
-								},
-								yAxis: {
-									<% if ( tipo == 'umidade' || tipo == 'completo') {%>
+			<% if ( tipo == 'umidade' || tipo == 'consumo') {%>
+			<div class="grafico content img-responsive" id="grafico">
+				<script type="text/javascript">
+					$(function () {
+						$('#grafico').highcharts({
+							chart: {
+								type: 'spline'
+							},
+							title: {
+								text: 'Relatório de acompanhamento'
 
-										title: 
-										{text: 'Status de umidade do solo'},
-
-										minorGridLineWidth: 0,
-										gridLineWidth: 0,
-										alternateGridColor: null,
-
-										plotBands: [{ 
-											from: 0,
-											to: 300,
-											color: 'rgba(0, 0, 0, 0)',
-											label: {
-												text: 'seco',
-												style: {
-													color: '#606060'
-												}
-											}
-										}, { 
-											from: 300,
-											to: 800,
-											color: 'rgba(68, 170, 213, 0.1)',
-											label: {
-												text: 'ideal',
-												style: {
-													color: '#606060'
-												}
-											}
-										}, { 
-											from: 800,
-											to: 1023,
-											color: 'rgba(0, 0, 0, 0)',
-											label: {
-												text: 'encharcado',
-												style: {
-													color: '#606060'
-												}
-											}
-										}]
-
+							},
+							xAxis: {
+								categories: [
+								<% if(resultado){%>
+									<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
+										[ "<%- resultado[i].dataHora %>"],
 										<%}%>
+										<%}%>	
+										]
 									},
-									tooltip: {
-										valueSuffix: ''
-									},
-									plotOptions: {
-										spline: {
-											lineWidth: 4,
-											states: {
-												hover: {
-													lineWidth: 5
+									yAxis: {
+										<% if ( tipo == 'umidade') {%>
+
+											title: 
+											{text: 'Status de umidade do solo'},
+
+											minorGridLineWidth: 0,
+											gridLineWidth: 0,
+											alternateGridColor: null,
+
+											plotBands: [{ 
+												from: 0,
+												to: 300,
+												color: 'rgba(0, 0, 0, 0)',
+												label: {
+													text: 'seco',
+													style: {
+														color: '#606060'
+													}
 												}
-											},
-											marker: {
-												enabled: false
-											},
+											}, { 
+												from: 300,
+												to: 800,
+												color: 'rgba(68, 170, 213, 0.1)',
+												label: {
+													text: 'ideal',
+													style: {
+														color: '#606060'
+													}
+												}
+											}, { 
+												from: 800,
+												to: 1023,
+												color: 'rgba(0, 0, 0, 0)',
+												label: {
+													text: 'encharcado',
+													style: {
+														color: '#606060'
+													}
+												}
+											}]
+
+											<%}%>
+										},
+										tooltip: {
+											valueSuffix: ''
+										},
+										plotOptions: {
+											spline: {
+												lineWidth: 4,
+												states: {
+													hover: {
+														lineWidth: 5
+													}
+												},
+												marker: {
+													enabled: false
+												},
                // pointInterval: 3600000, // one hour
                // pointStart: Date.UTC(2015, 4, 31, 0, 0, 0)
            }
@@ -134,7 +159,7 @@
        },
        series: [
 
-       <% if(tipo == 'umidade' || tipo == 'completo'){%>
+       <% if(tipo == 'umidade'){%>
 
        	{name: 'umidade',
        	data: [
@@ -148,7 +173,7 @@
 
        		<%}%>
 
-       		<% if(tipo == 'consumo' || tipo == 'completo'){%>       			
+       		<% if(tipo == 'consumo'){%>       			
        			
        			{name: 'consumo - litros',
        			data: [
@@ -169,59 +194,64 @@
        					}
        				}
        			});
-				});
+					});
 
-			</script>
-		</div>
-
-		<div class="table-responsive">
-			<table  class="table table-bordered">
-
-				<thead>
-					<tr>
-						<th>Data e hora</th>
-						<th>Clima</th>
-						<%if(tipo=='umidade'||tipo=='completo'){%>
-						<th>Umidade</th>
-						<%}%>
-						<%if(tipo=='consumo'||tipo=='completo'){%>
-						<th>Válvula</th>
-						<th>Consumo de água</th>
-						<%}%>
-					</tr>
-				</thead>
-
-				<tbody>
-					<% if(resultado){%>
-					<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
-					<tr>
-						<td><%- resultado[i].dataHora %></td>
-						<td><%- resultado[i].clima %></td>
-						<%if(tipo=='umidade'||tipo=='completo'){%>
-						<td><%- resultado[i].statusUmidade %></td>
-						<%}%>
-						<%if(tipo=='consumo'||tipo=='completo'){%>
-						<td><%- resultado[i].valvula %></td>
-						<td><%- resultado[i].consumo %></td>
-						<%}%>
-					</tr>
 					<%}%>
-					<%}%>
-				</tbody>
 
-			</table>
+				</script>
+			</div>
 
-			<dir class="form-group">
-			<a class="btn btn-default" href="/relatorio" type="submit">voltar</a>
-			</dir> 
+
+			<div class="table-responsive tabela-resultado">
+				<table  class="table table-striped" id="tbResultado">
+
+					<thead>
+						<tr>
+							<th>Data e hora</th>
+							<th>Clima</th>
+							<%if(tipo=='umidade'||tipo=='completo'){%>
+							<th>Umidade</th>
+							<%}%>
+							<%if(tipo=='consumo'||tipo=='completo'){%>
+							<th>Válvula</th>
+							<th>Consumo de água</th>
+							<%}%>
+						</tr>
+					</thead>
+
+					<tbody>
+						<% if(resultado){%>
+						<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
+						<tr>
+							<td><%- resultado[i].dataHora %></td>
+							<td><%- resultado[i].clima %></td>
+							<%if(tipo=='umidade'||tipo=='completo'){%>
+							<td><%- resultado[i].statusUmidade %></td>
+							<%}%>
+							<%if(tipo=='consumo'||tipo=='completo'){%>
+							<td><%- resultado[i].valvula %></td>
+							<td><%- resultado[i].consumo %></td>
+							<%}%>
+						</tr>
+						<%}%>
+						<%}%>
+					</tbody>
+
+				</table>
+
+				<dir class="form-group">
+					<a class="btn btn-default" href="/relatorio" type="submit">voltar</a>
+				</dir> 
+			</div>
+
 		</div>
-
 	</div>
-
 	<div class="container-fluid footer">
 		<h5>iOne Jardim Inteligente é um Projeto de Conclusão do Curso de Ciência da Computação</h5>
 		<h5>Universidade São Judas Tadeu - 2016</h5>
 	</div>
+
+	
 
 </body>
 </html>

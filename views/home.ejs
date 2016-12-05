@@ -10,7 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/fonts.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-  
+
 </head>
 <body>
 	<div class="container">
@@ -54,7 +54,7 @@
 			</div>
 		</div>
 		<%}else{%>
-		
+
 		<div class="grafico content img-responsive" id="grafico">
 			<script type="text/javascript">
 				$(function () {
@@ -69,82 +69,86 @@
 							subtitle: {
 								text: 'Aguardando dados de analise iOne'
 							},
-							<%}%>
-							xAxis: {
-								categories: [
-								<%if(analise){%>
-									<% for(i = analise.length-1; i >= 0 ; i--) {  %>
-										[ "<%-analise[i].dataHora %>"],
-										<%}%>
-										<%}%>
-										]
-									},
-									yAxis: {
-										title: {
-											text: 'Status de umidade do solo'
+							<%}else{%>
+								subtitle: {
+									text: '<%- jardim[0].nome %> | <%- jardim[0].qtdSensores %> Sensor(es) de umidade | Localização: <%- jardim[0].cidade.substring(8) %>-<%- jardim[0].estado %> | Serial: <%- jardim[0].serial %>'
+								},
+								<%}%>
+								xAxis: {
+									categories: [
+									<%if(analise){%>
+										<% for(i = analise.length-1; i >= 0 ; i--) {  %>
+											[ "<%-analise[i].dataHora %>"],
+											<%}%>
+											<%}%>
+											]
 										},
-										minorGridLineWidth: 0,
-										gridLineWidth: 0,
-										alternateGridColor: null,
-										plotBands: [{ 
-											from: 0,
-											<%if(planta){%>
-											to: <%- planta[0].umidade_min %>,
-											<%}else{%>
-												to: 400,
-												<%}%>
-											color: 'rgba(0, 0, 0, 0)',
-											label: {
-												text: 'seco',
-												style: {
-													color: '#606060'
-												}
-											}
-										}, { 
-											<%if(planta){%>
-											from: <%- planta[0].umidade_min %>,
-											to: <%- planta[0].umidade_max %>,
-											<%}else{%>
-												from: 401,
-												to: 800,
-												<%}%>
-											color: 'rgba(68, 170, 213, 0.1)',
-											label: {
-												text: 'ideal',
-												style: {
-													color: '#606060'
-												}
-											}
-										}, { 
-											<%if(planta){%>
-											from: <%- planta[0].umidade_max %>,
-											<%}else{%>
-												from:801,
-												<%}%>
-											to: 1300,
-											color: 'rgba(0, 0, 0, 0)',
-											label: {
-												text: 'encharcado',
-												style: {
-													color: '#606060'
-												}
-											}
-										}]
-									},
-									tooltip: {
-										valueSuffix: ''
-									},
-									plotOptions: {
-										spline: {
-											lineWidth: 4,
-											states: {
-												hover: {
-													lineWidth: 5
-												}
+										yAxis: {
+											title: {
+												text: 'Status de umidade do solo'
 											},
-											marker: {
-												enabled: false
-											},
+											minorGridLineWidth: 0,
+											gridLineWidth: 0,
+											alternateGridColor: null,
+											plotBands: [{ 
+												from: 0,
+												<%if(planta){%>
+													to: <%- planta[0].umidade_min %>,
+													<%}else{%>
+														to: 400,
+														<%}%>
+														color: 'rgba(0, 0, 0, 0)',
+														label: {
+															text: 'seco',
+															style: {
+																color: '#606060'
+															}
+														}
+													}, { 
+														<%if(planta){%>
+															from: <%- planta[0].umidade_min %>,
+															to: <%- planta[0].umidade_max %>,
+															<%}else{%>
+																from: 401,
+																to: 800,
+																<%}%>
+																color: 'rgba(68, 170, 213, 0.1)',
+																label: {
+																	text: 'ideal',
+																	style: {
+																		color: '#606060'
+																	}
+																}
+															}, { 
+																<%if(planta){%>
+																	from: <%- planta[0].umidade_max %>,
+																	<%}else{%>
+																		from:801,
+																		<%}%>
+																		to: 1300,
+																		color: 'rgba(0, 0, 0, 0)',
+																		label: {
+																			text: 'encharcado',
+																			style: {
+																				color: '#606060'
+																			}
+																		}
+																	}]
+																},
+																tooltip: {
+																	valueSuffix: ''
+																},
+																plotOptions: {
+																	spline: {
+																		lineWidth: 4,
+																		states: {
+																			hover: {
+																				lineWidth: 5
+																			}
+																		},
+																		marker: {
+																			enabled: false
+																		},
                // pointInterval: 3600000, // one hour
                // pointStart: Date.UTC(2015, 4, 31, 0, 0, 0)
            }
