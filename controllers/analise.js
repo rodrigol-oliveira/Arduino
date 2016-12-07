@@ -315,9 +315,11 @@ index: function(req, res){
 
 			if(inicio == '' || fim == ''){
 
-				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", statusUmidade, mediaSensores, clima '+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", statusUmidade, mediaSensores, clima, umidade_min, umidade_max '+
 					'from usuario u '+
 					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join jardim_planta jp on jp.idJardim = j.id '+
+					'inner join planta p on p.id = jp.idPlanta '+
 					'inner join analise a on a.idJardim = j.id '+
 					'where u.id = ? order by a.id desc ', [idUsuario], function(err, data){
 						if (err) {
@@ -337,9 +339,11 @@ index: function(req, res){
 				inicio = inicio.substring(6)+"-"+inicio.substring(3,5)+"-"+inicio.substring(0,2);
 				fim = fim.substring(6)+"-"+fim.substring(3,5)+"-"+fim.substring(0,2)+" 23:59:59";
 
-				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", statusUmidade, mediaSensores, clima '+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", statusUmidade, mediaSensores, clima, umidade_min, umidade_max '+
 					'from usuario u '+
 					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join jardim_planta jp on jp.idJardim = j.id '+
+					'inner join planta p on p.id = jp.idPlanta '+
 					'inner join analise a on a.idJardim = j.id '+
 					'where u.id = ? and '+
 					'a.dataHora between ? and ? order by a.id desc; ', [idUsuario, inicio, fim], function(err, data){
@@ -366,10 +370,12 @@ index: function(req, res){
 
 			if(inicio == '' || fim == ''){
 
-				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", valvula, consumo, clima, '+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", valvula, consumo, clima, umidade_min, umidade_max, '+
 					'statusUmidade, mediaSensores '+
 					'from usuario u '+
 					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join jardim_planta jp on jp.idJardim = j.id '+
+					'inner join planta p on p.id = jp.idPlanta '+
 					'inner join analise a on a.idJardim = j.id '+
 					'where u.id = ? order by a.id desc', [idUsuario], function(err, data){
 						if (err) {
@@ -405,10 +411,12 @@ index: function(req, res){
 				inicio = inicio.substring(6)+"-"+inicio.substring(3,5)+"-"+inicio.substring(0,2);
 				fim = fim.substring(6)+"-"+fim.substring(3,5)+"-"+fim.substring(0,2)+" 23:59:59";
 
-				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", valvula, consumo, clima, '+
+				_this.connection.query('select DATE_FORMAT(dataHora, "%d/%m/%Y %H:%i:%s") as "dataHora", valvula, consumo, clima, umidade_min, umidade_max, '+
 					'statusUmidade, mediaSensores '+
 					'from usuario u '+
 					'inner join jardim j on j.idUsuario = u.id '+
+					'inner join jardim_planta jp on jp.idJardim = j.id '+
+					'inner join planta p on p.id = jp.idPlanta '+
 					'inner join analise a on a.idJardim = j.id '+
 					'where u.id = ? and '+
 					'a.dataHora between ? and ? order by a.id desc; ', [idUsuario, inicio, fim], function(err, data){
