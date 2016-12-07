@@ -128,9 +128,7 @@ module.exports = {
 		// atribui clima da resposta do API
 		// levado em consideração a descrição do clima, pois possui informações complementares
 		var clima = resposta.list[0].weather[0].description;
-
-//-------------------------------------------------------
-
+		
 }
 		//----------------------------------------------------------------
 
@@ -181,6 +179,17 @@ module.exports = {
 		// if (consumo > 0) {var valvula = 'ligada'}else{var valvula = 'desligada'}
 		//----------------------------------------------------------------
 
+		//----------------------------------------------------------------
+		// traduzir resposta api (clima)
+		//----------------------------------------------------------------
+		for(var i = 0; i < climapt.length;i++){
+			var obj = climapt[i];
+			if(clima == obj.en){
+			console.log('en: '+obj.en)
+				clima = obj.pt;
+				console.log('pt: '+clima)
+			}
+		}
 
 		//salva os valores recebido em analise
 		_this.connection.query('insert into analise(idJardim, dataHora, sensor1, sensor2, sensor3, sensor4, '+
@@ -452,3 +461,20 @@ index: function(req, res){
 			}
 		}
 	}
+
+var climapt = [{"en": "thunderstorm with light rain","pt": "chuva fraca com trovoadas"}, {"en": "thunderstorm with rain",	"pt": "chuva com trovoadas"},
+	{"en": "thunderstorm with light rain",	"pt": "chuva fraca com trovoadas"}, {	"en": "thunderstorm with rain",	"pt": "chuva com trovoadas"
+}, {"en": "thunderstorm with heavy rain","pt": "chuva intensa com trovoadas"}, {"en": "light thunderstorm","pt": "trovoadas fracas"
+}, {"en": "thunderstorm","pt": " trovoadas"}, {"en": "heavy thunderstorm","pt": "trovoadas intensas"}, {"en": "ragged thunderstorm",
+"pt": "trovoadas irregulares"}, {"en": "thunderstorm with light drizzle","pt": "trovoadas com chuvisco fraco"}, {"en": "thunderstorm with drizzle",
+"pt": "trovoadas com chuvisco"}, {"en": "thunderstorm with heavy drizzle","pt": "trovoadas com chuvisco intenso"}, {
+"en": "light intensity drizzle","pt": "chuvisco fraco"}, {"en": "drizzle","pt": "chuvisco"}, {	"en": "heavy intensity drizzle",
+"pt": "chuvisco intenso"}, {"en": "light intensity drizzle rain","pt": "chuvisco fraco"}, {"en": "drizzle rain","pt": "chuvisco"
+}, {"en": "heavy intensity drizzle","pt": "chuvisco intenso"}, {"en": "shower rain and drizzle","pt": "chuva com chuvisco"
+}, {"en": "heavy shower rain and drizzle","pt": "chuva intensa com chuvisco"}, {"en": "shower drizzle","pt": "chuva com chuvisco"
+}, {"en": "light rain",	"pt": "chuva fraca"}, {	"en": "moderate rain","pt": "chuva moderada"}, {"en": "heavy intensity rain",
+"pt": "chuva intensa"}, {"en": "very heavy rain","pt": "chuva muito intensa"}, {"en": "extreme rain","pt": "chuva extrema"
+}, {"en": "freezing rain","pt": "chuva congelante"}, {"en": "light intensity shower","pt": "rain chuva fraca"}, {"en": "shower rain",
+"pt": "chuva"}, {"en": "heavy intensity shower rain","pt": "chuva intensa"}, {"en": "ragged shower rain","pt": "chuva irregular"
+}, {"en": "clear sky","pt": "céu aberto"}, {"en": "few clouds","pt": "poucas nuvens"}, {"en": "scattered clouds","pt": "nuvens dispersas"
+}, {"en": "broken clouds","pt": "Nuvens carregadas"}, {"en": "overcast clouds","pt": "nuvens cobertas"}];
