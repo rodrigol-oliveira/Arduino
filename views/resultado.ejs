@@ -26,7 +26,6 @@
 					"infoFiltered": "(filtrado de _MAX_ registros no total)"
 				}
 			});
-
 		});
 
 
@@ -70,6 +69,7 @@
 		</div>
 		<%}%>
 
+<!--
 		<div class="resultado content">
 			<h3>Relatório</h3>
 
@@ -200,58 +200,72 @@
 
 				</script>
 			</div>
+		-->
 
-
-			<div class="table-responsive tabela-resultado">
-				<table  class="table table-striped" id="tbResultado">
-
-					<thead>
-						<tr>
-							<th>Data e hora</th>
-							<th>Clima</th>
-							<%if(tipo=='umidade'||tipo=='completo'){%>
-							<th>Umidade</th>
-							<%}%>
-							<%if(tipo=='consumo'||tipo=='completo'){%>
-							<th>Válvula</th>
-							<th>Consumo de água</th>
-							<%}%>
-						</tr>
-					</thead>
-
-					<tbody>
-						<% if(resultado){%>
-						<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
-						<tr>
-							<td><%- resultado[i].dataHora %></td>
-							<td><%- resultado[i].clima %></td>
-							<%if(tipo=='umidade'||tipo=='completo'){%>
-							<td><%- resultado[i].statusUmidade %></td>
-							<%}%>
-							<%if(tipo=='consumo'||tipo=='completo'){%>
-							<td><%- resultado[i].valvula %></td>
-							<td><%- resultado[i].consumo %></td>
-							<%}%>
-						</tr>
-						<%}%>
-						<%}%>
-					</tbody>
-
-				</table>
-
-				<dir class="form-group">
-					<a class="btn btn-default" href="/relatorio" type="submit">voltar</a>
-				</dir> 
+		<div class="table-responsive tabela-resultado content">
+			<% if(tipo == 'umidade') {%>
+			<h3>Relatório de umidade</h3>
+			<%}else if(tipo == 'consumo'){%>
+			<h3>Relatório de consumo</h3>
+			<div class="panel">
+			<img id="icone-resultado" src="images/icone-regar.png" class="center-block"> <p style="text-align: center;">Consumo total no período: <%- soma[0].soma %> litros</p>
 			</div>
+			<%}else{%>
+			<h3>Relatório de completo</h3>
+			<div class="panel">
+			<img id="icone-resultado" src="images/icone-regar.png" class="center-block"> <p style="text-align: center;">Consumo total no período: <%- soma[0].soma %> litros</p>
+			</div>
+			<%}%>
 
+			<table  class="table table-striped" id="tbResultado">
+
+				<thead>
+					<tr>
+						<th>Data e hora</th>
+						<th>Clima</th>
+						<%if(tipo=='umidade'||tipo=='completo'){%>
+						<th>Umidade</th>
+						<%}%>
+						<%if(tipo=='consumo'||tipo=='completo'){%>
+						<th>Válvula</th>
+						<th>Consumo de água</th>
+						<%}%>
+					</tr>
+				</thead>
+
+				<tbody>
+					<% if(resultado){%>
+					<% for(i = resultado.length-1; i >= 0 ; i--) {  %>
+					<tr>
+						<td><%- resultado[i].dataHora %></td>
+						<td><%- resultado[i].clima %></td>
+						<%if(tipo=='umidade'||tipo=='completo'){%>
+						<td><%- resultado[i].statusUmidade %></td>
+						<%}%>
+						<%if(tipo=='consumo'||tipo=='completo'){%>
+						<td><%- resultado[i].valvula %></td>
+						<td><%- resultado[i].consumo %></td>
+						<%}%>
+					</tr>
+					<%}%>
+					<%}%>
+				</tbody>
+
+			</table>
+			
+			<dir class="form-group">
+				<a class="btn btn-default" href="/relatorio" type="submit">voltar</a>
+			</dir> 
 		</div>
-	</div>
-	<div class="container-fluid footer">
-		<h5>iOne Jardim Inteligente é um Projeto de Conclusão do Curso de Ciência da Computação</h5>
-		<h5>Universidade São Judas Tadeu - 2016</h5>
-	</div>
 
-	
+	</div>
+</div>
+<div class="container-fluid footer">
+	<h5>iOne Jardim Inteligente é um Projeto de Conclusão do Curso de Ciência da Computação</h5>
+	<h5>Universidade São Judas Tadeu - 2016</h5>
+</div>
+
+
 
 </body>
 </html>

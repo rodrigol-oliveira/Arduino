@@ -46,7 +46,7 @@ module.exports = {
 									'from usuario u '+
 									'inner join jardim j on j.idUsuario = u.id '+
 									'inner join analise a on a.idJardim = j.id '+
-									'where u.id = ? order by a.id desc limit 5', [idUsuario], function(err, data){
+									'where u.id = ? order by a.id desc limit 10', [idUsuario], function(err, data){
 										if (err) {
 											console.log('home - erro ao localizar analise '+err);
 											res.render("home", {alert:true, msg:'erro ao carregar acompanhamento', jardim:jardim, planta:false, analise:false});	

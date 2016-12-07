@@ -121,3 +121,13 @@ values(35, 'Jasmin','Jasminum officinale', 614, 818, 3, '10°C - 40°C',' Cresc
 
 
 
+select * from usuario;
+select * from jardim;
+select * from jardim_planta;
+select * from analise;
+
+delete from jardim_planta where idJardim = 8; 
+delete from analise where idJardim = 8;
+delete from jardim where id = 8;
+delete from usuario where id = 2;
+

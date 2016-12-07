@@ -19,8 +19,6 @@ var connection = mysql.createConnection({
 
 var app = express();
 
-
-
 // view engine setup
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');

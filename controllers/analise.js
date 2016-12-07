@@ -149,16 +149,25 @@ module.exports = {
 		// chuva fraca	= acionamento em 70% do tempo ~= 40s
 		// chuva 		= acionamento em 50% do tempo ~= 30s
 		//----------------------------------------------------------------
-		if(statusUmidade == 'seco'){
-			if(clima.match(/light rain/)){
-				var resposta = {'acao':'70'};
-			}else if(clima.match(/rain/)){
-				var resposta = {'acao':'50'};
+		
+		if (clima != "") {
+			if(statusUmidade == 'seco'){
+				if(clima.match(/light rain/) || clima.match(/drizzle/)){
+					var resposta = {'acao':'70'};
+				}else if(clima.match(/rain/)){
+					var resposta = {'acao':'50'};
+				}else{
+					var resposta = {'acao':'100'};
+				}
 			}else{
-				var resposta = {'acao':'100'};
+				var resposta = {'acao':'0'};
 			}
 		}else{
-			var resposta = {'acao':'0'};
+			if(statusUmidade == 'seco'){
+				var resposta = {'acao':'50'};
+			}else{
+				var resposta = {'acao':'0'};
+			}
 		}
 		//----------------------------------------------------------------
 		console.log('====================================')
@@ -225,13 +234,31 @@ index: function(req, res){
 					'where u.id = ? order by a.id desc ', [idUsuario], function(err, data){
 						if (err) {
 							console.log('relatorioConsumo - erro select analise '+err);
-							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.',soma:false, resultado:false})
 						}else{
 							var resultado = data;
 							if (resultado.length > 0) {
-								res.render('resultado', {alert:false, resultado:resultado, tipo:'consumo'});	
+
+								_this.connection.query('select sum(consumo) as "soma" '+
+									'from usuario u '+
+									'inner join jardim j on j.idUsuario = u.id '+
+									'inner join analise a on a.idJardim = j.id '+
+									'where u.id = ?', [idUsuario], function(err,data){
+										if (err) {
+											console.log('relatorioConsumo - erro sum consumo '+err);
+											res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+										}else{
+											var soma = data;
+											console.log(soma)
+											if (soma.length > 0) {
+												res.render('resultado', {alert:false, resultado:resultado, soma: soma, tipo:'consumo'});
+											}else{
+												res.render('resultado', {alert:false, resultado:resultado, soma: false, tipo:'consumo'});	
+											}
+										}
+									})
 							}else{
-								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'consumo'});
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período',soma: false, resultado:false, tipo:'consumo'});
 							}
 						}
 					});
@@ -250,13 +277,30 @@ index: function(req, res){
 					'a.dataHora between ? and ? order by a.id desc; ', [idUsuario, inicio, fim], function(err, data){
 						if (err) {
 							console.log('relatorioConsumo - erro select analise '+err);
-							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', soma:false, resultado:false})
 						}else{
 							var resultado = data;
 							if (resultado.length > 0) {
-								res.render('resultado', {alert:false, resultado:resultado, tipo:'consumo'});	
+								_this.connection.query('select sum(consumo) as "soma" '+
+									'from usuario u '+
+									'inner join jardim j on j.idUsuario = u.id '+
+									'inner join analise a on a.idJardim = j.id '+
+									'where u.id = ? and a.dataHora between ? and ?', [idUsuario, inicio, fim], function(err,data){
+										if (err) {
+											console.log('relatorioConsumo - erro sum consumo '+err);
+											res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+										}else{
+											var soma = data;
+											if (soma.length > 0) {
+												console.log(soma)
+												res.render('resultado', {alert:false, resultado:resultado, soma: soma, tipo:'consumo'});
+											}else{
+												res.render('resultado', {alert:false, resultado:resultado, soma: false, tipo:'consumo'});	
+											}
+										}
+									});
 							}else{
-								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'consumo'});
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período',soma:false, resultado:false, tipo:'consumo'});
 							}
 						}
 					});
@@ -278,13 +322,13 @@ index: function(req, res){
 					'where u.id = ? order by a.id desc ', [idUsuario], function(err, data){
 						if (err) {
 							console.log('relatorioConsumo - erro select analise '+err);
-							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.',soma:false,soma:false,soma:false, resultado:false})
 						}else{
 							var resultado = data;
 							if (resultado.length > 0) {
-								res.render('resultado', {alert:false, resultado:resultado, tipo:'umidade'});	
+								res.render('resultado', {alert:false, resultado:resultado, soma:false,soma:false,tipo:'umidade'});	
 							}else{
-								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'umidade'});
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', soma:false,resultado:false, tipo:'umidade'});
 							}
 						}
 					});
@@ -301,13 +345,13 @@ index: function(req, res){
 					'a.dataHora between ? and ? order by a.id desc; ', [idUsuario, inicio, fim], function(err, data){
 						if (err) {
 							console.log('relatorioConsumo - erro select analise '+err);
-							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', soma:false,resultado:false})
 						}else{
 							var resultado = data;
 							if (resultado.length > 0) {
-								res.render('resultado', {alert:false, resultado:resultado, tipo:'umidade'});	
+								res.render('resultado', {alert:false, resultado:resultado,soma:false, tipo:'umidade'});	
 							}else{
-								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'umidade'});
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período',soma:false, resultado:false, tipo:'umidade'});
 							}
 						}
 					});
@@ -330,13 +374,30 @@ index: function(req, res){
 					'where u.id = ? order by a.id desc', [idUsuario], function(err, data){
 						if (err) {
 							console.log('relatorioConsumo - erro select analise '+err);
-							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.',soma:false, resultado:false})
 						}else{
 							var resultado = data;
 							if (resultado.length > 0) {
-								res.render('resultado', {alert:false, resultado:resultado, tipo:'completo'});	
+								_this.connection.query('select sum(consumo) as "soma" '+
+									'from usuario u '+
+									'inner join jardim j on j.idUsuario = u.id '+
+									'inner join analise a on a.idJardim = j.id '+
+									'where u.id = ?', [idUsuario], function(err,data){
+										if (err) {
+											console.log('relatorioConsumo - erro sum consumo '+err);
+											res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+										}else{
+											var soma = data;
+											console.log(soma)
+											if (soma.length > 0) {
+												res.render('resultado', {alert:false, resultado:resultado, soma: soma, tipo:'completo'});
+											}else{
+												res.render('resultado', {alert:false, resultado:resultado, soma: false, tipo:'completo'});	
+											}
+										}
+									})
 							}else{
-								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'completo'});
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', soma:false,resultado:false, tipo:'completo'});
 							}
 						}
 					});
@@ -353,13 +414,30 @@ index: function(req, res){
 					'a.dataHora between ? and ? order by a.id desc; ', [idUsuario, inicio, fim], function(err, data){
 						if (err) {
 							console.log('relatorioConsumo - erro select analise '+err);
-							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+							res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', soma:false,resultado:false})
 						}else{
 							var resultado = data;
 							if (resultado.length > 0) {
-								res.render('resultado', {alert:false, resultado:resultado, tipo:'completo'});	
+								_this.connection.query('select sum(consumo) as "soma" '+
+									'from usuario u '+
+									'inner join jardim j on j.idUsuario = u.id '+
+									'inner join analise a on a.idJardim = j.id '+
+									'where u.id = ? and a.dataHora between ? and ?', [idUsuario, inicio, fim], function(err,data){
+										if (err) {
+											console.log('relatorioConsumo - erro sum consumo '+err);
+											res.render('relatorio', {alert:true, msg:'erro ao pesquisar, tente novamente.', resultado:false})
+										}else{
+											var soma = data;
+											console.log(soma)
+											if (soma.length > 0) {
+												res.render('resultado', {alert:false, resultado:resultado, soma: soma, tipo:'completo'});
+											}else{
+												res.render('resultado', {alert:false, resultado:resultado, soma: false, tipo:'completo'});	
+											}
+										}
+									})
 							}else{
-								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período', resultado:false, tipo:'completo'});
+								res.render('resultado', {alert:true, msg:'Não existe resultado para esse período',soma:false, resultado:false, tipo:'completo'});
 							}
 						}
 					});
